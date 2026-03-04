@@ -114,6 +114,7 @@ Alternatively, you can install all the dependencies, including PyTorch, using Co
 git clone https://github.com/AliEsmaeiliN/duckie-rl-project.git
 cd duckie-rl-project
 conda env create -f environment.yaml
+pip install -e .
 ```
 
 Please note that if you use Conda to install this package instead of pip, you will need to activate your Conda environment and add the package to your Python path before you can use it:
