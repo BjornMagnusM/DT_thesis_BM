@@ -9,4 +9,11 @@ bin
 trained_models
 dist
 requirements.resolved
+# RL Training Outputs
+outputs/
+models/
+wandb/
 runs/
+*.log
+__pycache__/
+.conda/
