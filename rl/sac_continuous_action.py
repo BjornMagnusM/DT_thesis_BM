@@ -1,5 +1,7 @@
 # docs and experiment results can be found at https://docs.cleanrl.dev/rl-algorithms/sac/#sac_continuous_actionpy
 import os
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
 import random
 import time
 from dataclasses import dataclass
@@ -44,7 +46,7 @@ class Args:
     """whether to capture videos of the agent performances (check out `videos` folder)"""
 
     # Algorithm specific arguments
-    env_id: str = "Hopper-v4"
+    env_id: str = "Oval-v1.2"
     """the environment id of the task"""
     total_timesteps: int = 1000000
     """total timesteps of the experiments"""
@@ -56,7 +58,7 @@ class Args:
     """the discount factor gamma"""
     tau: float = 0.005
     """target smoothing coefficient (default: 0.005)"""
-    batch_size: int = 64    #256 before
+    batch_size: int = 256    #256 before
     """the batch size of sample from the reply memory"""
     learning_starts: int = 5e3
     """timestep to start learning"""
@@ -99,13 +101,13 @@ def make_env(seed, idx, capture_video, run_name):
         env = DuckietownEnv(
             seed=123,  # random seed
             map_name="oval_loop",
-            max_steps=500001,  # we don't want the gym to reset itself
+            max_steps=1000,  # we don't want the gym to reset itself
             domain_rand=False,
             camera_width=160,
             camera_height=120,
             accept_start_angle_deg=4,  # start close to straight
             full_transparency=True,
-            distortion=True,
+            distortion=False,
         )
         print("Initialized environment")
 
@@ -115,7 +117,7 @@ def make_env(seed, idx, capture_video, run_name):
 
 
         # 4. Wrappers
-        env = ResizeWrapper(env)
+        #env = ResizeWrapper(env)
         
         print(f"Observation space before ImgWrapper: {env.observation_space.shape}")
         env = ImgWrapper(env)  # to make the images from 160x120x3 into 3x160x120
@@ -133,7 +135,7 @@ def make_env(seed, idx, capture_video, run_name):
         print(f"Observation space after stacking: {env.observation_space.shape}")
 
         #Flatten the 4x3 channels into 12 for the DQNEncoder
-        new_obs_space = gym.spaces.Box(low=0.0, high=1.0, shape=(12, 120, 160), dtype=np.float32)
+        new_obs_space = gym.spaces.Box(low=0.0, high=1.0, shape=(12, 120, 160), dtype=np.uint8)
         env = gym.wrappers.TransformObservation(
             env, 
             lambda obs: obs.reshape(12, 120, 160),
@@ -376,8 +378,8 @@ if __name__ == "__main__":
             #adding some parts
             #CAST TO FLOAT HERE
             # This converts the uint8 images from the buffer into float32 for the GPU
-            s_obs = data.observations.float() / 255.0
-            s_next_obs = data.next_observations.float() / 255.0
+            s_obs = data.observations.to(device, non_blocking=True).float() / 255.0
+            s_next_obs = data.next_observations.to(device, non_blocking=True).float() / 255.0
 
             with torch.no_grad():
                 next_state_actions, next_state_log_pi, _ = actor.get_action(s_next_obs)
