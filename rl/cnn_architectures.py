@@ -64,7 +64,7 @@ class ImpalaCNNLN(nn.Module):
 
 class ImpalaCNN(nn.Module):
     """A more efficient, high-stride CNN for faster feature extraction."""
-    def __init__(self, in_channels=12, feature_dim=256, default_init=True):
+    def __init__(self, in_channels=12, feature_dim=256, default_init=True, obs_shape=(12, 120, 160)):
 
         super().__init__()
 
@@ -83,8 +83,11 @@ class ImpalaCNN(nn.Module):
         print(f"Num params of encoder: {num_params}")
         
     def forward(self, obs):
-        x = self.main(torch.unsqueeze(obs, dim=0)/255 - 0.5)
-        return torch.squeeze(F.layer_norm(x, x.size()))
+        #x = self.main(torch.unsqueeze(obs, dim=0)/255 - 0.5)
+        #return torch.squeeze(F.layer_norm(x, x.size()))
+        x = obs.float() / 255.0 - 0.5
+        h = self.main(x)
+        return F.layer_norm(h, (h.size(-1),))
 
 
 class DrQEncoderV2(nn.Module):  
@@ -126,14 +129,22 @@ class DQNEncoder(nn.Module):
         super().__init__()
 
         # 64 * 11 * 16 = 11264
-        self.repr_dim = 11264
+        #self.repr_dim = 11264
 
         self.convnet = nn.Sequential(nn.Conv2d(obs_shape[0], 32, 8, stride=4),
                                      nn.ReLU(), nn.Conv2d(32, 64, 4, stride=2),
                                      nn.ReLU(), nn.Conv2d(64, 64, 3, stride=1),
-                                     nn.ReLU(), nn.Flatten(),
-                                     nn.Linear(self.repr_dim, 512), nn.ReLU())
-        self.linear = nn.Linear(512, feature_dim)
+                                     nn.ReLU(), nn.Flatten()
+                                    )
+        
+        with torch.no_grad():
+            dummy_input = torch.zeros(1, *obs_shape)
+            self.repr_dim = self.convnet(dummy_input).shape[1]
+
+        self.linear = nn.Sequential(nn.Linear(self.repr_dim, 512),
+                                    nn.ReLU(), 
+                                    nn.Linear(512, feature_dim)
+                                    )
         self.apply(weight_init)
 
         num_params = sum(p.numel() for p in self.parameters())

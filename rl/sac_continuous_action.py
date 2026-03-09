@@ -17,13 +17,14 @@ import tyro
 from torch.utils.tensorboard import SummaryWriter
 
 from cleanrl_utils.buffers import ReplayBuffer
+from cleanrl_utils.atari_wrappers import MaxAndSkipEnv
 
 # Duckietown Specific
 from gym_duckietown.envs import DuckietownEnv
-from utils.wrappers import NormalizeWrapper, ImgWrapper, DtRewardWrapper, ActionWrapper, ResizeWrapper
+from utils.wrappers import NormalizeWrapper, ImgWrapper, DtRewardWrapper, ActionWrapper, ResizeWrapper, CropResizeWrapper
 
 # CNN Architucture 
-from rl.cnn_architectures import DQNEncoder
+from rl.cnn_architectures import DQNEncoder, ImpalaCNN
 
 
 @dataclass
@@ -97,7 +98,6 @@ def save_model(actor, qf1, qf2, step, run_name, suffix=""):
 def make_env(seed, idx, capture_video, run_name):
     def thunk():
         # 1. Initializing the Duckietown env
-        #env = launch_env() # Output: (480, 640, 3)
         env = DuckietownEnv(
             seed=123,  # random seed
             map_name="oval_loop",
@@ -108,6 +108,7 @@ def make_env(seed, idx, capture_video, run_name):
             accept_start_angle_deg=4,  # start close to straight
             full_transparency=True,
             distortion=False,
+            frame_skip = 3
         )
         print("Initialized environment")
 
@@ -115,16 +116,12 @@ def make_env(seed, idx, capture_video, run_name):
         if capture_video and idx == 0:
             env = gym.wrappers.RecordVideo(env, f"videos/{run_name}")
 
+        # 3. Crop and Resize first (from 120x160 to 84x84)
+        env = CropResizeWrapper(env, shape=(84, 84))
 
-        # 4. Wrappers
-        #env = ResizeWrapper(env)
-        
-        print(f"Observation space before ImgWrapper: {env.observation_space.shape}")
-        env = ImgWrapper(env)  # to make the images from 160x120x3 into 3x160x120
-        print(f"Observation space after ImgWrapper: {env.observation_space.shape}")
+        # 4. To make the images from W*H*C into C*W*H
+        env = ImgWrapper(env)
 
-        # We don't need nomailiztion since we are saving them in uint8 and these will probably make them zero
-        # env = NormalizeWrapper(env)
 
         env = ActionWrapper(env)
         env = DtRewardWrapper(env)
@@ -132,17 +129,15 @@ def make_env(seed, idx, capture_video, run_name):
 
         # 5. Stack 4 frames
         env = gym.wrappers.FrameStackObservation(env, stack_size=4)
-        print(f"Observation space after stacking: {env.observation_space.shape}")
-
         #Flatten the 4x3 channels into 12 for the DQNEncoder
-        new_obs_space = gym.spaces.Box(low=0.0, high=1.0, shape=(12, 120, 160), dtype=np.uint8)
+        new_obs_space = gym.spaces.Box(low=0.0, high=1.0, shape=(12, 84, 84), dtype=np.uint8)
+        
         env = gym.wrappers.TransformObservation(
             env, 
-            lambda obs: obs.reshape(12, 120, 160),
+            lambda obs: obs.reshape(12, 84, 84),
             observation_space=new_obs_space  
         )   
-
-        # 3. Basic RL statistics for Tensorboard
+        # 6. Basic RL statistics for Tensorboard
         env = gym.wrappers.RecordEpisodeStatistics(env)
 
         env.action_space.seed(seed)
@@ -157,7 +152,7 @@ class SoftQNetwork(nn.Module):
         super().__init__()
         
         # Independent Visual Encoder
-        self.encoder = DQNEncoder(
+        self.encoder = ImpalaCNN(
             obs_shape=env.single_observation_space.shape,
             feature_dim=feature_dim
         )
@@ -196,7 +191,8 @@ class Actor(nn.Module):
         super().__init__()
 
         # Modified DQNEncoder
-        self.encoder = DQNEncoder(
+        self.encoder = ImpalaCNN(
+            in_channels=12,
             obs_shape=env.single_observation_space.shape,
             feature_dim=256
         )
@@ -378,8 +374,8 @@ if __name__ == "__main__":
             #adding some parts
             #CAST TO FLOAT HERE
             # This converts the uint8 images from the buffer into float32 for the GPU
-            s_obs = data.observations.to(device, non_blocking=True).float() / 255.0
-            s_next_obs = data.next_observations.to(device, non_blocking=True).float() / 255.0
+            s_obs = data.observations
+            s_next_obs = data.next_observations
 
             with torch.no_grad():
                 next_state_actions, next_state_log_pi, _ = actor.get_action(s_next_obs)
