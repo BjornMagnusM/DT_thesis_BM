@@ -1,6 +1,7 @@
 import gymnasium as gym
 from gymnasium import spaces
 import numpy as np
+from PIL import Image
 
 from gym_duckietown.simulator import Simulator
 
@@ -48,10 +49,6 @@ class ResizeWrapper(gym.ObservationWrapper):
         )
         self.shape = shape # (120, 160, 3)
     def observation(self, observation):
-        #from scipy.misc import imresize
-        from PIL import Image
-
-        #return imresize(observation, self.shape)
         
         resized = Image.fromarray(observation).resize((self.shape[1], self.shape[0]))
         return np.array(resized)

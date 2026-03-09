@@ -17,6 +17,7 @@ import tyro
 from torch.utils.tensorboard import SummaryWriter
 
 from cleanrl_utils.buffers import ReplayBuffer
+from cleanrl_utils.atari_wrappers import MaxAndSkipEnv
 
 # Duckietown Specific
 from gym_duckietown.envs import DuckietownEnv
@@ -52,13 +53,13 @@ class Args:
     """total timesteps of the experiments"""
     num_envs: int = 1
     """the number of parallel game environments"""
-    buffer_size: int = int(3e4) # image input: we can not have too many 1e6
+    buffer_size: int = int(10e4) # image input: we can not have too many 1e6
     """the replay memory buffer size"""
     gamma: float = 0.99
     """the discount factor gamma"""
     tau: float = 0.005
     """target smoothing coefficient (default: 0.005)"""
-    batch_size: int = 256    #256 before
+    batch_size: int = 512    #256 before
     """the batch size of sample from the reply memory"""
     learning_starts: int = 5e3
     """timestep to start learning"""
@@ -117,7 +118,7 @@ def make_env(seed, idx, capture_video, run_name):
 
 
         # 4. Wrappers
-        #env = ResizeWrapper(env)
+        env = ResizeWrapper(env, shape=(60, 80, 3))
         
         print(f"Observation space before ImgWrapper: {env.observation_space.shape}")
         env = ImgWrapper(env)  # to make the images from 160x120x3 into 3x160x120
@@ -125,6 +126,7 @@ def make_env(seed, idx, capture_video, run_name):
 
         # We don't need nomailiztion since we are saving them in uint8 and these will probably make them zero
         # env = NormalizeWrapper(env)
+        env = MaxAndSkipEnv(env, skip=4)
 
         env = ActionWrapper(env)
         env = DtRewardWrapper(env)
@@ -135,10 +137,10 @@ def make_env(seed, idx, capture_video, run_name):
         print(f"Observation space after stacking: {env.observation_space.shape}")
 
         #Flatten the 4x3 channels into 12 for the DQNEncoder
-        new_obs_space = gym.spaces.Box(low=0.0, high=1.0, shape=(12, 120, 160), dtype=np.uint8)
+        new_obs_space = gym.spaces.Box(low=0.0, high=1.0, shape=(12, 60, 80), dtype=np.uint8)
         env = gym.wrappers.TransformObservation(
             env, 
-            lambda obs: obs.reshape(12, 120, 160),
+            lambda obs: obs.reshape(12, 60, 80),
             observation_space=new_obs_space  
         )   
 
@@ -273,7 +275,7 @@ class Actor(nn.Module):
 if __name__ == "__main__":
 
     args = tyro.cli(Args)
-    run_name = f"{args.env_id}__{args.exp_name}__{args.seed}__{int(time.time())}"
+    run_name = f"{args.env_id}__sac__{args.seed}__{int(time.time())}"
     if args.track:
         import wandb
 

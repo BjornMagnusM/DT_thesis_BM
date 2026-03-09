@@ -131,9 +131,15 @@ class DQNEncoder(nn.Module):
         self.convnet = nn.Sequential(nn.Conv2d(obs_shape[0], 32, 8, stride=4),
                                      nn.ReLU(), nn.Conv2d(32, 64, 4, stride=2),
                                      nn.ReLU(), nn.Conv2d(64, 64, 3, stride=1),
-                                     nn.ReLU(), nn.Flatten(),
-                                     nn.Linear(self.repr_dim, 512), nn.ReLU())
-        self.linear = nn.Linear(512, feature_dim)
+                                     nn.ReLU(), nn.Flatten())
+        with torch.no_grad():
+            dummy_input = torch.zeros(1, *obs_shape)
+            self.repr_dim = self.convnet(dummy_input).shape[1]
+
+        self.linear = nn.Sequential(nn.Linear(self.repr_dim, 512), 
+                                    nn.ReLU(),
+                                    nn.Linear(512, feature_dim)
+        )
         self.apply(weight_init)
 
         num_params = sum(p.numel() for p in self.parameters())
