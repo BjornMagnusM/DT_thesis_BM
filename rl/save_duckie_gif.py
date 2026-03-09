@@ -3,11 +3,11 @@ import torch
 import numpy as np
 import gymnasium as gym
 import imageio
-from .sac_continuous_action import Actor, make_env
+from rl.sac_continuous_action import Actor, make_env
 
 def generate_gif():
     # --- CONFIG ---
-    MODEL_PATH = "runs/oval_loop__sac_continuous_action__1__1771938634/models/sac_step_step_50000.cleanrl_model"
+    MODEL_PATH = "runs/sac_step_step_450000.cleanrl_model"
     OUTPUT_NAME = "duckiebot_eval.gif"
     MAX_STEPS = 200  # Number of frames to capture
     SEED = 42        # Changed seed to try and avoid "Invalid Pose"
