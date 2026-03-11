@@ -26,6 +26,11 @@ from utils.wrappers import NormalizeWrapper, ImgWrapper, DtRewardWrapper, Action
 # CNN Architucture 
 from rl.cnn_architectures import DQNEncoder, ImpalaCNN
 
+# Target the specific logger used in the simulator
+import logging
+duckietown_logger = logging.getLogger("gym-duckietown")
+duckietown_logger.setLevel(logging.WARNING)
+
 
 @dataclass
 class Args:
@@ -76,6 +81,9 @@ class Args:
     autotune: bool = True
     """automatic tuning of the entropy coefficient"""
     save_interval: int = 50000
+    """the interval to save the Actor periodically"""
+    save_model: bool = True
+    """whether to save model into the `runs/{run_name}` folder"""
 
 def save_model(actor, qf1, qf2, step, run_name, suffix=""):
     
@@ -83,7 +91,7 @@ def save_model(actor, qf1, qf2, step, run_name, suffix=""):
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
 
-    label = suffix if suffix else f"step_{step}"
+    label = suffix if suffix else "latest"
     model_path = f"{model_dir}/sac_step_{label}.cleanrl_model"
 
     torch.save({
@@ -92,7 +100,7 @@ def save_model(actor, qf1, qf2, step, run_name, suffix=""):
         'qf2_state_dict': qf2.state_dict(),
         'global_step': step,
     }, model_path)
-    print(f"Saved: {model_path}")
+    print(f"Saved: {model_path} at Step:{step}")
 
 
 def make_env(seed, idx, capture_video, run_name):
@@ -352,13 +360,13 @@ if __name__ == "__main__":
         next_obs, rewards, terminations, truncations, infos = envs.step(actions)
 
         # TRY NOT TO MODIFY: record rewards for plotting purposes
-        if "final_info" in infos:
-            for info in infos["final_info"]:
-                if info is not None:
-                    print(f"global_step={global_step}, episodic_return={info['episode']['r']}")
-                    writer.add_scalar("charts/episodic_return", info["episode"]["r"], global_step)
-                    writer.add_scalar("charts/episodic_length", info["episode"]["l"], global_step)
-                    break
+        if "episode" in infos:
+            for i in range(envs.num_envs):
+                # Using the mask '_episode' to see which sub-env actually finished
+                if "_episode" in infos and infos["_episode"][i]:
+                    print(f"global_step={global_step}, episodic_return={infos['episode']['r'][i]}")
+                    writer.add_scalar("charts/episodic_return", infos['episode']['r'][i], global_step)
+                    writer.add_scalar("charts/episodic_length", infos['episode']['l'][i], global_step)  
 
         # TRY NOT TO MODIFY: save data to reply buffer; handle `final_observation`
         real_next_obs = next_obs.copy()
@@ -449,6 +457,6 @@ if __name__ == "__main__":
             if global_step > 0 and global_step % args.save_interval == 0:
                 save_model(actor, qf1, qf2, global_step, run_name)
 
-
+    save_model(actor, qf1, qf2, global_step, run_name, suffix="Final")    
     envs.close()
     writer.close()
