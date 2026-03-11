@@ -14,6 +14,8 @@ def parse_args():
                         help="Number of evaluation episodes")
     parser.add_argument("--render", action="store_true", default=True,
                         help="Whether to render the environment")
+    parser.add_argument("--capture-video", type=bool, default=True,
+                        help="Capture video of the evaluation episodes")
     return parser.parse_args()
 
 def evaluate():
@@ -22,7 +24,7 @@ def evaluate():
 
     # 1. Recreate the environment exactly as it was during training
     # Note: make_env returns a thunk, so we call it and then wrap it if needed
-    env_func = make_env(seed=args.num_episodes, idx=0, capture_video=False, run_name="eval")
+    env_func = make_env(seed=args.num_episodes, idx=0, capture_video=args.capture_video, run_name="eval")
     env = env_func()
     
     # 2. Instantiate the Actor
