@@ -21,10 +21,15 @@ from cleanrl_utils.atari_wrappers import MaxAndSkipEnv
 
 # Duckietown Specific
 from gym_duckietown.envs import DuckietownEnv
-from utils.wrappers import NormalizeWrapper, ImgWrapper, DtRewardWrapper, ActionWrapper, ResizeWrapper
+from utils.wrappers import NormalizeWrapper, ImgWrapper, DtRewardWrapper, ActionWrapper, ResizeWrapper, CropResizeWrapper
 
 # CNN Architucture 
-from rl.cnn_architectures import DQNEncoder
+from rl.cnn_architectures import DQNEncoder, ImpalaCNN
+
+# Target the specific logger used in the simulator
+import logging
+duckietown_logger = logging.getLogger("gym-duckietown")
+duckietown_logger.setLevel(logging.WARNING)
 
 
 @dataclass
@@ -76,6 +81,9 @@ class Args:
     autotune: bool = True
     """automatic tuning of the entropy coefficient"""
     save_interval: int = 50000
+    """the interval to save the Actor periodically"""
+    save_model: bool = True
+    """whether to save model into the `runs/{run_name}` folder"""
 
 def save_model(actor, qf1, qf2, step, run_name, suffix=""):
     
@@ -83,7 +91,7 @@ def save_model(actor, qf1, qf2, step, run_name, suffix=""):
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
 
-    label = suffix if suffix else f"step_{step}"
+    label = suffix if suffix else "latest"
     model_path = f"{model_dir}/sac_step_{label}.cleanrl_model"
 
     torch.save({
@@ -92,13 +100,13 @@ def save_model(actor, qf1, qf2, step, run_name, suffix=""):
         'qf2_state_dict': qf2.state_dict(),
         'global_step': step,
     }, model_path)
-    print(f"Saved: {model_path}")
+    print(f"Saved: {model_path} at Step:{step}")
 
 
 def make_env(seed, idx, capture_video, run_name):
     def thunk():
+        render_mode = "rgb_array" if (capture_video and idx == 0) else None
         # 1. Initializing the Duckietown env
-        #env = launch_env() # Output: (480, 640, 3)
         env = DuckietownEnv(
             seed=123,  # random seed
             map_name="oval_loop",
@@ -109,6 +117,8 @@ def make_env(seed, idx, capture_video, run_name):
             accept_start_angle_deg=4,  # start close to straight
             full_transparency=True,
             distortion=False,
+            render_mode=render_mode,
+            frame_skip = 3
         )
         print("Initialized environment")
 
@@ -116,17 +126,12 @@ def make_env(seed, idx, capture_video, run_name):
         if capture_video and idx == 0:
             env = gym.wrappers.RecordVideo(env, f"videos/{run_name}")
 
+        # 3. Crop and Resize first (from 120x160 to 84x84)
+        env = CropResizeWrapper(env, shape=(84, 84))
 
-        # 4. Wrappers
-        env = ResizeWrapper(env, shape=(60, 80, 3))
-        
-        print(f"Observation space before ImgWrapper: {env.observation_space.shape}")
-        env = ImgWrapper(env)  # to make the images from 160x120x3 into 3x160x120
-        print(f"Observation space after ImgWrapper: {env.observation_space.shape}")
+        # 4. To make the images from W*H*C into C*W*H
+        env = ImgWrapper(env)
 
-        # We don't need nomailiztion since we are saving them in uint8 and these will probably make them zero
-        # env = NormalizeWrapper(env)
-        env = MaxAndSkipEnv(env, skip=4)
 
         env = ActionWrapper(env)
         env = DtRewardWrapper(env)
@@ -134,17 +139,15 @@ def make_env(seed, idx, capture_video, run_name):
 
         # 5. Stack 4 frames
         env = gym.wrappers.FrameStackObservation(env, stack_size=4)
-        print(f"Observation space after stacking: {env.observation_space.shape}")
-
         #Flatten the 4x3 channels into 12 for the DQNEncoder
-        new_obs_space = gym.spaces.Box(low=0.0, high=1.0, shape=(12, 60, 80), dtype=np.uint8)
+        new_obs_space = gym.spaces.Box(low=0.0, high=1.0, shape=(12, 84, 84), dtype=np.uint8)
+        
         env = gym.wrappers.TransformObservation(
             env, 
-            lambda obs: obs.reshape(12, 60, 80),
+            lambda obs: obs.reshape(12, 84, 84),
             observation_space=new_obs_space  
         )   
-
-        # 3. Basic RL statistics for Tensorboard
+        # 6. Basic RL statistics for Tensorboard
         env = gym.wrappers.RecordEpisodeStatistics(env)
 
         env.action_space.seed(seed)
@@ -159,7 +162,7 @@ class SoftQNetwork(nn.Module):
         super().__init__()
         
         # Independent Visual Encoder
-        self.encoder = DQNEncoder(
+        self.encoder = ImpalaCNN(
             obs_shape=env.single_observation_space.shape,
             feature_dim=feature_dim
         )
@@ -198,7 +201,8 @@ class Actor(nn.Module):
         super().__init__()
 
         # Modified DQNEncoder
-        self.encoder = DQNEncoder(
+        self.encoder = ImpalaCNN(
+            in_channels=12,
             obs_shape=env.single_observation_space.shape,
             feature_dim=256
         )
@@ -356,13 +360,13 @@ if __name__ == "__main__":
         next_obs, rewards, terminations, truncations, infos = envs.step(actions)
 
         # TRY NOT TO MODIFY: record rewards for plotting purposes
-        if "final_info" in infos:
-            for info in infos["final_info"]:
-                if info is not None:
-                    print(f"global_step={global_step}, episodic_return={info['episode']['r']}")
-                    writer.add_scalar("charts/episodic_return", info["episode"]["r"], global_step)
-                    writer.add_scalar("charts/episodic_length", info["episode"]["l"], global_step)
-                    break
+        if "episode" in infos:
+            for i in range(envs.num_envs):
+                # Using the mask '_episode' to see which sub-env actually finished
+                if "_episode" in infos and infos["_episode"][i]:
+                    print(f"global_step={global_step}, episodic_return={infos['episode']['r'][i]}")
+                    writer.add_scalar("charts/episodic_return", infos['episode']['r'][i], global_step)
+                    writer.add_scalar("charts/episodic_length", infos['episode']['l'][i], global_step)  
 
         # TRY NOT TO MODIFY: save data to reply buffer; handle `final_observation`
         real_next_obs = next_obs.copy()
@@ -380,8 +384,8 @@ if __name__ == "__main__":
             #adding some parts
             #CAST TO FLOAT HERE
             # This converts the uint8 images from the buffer into float32 for the GPU
-            s_obs = data.observations.to(device, non_blocking=True).float() / 255.0
-            s_next_obs = data.next_observations.to(device, non_blocking=True).float() / 255.0
+            s_obs = data.observations
+            s_next_obs = data.next_observations
 
             with torch.no_grad():
                 next_state_actions, next_state_log_pi, _ = actor.get_action(s_next_obs)
@@ -453,6 +457,6 @@ if __name__ == "__main__":
             if global_step > 0 and global_step % args.save_interval == 0:
                 save_model(actor, qf1, qf2, global_step, run_name)
 
-
+    save_model(actor, qf1, qf2, global_step, run_name, suffix="Final")    
     envs.close()
     writer.close()

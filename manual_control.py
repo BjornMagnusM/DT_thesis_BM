@@ -15,6 +15,7 @@ import pyglet
 from pyglet.window import key
 
 from src.gym_duckietown.envs import DuckietownEnv
+from utils.wrappers import CropResizeWrapper
 
 # from experiments.utils import save_img
 
@@ -46,6 +47,7 @@ if args.env_name and args.env_name.find("Duckietown") != -1:
         camera_width=160,
         camera_height=120,
     )
+    env = CropResizeWrapper(env, shape=(84, 84))
 else:
     env = gym.make(args.env_name)
 
@@ -57,7 +59,7 @@ env.reset(seed=args.seed)
 pure_internal_obs = env.unwrapped.render_obs()
 print(f"Internal Renderer Shape: {pure_internal_obs.shape}")
 
-env.render(view)
+env.unwrapped.render(view)
 
 
 @env.unwrapped.window.event
@@ -70,7 +72,7 @@ def on_key_press(symbol, modifiers):
     if symbol == key.BACKSPACE or symbol == key.SLASH:
         print("RESET")
         env.reset(seed=args.seed)
-        env.render(view)
+        env.unwrapped.render(view)
     elif symbol == key.PAGEUP:
         env.unwrapped.cam_angle[0] = 0
     elif symbol == key.ESCAPE:
@@ -140,9 +142,9 @@ def update(dt):
     if done:
         print("done!")
         env.reset(seed=args.seed)
-        env.render(view)
+        env.unwrapped.render(view)
 
-    env.render(view)
+    env.unwrapped.render(view)
 
 
 pyglet.clock.schedule_interval(update, 1.0 / env.unwrapped.frame_rate)

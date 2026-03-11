@@ -40,6 +40,7 @@ def generate_multi_episode_gif():
             # Capture the raw RGB array from the simulator
             # Mode 'rgb_array' returns a numpy array of the current state
             frame = env.unwrapped.render() 
+            frame = np.flipud(frame)
             all_frames.append(frame)
 
             # Get action from model using deterministic mean_action
