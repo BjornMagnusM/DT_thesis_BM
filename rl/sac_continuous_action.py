@@ -31,6 +31,10 @@ import logging
 duckietown_logger = logging.getLogger("gym-duckietown")
 duckietown_logger.setLevel(logging.WARNING)
 
+# Disable error checking for maximum training throughput
+import pyglet
+pyglet.options['debug_gl'] = False
+
 
 @dataclass
 class Args:
@@ -58,13 +62,13 @@ class Args:
     """total timesteps of the experiments"""
     num_envs: int = 1
     """the number of parallel game environments"""
-    buffer_size: int = int(10e4) # image input: we can not have too many 1e6
+    buffer_size: int = int(5e4) # image input: we can not have too many 1e6 ... Currently the best performing speed wise is 5e4 (1 env , SyncVectorEnv)
     """the replay memory buffer size"""
     gamma: float = 0.99
     """the discount factor gamma"""
     tau: float = 0.005
     """target smoothing coefficient (default: 0.005)"""
-    batch_size: int = 512    #256 before
+    batch_size: int = 256    #256 before ... Currently the best performing speed wise is 256 (1 env , SyncVectorEnv)
     """the batch size of sample from the reply memory"""
     learning_starts: int = 5e3
     """timestep to start learning"""
@@ -384,8 +388,8 @@ if __name__ == "__main__":
             #adding some parts
             #CAST TO FLOAT HERE
             # This converts the uint8 images from the buffer into float32 for the GPU
-            s_obs = data.observations
-            s_next_obs = data.next_observations
+            s_obs = data.observations.to(device, non_blocking=True)
+            s_next_obs = data.next_observations.to(device, non_blocking=True)
 
             with torch.no_grad():
                 next_state_actions, next_state_log_pi, _ = actor.get_action(s_next_obs)
