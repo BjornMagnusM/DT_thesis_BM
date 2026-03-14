@@ -1661,9 +1661,10 @@ class Simulator(gym.Env):
     
                     
 
-    def compute_reward(self, pos, angle, speed):
+    def compute_reward(self, pos, angle, speed, action):
         """
         Refined reward function for oscillation reduction and lane alignment.
+        Refined reward function with Jerk (Action Continuity) Penalty. 14/03 9pm
         """
         # Get the position relative to the right lane tangent
         try:
@@ -1675,13 +1676,18 @@ class Simulator(gym.Env):
         reward_alignment = 2.0 * (lp.dot_dir ** 2) if lp.dot_dir > 0 else 4.0 * lp.dot_dir # tanh like behaviour to add a higher gradint near 1
         reward_distance = -10.0 * np.abs(lp.dist)
         reward_angle = -0.1 * np.abs(lp.angle_deg)
+        # Jerk Penalty: Penalize sudden changes in angle
+        # self.last_action stores the [v, omega] from the PREVIOUS step
+        action_diff = np.linalg.norm(action - self.last_action)
+        reward_jerk = -0.5 * action_diff  # Start with -0.5 and tune if needed
 
-        reward = reward_speed + reward_alignment + reward_distance + reward_angle
+        reward = reward_speed + reward_alignment + reward_distance + reward_angle + reward_jerk
 
         return reward
 
     def step(self, action: np.ndarray):
         action = np.clip(action, -1, 1)
+        current_step_action = np.array(action)
         # Actions could be a Python list
         action = np.array(action)
         for _ in range(self.frame_skip):
@@ -1691,12 +1697,12 @@ class Simulator(gym.Env):
         obs = self.render_obs()
         misc = self.get_agent_info()
 
-        d = self._compute_done_reward()
+        d = self._compute_done_reward(current_step_action)
         misc["Simulator"]["msg"] = d.done_why
         
         return obs, d.reward, d.done, False, misc
 
-    def _compute_done_reward(self) -> DoneRewardInfo:
+    def _compute_done_reward(self, action) -> DoneRewardInfo:
         # If the agent is not in a valid pose (on drivable tiles)
         if not self._valid_pose(self.cur_pos, self.cur_angle):
             msg = "Stopping the simulator because we are at an invalid pose."
@@ -1713,7 +1719,7 @@ class Simulator(gym.Env):
             done_code = "max-steps-reached"
         else:
             done = False
-            reward = self.compute_reward(self.cur_pos, self.cur_angle, self.robot_speed)
+            reward = self.compute_reward(self.cur_pos, self.cur_angle, self.robot_speed, action)
             msg = ""
             done_code = "in-progress"
         return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
