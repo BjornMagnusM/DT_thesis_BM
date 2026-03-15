@@ -24,8 +24,18 @@ def evaluate():
 
     # 1. Recreate the environment exactly as it was during training
     # Note: make_env returns a thunk, so we call it and then wrap it if needed
-    env_func = make_env(seed=args.num_episodes, idx=0, capture_video=args.capture_video, run_name="eval")
+    env_func = make_env(seed=42, idx=0, capture_video=args.capture_video, run_name="eval")
     env = env_func()
+
+    if args.capture_video:
+        video_folder = "videos"
+        env = gym.wrappers.RecordVideo(
+            env, 
+            video_folder, 
+            # This is the key: it tells the wrapper to record if episode_id >= 0
+            episode_trigger=lambda x: True 
+        )
+        print(f"Recording videos to {video_folder}")
     
     # 2. Instantiate the Actor
     # We use env.single_observation_space because it's a VectorEnv in training, 
