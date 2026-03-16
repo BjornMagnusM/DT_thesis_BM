@@ -1,3 +1,4 @@
+import os 
 import torch
 import numpy as np
 import gymnasium as gym
@@ -28,7 +29,10 @@ def evaluate():
     env = env_func()
 
     if args.capture_video:
-        video_folder = "videos"
+        video_folder = f"videos/{args.env_id}"
+        if not os.path.exists(video_folder):
+            os.makedirs(video_folder)
+
         env = gym.wrappers.RecordVideo(
             env, 
             video_folder, 
