@@ -35,6 +35,9 @@ duckietown_logger.setLevel(logging.WARNING)
 import pyglet
 pyglet.options['debug_gl'] = False
 
+#Import augmentation
+from utils.drqv2_augmentation import 
+
 
 @dataclass
 class Args:
@@ -58,7 +61,7 @@ class Args:
     # Algorithm specific arguments
     env_id: str = "Oval-v1.2"
     """the environment id of the task"""
-    total_timesteps: int = 1000000
+    total_timesteps: int = 3000
     """total timesteps of the experiments"""
     num_envs: int = 1
     """the number of parallel game environments"""
@@ -70,7 +73,7 @@ class Args:
     """target smoothing coefficient (default: 0.005)"""
     batch_size: int = 256    #256 before ... Currently the best performing speed wise is 256 (1 env , SyncVectorEnv)
     """the batch size of sample from the reply memory"""
-    learning_starts: int = 5e3
+    learning_starts: int = 100
     """timestep to start learning"""
     policy_lr: float = 3e-4
     """the learning rate of the policy network optimizer"""
@@ -177,6 +180,8 @@ class SoftQNetwork(nn.Module):
         self.fc1 = nn.Linear(feature_dim + action_dim, 512)
         self.fc2 = nn.Linear(512, 256)
         self.fc_q = nn.Linear(256, 1)
+
+
 
     def forward(self, x, a):
         # x: Image observations (Batch, 12, 120, 160)
@@ -328,6 +333,9 @@ if __name__ == "__main__":
     q_optimizer = optim.Adam(list(qf1.parameters()) + list(qf2.parameters()), lr=args.q_lr)
     actor_optimizer = optim.Adam(list(actor.parameters()), lr=args.policy_lr)
 
+    #BM augmention 
+    aug = RandomShiftsAug(pad=4).to(device)
+
     # Automatic entropy tuning
     if args.autotune:
         target_entropy = -torch.prod(torch.Tensor(envs.single_action_space.shape).to(device)).item()
@@ -391,15 +399,20 @@ if __name__ == "__main__":
             s_obs = data.observations.to(device, non_blocking=True)
             s_next_obs = data.next_observations.to(device, non_blocking=True)
 
+            #BM applying the augmentation
+            a_obs = aug(s_obs.float())
+            a_next_obs = aug(s_next_obs.float())
+
+
             with torch.no_grad():
-                next_state_actions, next_state_log_pi, _ = actor.get_action(s_next_obs)
-                qf1_next_target = qf1_target(s_next_obs, next_state_actions)
-                qf2_next_target = qf2_target(s_next_obs, next_state_actions)
+                next_state_actions, next_state_log_pi, _ = actor.get_action(a_next_obs)
+                qf1_next_target = qf1_target(a_next_obs, next_state_actions)
+                qf2_next_target = qf2_target(a_next_obs, next_state_actions)
                 min_qf_next_target = torch.min(qf1_next_target, qf2_next_target) - alpha * next_state_log_pi
                 next_q_value = data.rewards.flatten() + (1 - data.dones.flatten()) * args.gamma * (min_qf_next_target).view(-1)
 
-            qf1_a_values = qf1(s_obs, data.actions).view(-1)
-            qf2_a_values = qf2(s_obs, data.actions).view(-1)
+            qf1_a_values = qf1(a_obs, data.actions).view(-1)
+            qf2_a_values = qf2(a_obs, data.actions).view(-1)
             qf1_loss = F.mse_loss(qf1_a_values, next_q_value)
             qf2_loss = F.mse_loss(qf2_a_values, next_q_value)
             qf_loss = qf1_loss + qf2_loss
@@ -413,9 +426,9 @@ if __name__ == "__main__":
                 for _ in range(
                     args.policy_frequency
                 ):  # compensate for the delay by doing 'actor_update_interval' instead of 1
-                    pi, log_pi, _ = actor.get_action(s_obs)
-                    qf1_pi = qf1(s_obs, pi)
-                    qf2_pi = qf2(s_obs, pi)
+                    pi, log_pi, _ = actor.get_action(a_obs)
+                    qf1_pi = qf1(a_obs, pi)
+                    qf2_pi = qf2(a_obs, pi)
                     min_qf_pi = torch.min(qf1_pi, qf2_pi)
                     actor_loss = ((alpha * log_pi) - min_qf_pi).mean()
 
@@ -425,7 +438,7 @@ if __name__ == "__main__":
 
                     if args.autotune:
                         with torch.no_grad():
-                            _, log_pi, _ = actor.get_action(s_obs)
+                            _, log_pi, _ = actor.get_action(a_obs)
                         alpha_loss = (-log_alpha.exp() * (log_pi + target_entropy)).mean()
 
                         a_optimizer.zero_grad()
