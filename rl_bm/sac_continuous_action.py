@@ -24,7 +24,7 @@ from gym_duckietown.envs import DuckietownEnv
 from utils.wrappers import NormalizeWrapper, ImgWrapper, DtRewardWrapper, ActionWrapper, ResizeWrapper, CropResizeWrapper
 
 # CNN Architucture 
-from rl.cnn_architectures import DQNEncoder, ImpalaCNN
+from cnn_architectures import DQNEncoder, ImpalaCNN,DrQEncoderV2
 
 # Target the specific logger used in the simulator
 import logging
@@ -36,7 +36,7 @@ import pyglet
 pyglet.options['debug_gl'] = False
 
 #Import augmentation
-from utils.drqv2_augmentation import 
+from utils.drqv2_augmentation import RandomShiftsAug
 
 
 @dataclass
@@ -168,8 +168,8 @@ class SoftQNetwork(nn.Module):
     def __init__(self, env, feature_dim=256):
         super().__init__()
         
-        # Independent Visual Encoder
-        self.encoder = ImpalaCNN(
+        #BM switched to the encoder from DrQ-v2
+        self.encoder = DrQEncoderV2(
             obs_shape=env.single_observation_space.shape,
             feature_dim=feature_dim
         )
@@ -209,9 +209,8 @@ class Actor(nn.Module):
     def __init__(self, env):
         super().__init__()
 
-        # Modified DQNEncoder
-        self.encoder = ImpalaCNN(
-            in_channels=12,
+        #BM switched to the encoder from DrQ-v2
+        self.encoder = DrQEncoderV2(
             obs_shape=env.single_observation_space.shape,
             feature_dim=256
         )
