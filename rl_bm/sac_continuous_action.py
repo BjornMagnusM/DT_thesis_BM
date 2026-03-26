@@ -39,6 +39,9 @@ pyglet.options['debug_gl'] = False
 from utils.drqv2_augmentation import RandomShiftsAug
 
 
+#Added for saving image 
+from torchvision.utils import save_image
+
 @dataclass
 class Args:
     exp_name: str = os.path.basename(__file__)[: -len(".py")]
@@ -91,6 +94,27 @@ class Args:
     """the interval to save the Actor periodically"""
     save_model: bool = True
     """whether to save model into the `runs/{run_name}` folder"""
+
+#BM saves image from before and after augmentation 
+def save_augmentation_comparison(original_tensor, augmented_tensor, step, run_name):
+    """
+    Saves the first image of a batch before and after augmentation.
+    Assumes (B, 12, 84, 84) where channels 0-2 are the most recent RGB frame.
+    """
+    os.makedirs(f"runs/{run_name}/aug_samples", exist_ok=True)
+    
+    # 1. Take the first environment in the batch [0]
+    # 2. Take the first 3 channels [0:3] which represent the latest RGB frame
+    # 3. Scale back to [0, 1] if they aren't already
+    before = original_tensor[0, 0:3] / 255.0 if original_tensor.max() > 1.0 else original_tensor[0, 0:3]
+    after = augmented_tensor[0, 0:3] / 255.0 if augmented_tensor.max() > 1.0 else augmented_tensor[0, 0:3]
+    
+    # Save side-by-side
+    comparison = torch.cat([before, after], dim=2) # Concatenate horizontally
+    save_path = f"runs/{run_name}/aug_samples/step_{step}.png"
+    save_image(comparison, save_path)
+    print(f"Saved augmentation sample to {save_path}")
+
 
 def save_model(actor, qf1, qf2, step, run_name, suffix=""):
     
@@ -393,6 +417,21 @@ if __name__ == "__main__":
         if global_step > args.learning_starts:
             data = rb.sample(args.batch_size)
             #adding some parts
+
+            if global_step > args.learning_starts:
+                data = rb.sample(args.batch_size)
+                s_obs = data.observations.to(device, non_blocking=True)
+                
+                # BM applying the augmentation
+                # Note: .clone() is used so we keep the original 'clean' version for saving
+                a_obs = aug(s_obs.float().clone()) 
+
+                # --- SAVE IMAGE LOGIC ---
+                # Save just once at the start of training, or every 1000 steps
+                if global_step == args.learning_starts + 1:
+                    save_augmentation_comparison(s_obs, a_obs, global_step, run_name)
+
+
             #CAST TO FLOAT HERE
             # This converts the uint8 images from the buffer into float32 for the GPU
             s_obs = data.observations.to(device, non_blocking=True)
