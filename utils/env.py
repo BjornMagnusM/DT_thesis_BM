@@ -21,3 +21,6 @@ def launch_env(id=None):
         env = gym.make(id)
 
     return env
+
+
+

@@ -3,8 +3,8 @@ import torch
 import numpy as np
 import gymnasium as gym
 from gym_duckietown.envs import DuckietownEnv
-from utils.wrappers import NormalizeWrapper, ImgWrapper, ActionWrapper, ResizeWrapper, DtRewardWrapper
-from rl.sac_continuous_action import Actor
+from utils.wrappers import NormalizeWrapper, ImgWrapper, ActionWrapper, ResizeWrapper, DtRewardWrapper,CropResizeWrapper
+from sac_continuous_action import Actor
 
 def enjoy():
     parser = argparse.ArgumentParser()
@@ -34,8 +34,8 @@ def enjoy():
 
 
 
-        # 4. Wrappers
-        #env = ResizeWrapper(env)
+        #BM added this 4. Wrappers
+        env = CropResizeWrapper(env, shape=(84, 84))
         
         print(f"Observation space before ImgWrapper: {env.observation_space.shape}")
         env = ImgWrapper(env)  # to make the images from 160x120x3 into 3x160x120
@@ -53,10 +53,10 @@ def enjoy():
         print(f"Observation space after stacking: {env.observation_space.shape}")
 
         #Flatten the 4x3 channels into 12 for the DQNEncoder
-        new_obs_space = gym.spaces.Box(low=0.0, high=1.0, shape=(12, 120, 160), dtype=np.uint8)
+        new_obs_space = gym.spaces.Box(low=0.0, high=1.0, shape=(12, 84, 84), dtype=np.uint8)
         env = gym.wrappers.TransformObservation(
             env, 
-            lambda obs: obs.reshape(12, 120, 160),
+            lambda obs: obs.reshape(12, 84, 84),
             observation_space=new_obs_space  
         )   
 

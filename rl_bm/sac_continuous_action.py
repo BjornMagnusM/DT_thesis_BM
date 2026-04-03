@@ -61,7 +61,7 @@ class Args:
     # Algorithm specific arguments
     env_id: str = "Oval-v1.2"
     """the environment id of the task"""
-    total_timesteps: int = 3000
+    total_timesteps: int = 100000
     """total timesteps of the experiments"""
     num_envs: int = 1
     """the number of parallel game environments"""
@@ -73,7 +73,7 @@ class Args:
     """target smoothing coefficient (default: 0.005)"""
     batch_size: int = 256    #256 before ... Currently the best performing speed wise is 256 (1 env , SyncVectorEnv)
     """the batch size of sample from the reply memory"""
-    learning_starts: int = 100
+    learning_starts: int = 1000
     """timestep to start learning"""
     policy_lr: float = 3e-4
     """the learning rate of the policy network optimizer"""
@@ -87,7 +87,7 @@ class Args:
     """Entropy regularization coefficient."""
     autotune: bool = True
     """automatic tuning of the entropy coefficient"""
-    save_interval: int = 50000
+    save_interval: int = 500
     """the interval to save the Actor periodically"""
     save_model: bool = True
     """whether to save model into the `runs/{run_name}` folder"""
@@ -117,7 +117,7 @@ def make_env(seed, idx, capture_video, run_name):
         env = DuckietownEnv(
             seed=123,  # random seed
             map_name="oval_loop",
-            max_steps=1000,  # we don't want the gym to reset itself
+            max_steps=5000,  # we don't want the gym to reset itself
             domain_rand=False,
             camera_width=160,
             camera_height=120,
