@@ -61,7 +61,7 @@ class Args:
     # Algorithm specific arguments
     env_id: str = "Oval-v1.2"
     """the environment id of the task"""
-    total_timesteps: int = 10000
+    total_timesteps: int = 1000000
     """total timesteps of the experiments"""
     num_envs: int = 1
     """the number of parallel game environments"""
