@@ -61,7 +61,7 @@ class Args:
     # Algorithm specific arguments
     env_id: str = "Oval-v1.2"
     """the environment id of the task"""
-    total_timesteps: int = 100000
+    total_timesteps: int = 10000
     """total timesteps of the experiments"""
     num_envs: int = 1
     """the number of parallel game environments"""
@@ -73,7 +73,7 @@ class Args:
     """target smoothing coefficient (default: 0.005)"""
     batch_size: int = 256    #256 before ... Currently the best performing speed wise is 256 (1 env , SyncVectorEnv)
     """the batch size of sample from the reply memory"""
-    learning_starts: int = 1000
+    learning_starts: int = 500
     """timestep to start learning"""
     policy_lr: float = 3e-4
     """the learning rate of the policy network optimizer"""
