@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=dt_bm_sac
+#SBATCH --job-name= dt_bm_sac
 #SBATCH --output=output/duckie_%j.out
 #SBATCH -e output/duckie_%j.err
 #SBATCH --time=20:00:00
