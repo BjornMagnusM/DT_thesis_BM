@@ -1,0 +1,4 @@
+[submodule "dt-core"]
+	path = dt-core
+	url = git@github.com:duckietown/dt-core.git
+	branch = ente
