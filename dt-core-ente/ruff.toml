@@ -1,8 +1,0 @@
-line-length = 79
-target-version = "py312"
-
-[lint]
-select = ["ALL"]
-
-[lint.pycodestyle]
-max-doc-length = 72
