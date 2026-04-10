@@ -51,8 +51,6 @@ Connect via docker
     docker run -it --rm --network host dt-template-ros-test:latest bash
 Exports
 
-    export VEHICLE_NAME=duckiebot14
-    export ROS_MASTER_URI=http://192.168.1.7:11311
     export ROS_IP=192.168.1.6
 Launch the node 
 
