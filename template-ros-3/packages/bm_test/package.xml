@@ -4,7 +4,8 @@
   <version>1.0.0</version>
   <description>This package is for testing different stuff.</description>
 
-  <author email="bjoernmagnus.myrhaug@studenti.unipd.it">steven</author>
+  <maintainer email="bjoernmagnus.myrhaug@studenti.unipd.it">Bjorn Magnus Myrhaug</maintainer>
+  <author email="bjoernmagnus.myrhaug@studenti.unipd.it">Bjorn Magnus Myrhauge</author>
 
   <license>GPLv3</license>
 

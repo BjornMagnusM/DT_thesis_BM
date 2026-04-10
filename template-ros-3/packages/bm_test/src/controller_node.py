@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+import numpy as np
+import rospy
+
+from duckietown.dtros import DTROS, NodeType, TopicType, DTParam, ParamType
+from duckietown_msgs.msg import (
+    Twist2DStamped,
+    LanePose,
+    WheelsCmdStamped,
+    BoolStamped,
+    FSMState,
+    StopLineReading,
+)
+
+class WheelControllerNode(DTROS):
+    def __init__(self, node_name):
+        super(WheelControllerNode, self).__init__(
+            node_name=node_name,
+            node_type=NodeType.CONTROL
+        )
+
+        # Publisher this is changed from "~car_cmd" to "/duckiebot14/car_cmd_switch_node/cmd" 
+        #               where original was from core and new based on topics on acual duckiebot
+        self.car_cmd = rospy.Publisher(
+            "/duckiebot14/car_cmd_switch_node/cmd", Twist2DStamped, queue_size=1, dt_topic_type=TopicType.CONTROL
+        )
+
+        # Update Parameters timer
+        rospy.Timer(rospy.Duration.from_sec(1.0), self.pub_cmd)
+
+    def pub_cmd(self, event):
+        car_control_msg = Twist2DStamped()
+        car_control_msg.header.stamp = rospy.Time.now()
+
+        car_control_msg.v = 0.2
+        car_control_msg.omega = 0
+        self.car_cmd.publish(car_control_msg)
+        rospy.loginfo(f"Published car_cmd: v={car_control_msg.v}, omega={car_control_msg.omega}")
+
+    def onShutdown(self):
+        rospy.loginfo("[WheelControllerNode] Shutdown.")
+
+
+if __name__ == "__main__":
+    wheel_controller_node = WheelControllerNode(node_name="wheel_controller_node")
+    rospy.on_shutdown(wheel_controller_node.onShutdown)
+    rospy.spin()
