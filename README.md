@@ -45,10 +45,10 @@ Go in to template-ros-3
     cd template-ros-3
 Building the code 
 
-    docker build -t dt-template-ros-test:latest .
+    docker build -t dt-ros:latest .
 Connect via docker 
 
-    docker run -it --rm --network host dt-template-ros-test:latest bash
+    docker run -it --rm --network host dt-ros:latest bash
 Exports
 
     export ROS_IP=192.168.1.6
