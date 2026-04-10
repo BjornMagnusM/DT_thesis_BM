@@ -46,12 +46,9 @@ Go in to template-ros-3
 Building the code 
 
     docker build -t dt-ros:latest .
-Connect via docker 
+Connect via docker with the ip of the host 
 
-    docker run -it --rm --network host dt-ros:latest bash
-Exports
-
-    export ROS_IP=192.168.1.6
+    docker run -it --rm --network host -e ROS_IP=192.168.1.6 dt-ros:latest bash
 Launch the node 
 
     roslaunch rl_model rl_model.launch
