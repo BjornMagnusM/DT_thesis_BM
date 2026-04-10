@@ -54,7 +54,7 @@ Exports
     export ROS_IP=192.168.1.6
 Launch the node 
 
-    roslaunch rl_mode rl_model.launch
+    roslaunch rl_model rl_model.launch
 See the ros topics 
    
     rostopic list
