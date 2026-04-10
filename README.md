@@ -40,6 +40,9 @@ RUn visualize (doesn't work for me)
 
 
 ## Running duckiebot 
+Go in to template-ros-3 
+
+    cd template-ros-3
 Building the code 
 
     buildx build   --build-arg NCPUS=18   --build-arg ARCH=amd64   --file Dockerfile   --tag dt-template-ros-test:latest .
