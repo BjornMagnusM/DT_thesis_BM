@@ -19,6 +19,9 @@ class WheelControllerNode(DTROS):
             node_type=NodeType.CONTROL
         )
 
+        self.v = 0.0
+        self.omega = 0.2
+
         # Publisher this is changed from "~car_cmd" to "/duckiebot14/car_cmd_switch_node/cmd" 
         #               where original was from core and new based on topics on acual duckiebot
         self.car_cmd = rospy.Publisher(
@@ -26,19 +29,29 @@ class WheelControllerNode(DTROS):
         )
 
         # Update Parameters timer
-        rospy.Timer(rospy.Duration.from_sec(1.0), self.pub_cmd)
+        rospy.Timer(rospy.Duration.from_sec(1.0), self.pub_cmd) ##Should decrease timer to publish more often 
 
     def pub_cmd(self, event):
         car_control_msg = Twist2DStamped()
         car_control_msg.header.stamp = rospy.Time.now()
 
-        car_control_msg.v = 0.2
-        car_control_msg.omega = 0
+        car_control_msg.v = self.v
+        car_control_msg.omega = self.omega
         self.car_cmd.publish(car_control_msg)
         rospy.loginfo(f"Published car_cmd: v={car_control_msg.v}, omega={car_control_msg.omega}")
 
     def onShutdown(self):
-        rospy.loginfo("[WheelControllerNode] Shutdown.")
+        rospy.loginfo("[WheelControllerNode] Shutdown. Stopping robot...")
+    
+        ## added for stopping the robot 
+        stop_msg = Twist2DStamped()
+        stop_msg.header.stamp = rospy.Time.now()
+        stop_msg.v = 0.0
+        stop_msg.omega = 0.0
+
+        for _ in range(3):
+            self.car_cmd.publish(stop_msg)
+            rospy.sleep(0.05)
 
 
 if __name__ == "__main__":
