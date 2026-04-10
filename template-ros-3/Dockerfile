@@ -1,6 +1,6 @@
 # parameters
 ARG REPO_NAME="dt-template-ros-bjorn"
-ARG MAINTAINER="Bjørn Magnus Myrhaug (your@email.com)"
+ARG MAINTAINER="Bjorn Magnus Myrhaug (bjoernmagnus.myrhaug@studenti.unipd.it)"
 ARG DESCRIPTION="Duckietown ROS template project"
 # pick an icon from: https://fontawesome.com/v4.7.0/icons/
 ARG ICON="cube"
@@ -11,7 +11,7 @@ ARG ARCH
 ARG DISTRO=daffy
 ARG DOCKER_REGISTRY=docker.io
 ARG BASE_IMAGE=dt-ros-commons
-ARG BASE_TAG=${DISTRO}-${ARCH}
+ARG BASE_TAG=${DISTRO}-amd64
 ARG LAUNCHER=default
 
 # define base image
