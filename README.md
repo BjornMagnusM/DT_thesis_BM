@@ -12,8 +12,6 @@ See available duckiebots
 
     dts fleet discover
 
-    Hardware Acceleration: Optimized for NVIDIA GPUs (GTX 1650/RTX series).
-
 
 See available duckiebots 
     dts fleet discover
