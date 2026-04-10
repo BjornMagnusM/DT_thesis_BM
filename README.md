@@ -45,7 +45,7 @@ Go in to template-ros-3
     cd template-ros-3
 Building the code 
 
-    docker buildx build   --build-arg NCPUS=18   --build-arg ARCH=amd64   --file Dockerfile   --tag dt-template-ros-test:latest .
+    docker build -t dt-template-ros-test:latest .
 Connect via docker 
 
     docker run -it --rm --network host dt-template-ros-test:latest bash
