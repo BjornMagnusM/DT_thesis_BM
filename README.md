@@ -11,8 +11,6 @@
 See available duckiebots 
 
     dts fleet discover
-
-
 See available duckiebots 
     dts fleet discover
 
