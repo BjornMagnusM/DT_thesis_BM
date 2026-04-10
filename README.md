@@ -8,9 +8,9 @@
 ## General dsl command 
 
 
-This version has been refactored to support:
+See available duckiebots 
 
-    Gymnasium API: Updated for compatibility with modern RL libraries.
+    dts fleet discover
 
     Hardware Acceleration: Optimized for NVIDIA GPUs (GTX 1650/RTX series).
 
