@@ -15,7 +15,7 @@ ARG BASE_TAG=${DISTRO}-${ARCH}
 ARG LAUNCHER=default
 
 # define base image
-FROM ${DOCKER_REGISTRY}/duckietown/${BASE_IMAGE}:${BASE_TAG} as base
+FROM ${DOCKER_REGISTRY}/duckietown/${BASE_IMAGE}:${BASE_TAG} AS base
 
 # recall all arguments
 ARG DISTRO
@@ -89,3 +89,11 @@ LABEL org.duckietown.label.module.type="${REPO_NAME}" \
     org.duckietown.label.maintainer="${MAINTAINER}"
 # <== Do not change the code above this line
 # <==================================================
+
+RUN mkdir -p /data/config && \
+    echo "duckiebot" > /data/config/robot_type && \
+    echo "default" > /data/config/robot_configuration && \
+    echo "default" > /data/config/robot_hardware
+
+ENV VEHICLE_NAME=duckiebot14
+ENV ROS_MASTER_URI=http://192.168.1.7:11311
