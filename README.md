@@ -46,7 +46,7 @@ Go in to template-ros-3
 Building the code 
 
     docker build -t dt-ros:latest .
-Connect via docker with the ip of the host 
+Connect via docker with the ip of the duckiebot 
 
     docker run -it --rm --network host -e ROS_IP=192.168.1.6 dt-ros:latest bash
 Launch the node 
