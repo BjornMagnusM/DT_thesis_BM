@@ -24,7 +24,7 @@ from gym_duckietown.envs import DuckietownEnv
 from utils.wrappers import NormalizeWrapper, ImgWrapper, DtRewardWrapper, ActionWrapper, ResizeWrapper, CropResizeWrapper
 
 # CNN Architucture 
-from cnn_architectures import DQNEncoder, ImpalaCNN,DrQEncoderV2
+from rl_bm.cnn_architectures import DQNEncoder, ImpalaCNN,DrQEncoderV2
 
 # Target the specific logger used in the simulator
 import logging
@@ -236,6 +236,8 @@ class Actor(nn.Module):
                 dtype=torch.float32,
             ),
         )
+        print(env.single_action_space.low)
+        print(env.single_action_space.high)
 
     def forward(self, x):
         #x = F.relu(self.fc1(x))
