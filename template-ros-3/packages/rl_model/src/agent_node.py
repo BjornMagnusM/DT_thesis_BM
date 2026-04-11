@@ -19,7 +19,7 @@ from duckietown_msgs.msg import (
 )
 
 # Helper file with encoder and agent 
-from sac import Actor
+from sac import Actor, CropResizeWrapperROS, ImgWrapperROS,FrameStackObservationROS
 
 class AgentNode(DTROS):
     def __init__(self, node_name):
@@ -27,6 +27,7 @@ class AgentNode(DTROS):
             node_name=node_name,
             node_type=NodeType.CONTROL
         )
+        self.latest_obs = None
 
         # Publisher this is changed from "~car_cmd" to "/duckiebot14/car_cmd_switch_node/cmd" 
         #               where original was from core and new based on topics on acual duckiebot
@@ -36,7 +37,7 @@ class AgentNode(DTROS):
 
         # Subscribers
         self.sub_image = rospy.Subscriber(
-            "~image/compressed", CompressedImage, self.image_cb, buff_size=10000000, queue_size=1
+            "/duckiebot14/camera_node/image/compressed", CompressedImage, self.image_cb, buff_size=10000000, queue_size=1
         )
 
         # Update Parameters timer
@@ -52,7 +53,7 @@ class AgentNode(DTROS):
         self.actor.load_state_dict(checkpoint['actor_state_dict'])
         self.actor.eval()
 
-        self.latest_obs = None
+
 
         self.CropResizeWrapperROS = CropResizeWrapperROS(shape=(84, 84))
         self.ImgWrapperROS = ImgWrapperROS()
@@ -61,10 +62,11 @@ class AgentNode(DTROS):
         #Initilize bridge for de compressing 
         self.bridge = CvBridge()
 
-     def image_cb(self, image_msg):
+    def image_cb(self, image_msg):
         """
         Processes the incoming image messages.
         """
+        rospy.loginfo("Run image")
         # Decode from compressed image with OpenCV
         obtained_image = self.bridge.compressed_imgmsg_to_cv2(image_msg)
     
@@ -75,7 +77,8 @@ class AgentNode(DTROS):
         obtained_image = self.ImgWrapperROS.observation(obtained_image)
 
         # Frame stack set to 4 like in training  
-        if len(self.FrameStackObservationROS.obs_queue) == 0:
+        #if len(self.FrameStackObservationROS.obs_queue) == 0:
+        if self.latest_obs is None:
             stacked = self.FrameStackObservationROS.reset(obtained_image)
         else:
             stacked = self.FrameStackObservationROS.append(obtained_image)

@@ -58,7 +58,9 @@ RUN dt-apt-install ${REPO_PATH}/dependencies-apt.txt
 ARG PIP_INDEX_URL="https://pypi.org/simple"
 ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 COPY ./dependencies-py3.* "${REPO_PATH}/"
-RUN dt-pip3-install "${REPO_PATH}/dependencies-py3.*"
+
+RUN pip install --default-timeout=200 --retries 10 -r "${REPO_PATH}/dependencies-py3.txt"  
+#RUN dt-pip3-install "${REPO_PATH}/dependencies-py3.*"
 
 # copy the source code
 COPY ./packages "${REPO_PATH}/packages"
@@ -66,7 +68,8 @@ COPY ./packages "${REPO_PATH}/packages"
 # build packages
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
   catkin build \
-    --workspace ${CATKIN_WS_DIR}/
+    --workspace ${CATKIN_WS_DIR}/ \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
 # install launcher scripts
 COPY ./launchers/. "${LAUNCH_PATH}/"
@@ -97,3 +100,4 @@ RUN mkdir -p /data/config && \
 
 ENV VEHICLE_NAME=duckiebot14
 ENV ROS_MASTER_URI=http://192.168.1.7:11311
+
