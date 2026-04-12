@@ -73,7 +73,7 @@ class Args:
     """target smoothing coefficient (default: 0.005)"""
     batch_size: int = 256    #256 before ... Currently the best performing speed wise is 256 (1 env , SyncVectorEnv)
     """the batch size of sample from the reply memory"""
-    learning_starts: int = 500
+    learning_starts: int = 5000
     """timestep to start learning"""
     policy_lr: float = 3e-4
     """the learning rate of the policy network optimizer"""
@@ -87,7 +87,7 @@ class Args:
     """Entropy regularization coefficient."""
     autotune: bool = True
     """automatic tuning of the entropy coefficient"""
-    save_interval: int = 500
+    save_interval: int = 100000
     """the interval to save the Actor periodically"""
     save_model: bool = True
     """whether to save model into the `runs/{run_name}` folder"""
@@ -236,9 +236,7 @@ class Actor(nn.Module):
                 dtype=torch.float32,
             ),
         )
-        print(env.single_action_space.low)
-        print(env.single_action_space.high)
-
+        
     def forward(self, x):
         #x = F.relu(self.fc1(x))
         #x = F.relu(self.fc2(x))
