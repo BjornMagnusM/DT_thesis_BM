@@ -23,4 +23,6 @@ if [ ! -f $CONDA_PREFIX/lib/libtiff.so.5 ]; then
     ln -s $CONDA_PREFIX/lib/libtiff.so.6 $CONDA_PREFIX/lib/libtiff.so.5
 fi
 
+echo "before python"
 python rl_bm/sac_continuous_action.py 
+echo "after python" 
