@@ -13,6 +13,7 @@ source $(conda info --base)/etc/profile.d/conda.sh
 conda activate duckie-rl
 
 echo "Using Python from: $(which python)"
+echo "PWD is: $(pwd)"
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 export PYGLET_DEBUG_GL=False
