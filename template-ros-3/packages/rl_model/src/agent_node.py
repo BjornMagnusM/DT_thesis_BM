@@ -27,21 +27,6 @@ class AgentNode(DTROS):
             node_name=node_name,
             node_type=NodeType.CONTROL
         )
-        self.latest_obs = None
-
-        # Publisher this is changed from "~car_cmd" to "/duckiebot14/car_cmd_switch_node/cmd" 
-        #               where original was from core and new based on topics on acual duckiebot
-        self.car_cmd = rospy.Publisher(
-            "/duckiebot14/car_cmd_switch_node/cmd", Twist2DStamped, queue_size=1, dt_topic_type=TopicType.CONTROL
-        )
-
-        # Subscribers
-        self.sub_image = rospy.Subscriber(
-            "/duckiebot14/camera_node/image/compressed", CompressedImage, self.image_cb, buff_size=10000000, queue_size=1
-        )
-
-        # Update Parameters timer
-        rospy.Timer(rospy.Duration.from_sec(0.1), self.control_loop) ##Should decrease timer to publish more often 
 
         #Initilize the agent 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -62,11 +47,28 @@ class AgentNode(DTROS):
         #Initilize bridge for de compressing 
         self.bridge = CvBridge()
 
+        self.latest_obs = None
+
+        # Publisher this is changed from "~car_cmd" to "/duckiebot14/car_cmd_switch_node/cmd" 
+        #               where original was from core and new based on topics on acual duckiebot
+        self.car_cmd = rospy.Publisher(
+            "/duckiebot14/car_cmd_switch_node/cmd", Twist2DStamped, queue_size=1, dt_topic_type=TopicType.CONTROL
+        )
+
+        # Subscribers
+        self.sub_image = rospy.Subscriber(
+            "/duckiebot14/camera_node/image/compressed", CompressedImage, self.image_cb, buff_size=10000000, queue_size=1
+        )
+
+        # Update Parameters timer
+        rospy.Timer(rospy.Duration.from_sec(0.1), self.control_loop) ##Should decrease timer to publish more often 
+
     def image_cb(self, image_msg):
         """
         Processes the incoming image messages.
         """
-        rospy.loginfo("Run image")
+        #rospy.loginfo("Start of image_cb")
+
         # Decode from compressed image with OpenCV
         obtained_image = self.bridge.compressed_imgmsg_to_cv2(image_msg)
     
@@ -87,7 +89,9 @@ class AgentNode(DTROS):
 
     def control_loop(self, event):
 
-        #Retirn of there is no observation 
+        #rospy.loginfo("Start of control_loop")
+
+        #Return if there is no observation 
         if self.latest_obs is None:
             return
 
