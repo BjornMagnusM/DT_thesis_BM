@@ -2,7 +2,7 @@
 #SBATCH --job-name=dt_bm_sac
 #SBATCH --output=output/duckie_%j.out
 #SBATCH -e output/duckie_%j.err
-#SBATCH --time=36:00:00
+#SBATCH --time=24:00:00
 #SBATCH --partition=pgpu_most
 #SBATCH --account=dei_most
 #SBATCH --gpus=1
