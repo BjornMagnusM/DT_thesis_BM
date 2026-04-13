@@ -9,7 +9,7 @@
 #SBATCH --mem=16G
 #SBATCH --cpus-per-task=4
 
-eval "$(conda shell.bash hook)"
+source $(conda info --base)/etc/profile.d/conda.sh
 conda activate duckie-rl
 
 echo "Using Python from: $(which python)"
