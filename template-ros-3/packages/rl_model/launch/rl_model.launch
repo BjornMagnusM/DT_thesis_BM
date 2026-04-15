@@ -5,8 +5,11 @@
     <arg name="pkg_name" value="rl_model"/>
     <arg name="node_name" default="agent_node"/>
 
+
+    <arg name="model_name" default="OvalSAC1MnoDis" />
+
     <arg name="model_path"
-     default="/code/catkin_ws/src/dt-template-ros-bjorn/packages/rl_model/models/Oval_sac_90k_Nodis/models/sac_step_latest.cleanrl_model"/>
+        default="/code/catkin_ws/src/dt-template-ros-bjorn/packages/rl_model/models/$(arg model_name)/models/sac_step_Final.cleanrl_model"/>
 
     <group ns="$(arg veh)">
         <node name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen" required="true">
