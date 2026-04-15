@@ -46,9 +46,9 @@ Go in to template-ros-3
 Building the code 
 
     docker build -t dt-ros:latest .
-Connect via docker with the ip of the duckiebot 
+Running a bash script to connect to the docker given the name of the duckiebot
 
-    docker run -it --rm   --network host   --add-host duckiebot14.local:192.168.1.7   dt-ros:latest bash
+    ./run_docker.sh duckiebot14
 Launch the node 
 
     roslaunch rl_model rl_model.launch
