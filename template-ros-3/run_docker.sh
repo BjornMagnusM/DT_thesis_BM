@@ -1,8 +1,9 @@
 #!/bin/bash
 DUCKIE_NAME=$1
-DUCKIE_IP=$(getent hosts duckiebot14.local | awk '{print $1}')
+DUCKIE_IP=$(getent hosts ${DUCKIE_NAME}.local | awk '{print $1}')
 
 docker run -it --rm \
   --network host \
-  --add-host duckiebot14.local:$DUCKIE_IP \
+  --add-host ${DUCKIE_NAME}.local:$DUCKIE_IP \
+   -v ~/Downloads:/data \
   dt-ros:latest bash
