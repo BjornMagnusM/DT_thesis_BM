@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import gymnasium as gym
 import argparse
-from rl_bm.sac_continuous_action import Actor, make_env
+from sac_continuous_action import Actor, make_env
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluate SAC Agent in Duckietown")
