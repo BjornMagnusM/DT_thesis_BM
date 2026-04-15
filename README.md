@@ -46,6 +46,9 @@ Go in to template-ros-3
 Building the code 
 
     docker build -t dt-ros:latest .
+Building the bash file 
+
+    chmod +x run_docker.sh
 Running a bash script to connect to the docker given the name of the duckiebot
 
     ./run_docker.sh duckiebot14
