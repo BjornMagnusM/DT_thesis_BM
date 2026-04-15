@@ -49,9 +49,9 @@ Building the code
 Running a bash script to connect to the docker given the name of the duckiebot
 
     ./run_docker.sh duckiebot14
-Launch the node 
+Launch the node with the file name of the model, the model need to be in models folder for the package, runs the final model
 
-    roslaunch rl_model rl_model.launch
+    roslaunch rl_model rl_model.launch model_name:=OvalSAC1MnoDis
 See the ros topics 
    
     rostopic list
