@@ -61,9 +61,9 @@ See the ros topics
 Running recoder node 
 
     roslaunch rl_model recorder.launch
-Transfer video from docker to local computer 
+Transfer video from docker to local computer, make sure the last activated docker is the one with the video 
 
-    docker cp $(docker ps -q | head -n 1):/data/duckie.mp4 ~/Downloads/
+   docker cp $(docker ps --latest -q):/data/duckie.mp4 ~/Downloads/
 
 
 
