@@ -6,9 +6,8 @@ import numpy as np
 
 class Recorder:
     def __init__(self):
-
         self.out = cv2.VideoWriter(
-            "duckie.mp4",
+            "/data/duckie.mp4",
             cv2.VideoWriter_fourcc(*"mp4v"),
             20,
             (640, 480)
@@ -24,11 +23,6 @@ class Recorder:
     def cb(self, msg):
         np_arr = np.frombuffer(msg.data, np.uint8)
         img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-
-        if img is None:
-            return
-
-        img = cv2.resize(img, (640, 480))
         self.out.write(img)
 
 if __name__ == "__main__":
