@@ -58,6 +58,9 @@ Launch the node with the file name of the model, the model need to be in models 
 See the ros topics 
    
     rostopic list
+Running recoder node 
+
+    roslaunch rl_model recorder.launch
 
 
 
