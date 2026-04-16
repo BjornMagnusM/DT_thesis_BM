@@ -3,6 +3,7 @@ import numpy as np
 import torch
 import cv2
 from cv_bridge import CvBridge
+import os
 
 
 import rospy
@@ -28,6 +29,10 @@ class AgentNode(DTROS):
             node_type=NodeType.CONTROL
         )
 
+        #Get the duckiebot's name from the docker
+        duckie_name = os.getenv("DUCKIE_NAME", "duckie")
+        rospy.loginfo(f"the duckiebot's name is {duckie_name}")
+
         #Initilize the agent 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.actor = Actor(obs_shape=(12, 84, 84), action_dim=2).to(self.device)
@@ -52,12 +57,12 @@ class AgentNode(DTROS):
         # Publisher this is changed from "~car_cmd" to "/duckiebot14/car_cmd_switch_node/cmd" 
         #               where original was from core and new based on topics on acual duckiebot
         self.car_cmd = rospy.Publisher(
-            "/duckiebot14/car_cmd_switch_node/cmd", Twist2DStamped, queue_size=1, dt_topic_type=TopicType.CONTROL
+           f"/{duckie_name}/car_cmd_switch_node/cmd", Twist2DStamped, queue_size=1, dt_topic_type=TopicType.CONTROL
         )
 
         # Subscribers
         self.sub_image = rospy.Subscriber(
-            "/duckiebot14/camera_node/image/compressed", CompressedImage, self.image_cb, buff_size=10000000, queue_size=1
+            f"/{duckie_name}/camera_node/image/compressed", CompressedImage, self.image_cb, buff_size=10000000, queue_size=1
         )
 
         # Update Parameters timer

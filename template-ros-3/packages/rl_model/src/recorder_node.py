@@ -7,8 +7,10 @@ import os
 
 class Recorder:
     def __init__(self):
+        #Get the duckiebot's name from the docker
         duckie_name = os.getenv("DUCKIE_NAME", "duckie")
         rospy.loginfo(f"the duckiebot's name is {duckie_name}")
+
         #Video writer 
         self.out = cv2.VideoWriter("/data/duckie.mp4", cv2.VideoWriter_fourcc(*"mp4v"), 20, (640, 480)
         )
