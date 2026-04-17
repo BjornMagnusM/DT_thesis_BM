@@ -66,7 +66,7 @@ class AgentNode(DTROS):
         )
 
         # Update Parameters timer
-        rospy.Timer(rospy.Duration.from_sec(0.1), self.control_loop) ##Should decrease timer to publish more often 
+        rospy.Timer(rospy.Duration.from_sec(1.0/30.0), self.control_loop) ##Should decrease timer to publish more often 
 
     def image_cb(self, image_msg):
         """

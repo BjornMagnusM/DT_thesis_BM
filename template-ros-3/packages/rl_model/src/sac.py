@@ -199,7 +199,7 @@ class Actor(nn.Module):
         mean_omega = torch.tanh(mean[:, 1:2])
         mean_action = torch.cat([mean_v, mean_omega], dim=-1) * self.action_scale + self.action_bias
 
-        #reducing the actions by 50% for test 
+        #reducing the actions by 75% for test 
         mean_action = mean_action*3/4
 
         # Enforcing Action Bound
