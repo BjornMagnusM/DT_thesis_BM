@@ -99,7 +99,8 @@ RUN mkdir -p /data/config && \
     echo "default" > /data/config/robot_hardware
 
 ENV VEHICLE_NAME=duckiebot14
-ENV ROS_MASTER_URI=http://${VEHICLE_NAME}:11311
-ENV ROS_IP=192.168.1.6
-ENV ROS_HOSTNAME=192.168.1.6
+ENV ROS_MASTER_URI=http://192.168.0.97:11311
+# http://${VEHICLE_NAME}:11311
+ENV ROS_IP=192.168.0.103
+ENV ROS_HOSTNAME=192.168.0.103
 

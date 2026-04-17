@@ -87,7 +87,11 @@ def weight_init(m):
         if hasattr(m.bias, 'data') and m.bias is not None:
             m.bias.data.fill_(0.0)
 
-
+def impala_init(module, weight_init, bias_init, gain=1):
+    """Custom initialization utility for Impala-style architectures."""
+    weight_init(module.weight.data, gain=gain)
+    bias_init(module.bias.data)
+    return module
 
 
 class DrQEncoderV2(nn.Module):  
@@ -120,6 +124,11 @@ class DrQEncoderV2(nn.Module):
         
         h = self.linear(h)
         return F.layer_norm(h, h.size())
+
+
+
+
+
 
 
 LOG_STD_MAX = 2
@@ -189,6 +198,9 @@ class Actor(nn.Module):
         mean_v = torch.sigmoid(mean[:, 0:1])
         mean_omega = torch.tanh(mean[:, 1:2])
         mean_action = torch.cat([mean_v, mean_omega], dim=-1) * self.action_scale + self.action_bias
+
+        #reducing the actions by 50% for test 
+        mean_action = mean_action*3/4
 
         # Enforcing Action Bound
         #log_prob -= torch.log(self.action_scale * (1 - y_t.pow(2)) + 1e-6)
