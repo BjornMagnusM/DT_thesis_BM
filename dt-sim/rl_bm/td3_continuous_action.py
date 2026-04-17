@@ -34,6 +34,9 @@ duckietown_logger.setLevel(logging.WARNING)
 import pyglet
 pyglet.options['debug_gl'] = False
 
+#Import augmentation
+from utils.drqv2_augmentation import RandomShiftsAug
+
 
 @dataclass
 class Args:
@@ -127,8 +130,8 @@ class QNetwork(nn.Module):
         super().__init__()
         in_channels = 4 if args.grayscale else 12
 
-        self.encoder = cnn_encoder(
-            in_channels=in_channels,
+        #BM switched to the encoder from DrQ-v2
+        self.encoder = DrQEncoderV2(
             obs_shape=env.single_observation_space.shape,
             feature_dim=feature_dim
         )
@@ -153,8 +156,8 @@ class Actor(nn.Module):
         super().__init__()
         in_channels = 4 if grayscale else 12
 
-        self.encoder = cnn_encoder(
-            in_channels=in_channels,
+        #BM switched to the encoder from DrQ-v2
+        self.encoder = DrQEncoderV2(
             obs_shape=env.single_observation_space.shape,
             feature_dim=feature_dim
         )
@@ -264,6 +267,9 @@ if __name__ == "__main__":
     q_optimizer = optim.Adam(list(qf1.parameters()) + list(qf2.parameters()), lr=args.learning_rate)
     actor_optimizer = optim.Adam(list(actor.parameters()), lr=args.learning_rate)
 
+    #BM augmention 
+    aug = RandomShiftsAug(pad=4).to(device)
+
     envs.single_observation_space.dtype = np.uint8
     rb = ReplayBuffer(
         args.buffer_size,
@@ -312,21 +318,29 @@ if __name__ == "__main__":
         # ALGO LOGIC: training.
         if global_step > args.learning_starts:
             data = rb.sample(args.batch_size)
+            
+            s_obs = data.observations.to(device, non_blocking=True)
+            s_next_obs = data.next_observations.to(device, non_blocking=True)
+
+            #BM applying the augmentation
+            a_obs = aug(s_obs.float())
+            a_next_obs = aug(s_next_obs.float())
+
             with torch.no_grad():
                 clipped_noise = (torch.randn_like(data.actions, device=device) * args.policy_noise).clamp(
                     -args.noise_clip, args.noise_clip
                 ) * target_actor.action_scale
 
-                next_state_actions = (target_actor(data.next_observations) + clipped_noise).clamp(
+                next_state_actions = (target_actor(a_next_obs) + clipped_noise).clamp(
                     envs.single_action_space.low[0], envs.single_action_space.high[0]
                 )
-                qf1_next_target = qf1_target(data.next_observations, next_state_actions)
-                qf2_next_target = qf2_target(data.next_observations, next_state_actions)
+                qf1_next_target = qf1_target(a_next_obs, next_state_actions)
+                qf2_next_target = qf2_target(a_next_obs, next_state_actions)
                 min_qf_next_target = torch.min(qf1_next_target, qf2_next_target)
                 next_q_value = data.rewards.flatten() + (1 - data.dones.flatten()) * args.gamma * (min_qf_next_target).view(-1)
 
-            qf1_a_values = qf1(data.observations, data.actions).view(-1)
-            qf2_a_values = qf2(data.observations, data.actions).view(-1)
+            qf1_a_values = qf1(a_obs, data.actions).view(-1)
+            qf2_a_values = qf2(a_obs, data.actions).view(-1)
             qf1_loss = F.mse_loss(qf1_a_values, next_q_value)
             qf2_loss = F.mse_loss(qf2_a_values, next_q_value)
             qf_loss = qf1_loss + qf2_loss
@@ -337,7 +351,7 @@ if __name__ == "__main__":
             q_optimizer.step()
 
             if global_step % args.policy_frequency == 0:
-                actor_loss = -qf1(data.observations, actor(data.observations)).mean()
+                actor_loss = -qf1(a_obs, actor(a_obs)).mean()
                 actor_optimizer.zero_grad()
                 actor_loss.backward()
                 actor_optimizer.step()

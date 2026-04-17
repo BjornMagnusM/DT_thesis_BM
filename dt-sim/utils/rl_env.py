@@ -60,8 +60,8 @@ class DuckieOvalEnv(Simulator):
         #env = ActionWrapper(env)
         
         # 5. Reward System
-        env = DtRewardWrapper(env)
-        env = CustomRewardWrapper(env)
+       # env = DtRewardWrapper(env)
+        #env = CustomRewardWrapper(env)
 
         # 6. Temporal Stacking
         if frame_stack > 1:

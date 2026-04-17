@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=dt_bm_td3
+#SBATCH --job-name=duckie_rl_td3
 #SBATCH --output=output/duckie_%j.out
 #SBATCH -e output/duckie_%j.err
 #SBATCH --time=36:00:00
@@ -22,4 +22,13 @@ if [ ! -f $CONDA_PREFIX/lib/libtiff.so.5 ]; then
     ln -s $CONDA_PREFIX/lib/libtiff.so.6 $CONDA_PREFIX/lib/libtiff.so.5
 fi
 
-python rl_bm/sac_continuous_action.py 
+# --- 4. Launch Training ---
+python rl_bm/td3_continuous_action.py \
+    --seed 1 \
+    --env-id AdaptiveV1 \
+    --total-timesteps 1000000 \
+    --buffer-size 50000 \
+    --track \
+    --domain-rand \
+    --learning-starts 5000 \
+    --run-notes "New Adaptive Reward with Domain Randomization and MotionBlur"

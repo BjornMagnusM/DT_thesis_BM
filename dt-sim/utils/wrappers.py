@@ -127,7 +127,15 @@ class ImgWrapper(gym.ObservationWrapper):
     def observation(self, observation):
         return observation.transpose(2, 0, 1)
 
+class DtRewardWrapper(gym.RewardWrapper):
+    def __init__(self, env):
+        super().__init__(env)
 
+    def reward(self, reward):
+        if reward == -1000:
+            reward = -15
+
+        return reward
 
 # this is needed because at max speed the duckie can't turn anymore
 class ActionWrapper(gym.ActionWrapper):
