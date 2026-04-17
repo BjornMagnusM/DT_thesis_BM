@@ -126,6 +126,29 @@ class DrQEncoderV2(nn.Module):
         return F.layer_norm(h, h.size())
 
 
+class ImpalaCNNLN(nn.Module):
+    """A more efficient, high-stride CNN for faster feature extraction."""
+    def __init__(self, in_channels=9, feature_dim=50, default_init=True):
+
+        super().__init__()
+
+        if default_init:
+            init_ = lambda m: impala_init(m, nn.init.orthogonal_, lambda x: nn.init.
+                               constant_(x, 0), nn.init.calculate_gain('relu'))
+        else:
+            init_ = lambda m:m # no init, use pytorch default
+
+        self.main = nn.Sequential(
+            init_(nn.Conv2d(in_channels, 16, 8, stride=4)), LayerNormalization(), nn.LeakyReLU(),
+            init_(nn.Conv2d(16, 32, 4, stride=2)), LayerNormalization(), nn.LeakyReLU(), nn.Flatten(),
+            init_(nn.Linear(32 * 81, feature_dim)))
+        
+        num_params = sum(p.numel() for p in self.parameters())
+        print(f"Num params of encoder: {num_params}")
+        
+    def forward(self, obs):
+        x = self.main(torch.unsqueeze(obs, dim=0)/255 - 0.5)
+        return torch.squeeze(F.layer_norm(x, x.size()))
 
 
 
@@ -139,11 +162,13 @@ class Actor(nn.Module):
     def __init__(self, obs_shape,action_dim):
         super().__init__()
 
-        #BM switched to the encoder from DrQ-v2
-        self.encoder = DrQEncoderV2(
-            obs_shape=obs_shape,
+        #Testings ALi's model 
+        self.encoder = ImpalaCNNLN(
+            in_channels=4,
+            obs_shape=(4, 84, 84),
             feature_dim=256
         )
+        
         
 
         self.fc_mean = nn.Linear(256, action_dim)

@@ -76,6 +76,9 @@ class AgentNode(DTROS):
 
         # Decode from compressed image with OpenCV
         obtained_image = self.bridge.compressed_imgmsg_to_cv2(image_msg)
+
+        #Convert to grayscale for ALi 
+        obtained_image = cv2.cvtColor(obtained_image, cv2.COLOR_BGR2GRAY)
     
         #Resize image to same dim as sim 
         obtained_image =  self.CropResizeWrapperROS.observation(obtained_image)
