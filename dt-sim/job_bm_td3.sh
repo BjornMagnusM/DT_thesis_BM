@@ -28,7 +28,5 @@ python rl_bm/td3_continuous_action.py \
     --env-id AdaptiveV1 \
     --total-timesteps 1000000 \
     --buffer-size 50000 \
-    --track \
-    --domain-rand \
     --learning-starts 5000 \
-    --run-notes "New Adaptive Reward with Domain Randomization and MotionBlur"
+    --run-notes "First test run of td3"
