@@ -98,16 +98,6 @@ class ImgWrapper(gym.ObservationWrapper):
         return observation.transpose(2, 0, 1)
 
 
-class DtRewardWrapper(gym.RewardWrapper):
-    def __init__(self, env):
-        super().__init__(env)
-
-    def reward(self, reward):
-        if reward == -1000:
-            reward = -15
-
-        return reward
-
 
 # this is needed because at max speed the duckie can't turn anymore
 class ActionWrapper(gym.ActionWrapper):
@@ -144,6 +134,18 @@ class CropResizeWrapper(gym.ObservationWrapper):
         img = img.resize((self.shape[1], self.shape[0]), Image.BILINEAR)
         
         return np.array(img)
+
+
+class DtRewardWrapper(gym.RewardWrapper):
+    def __init__(self, env):
+        super().__init__(env)
+
+    def reward(self, reward):
+        if reward == -1000:
+            reward = -15
+
+        return reward
+
     
 class CustomRewardWrapper(gym.RewardWrapper):
     def __init__(self, env):
@@ -215,8 +217,60 @@ class CustomRewardWrapper(gym.RewardWrapper):
 
         return reward_speed + reward_alignment + reward_distance + reward_angle + reward_jerk
     
-    import gymnasium as gym
-import numpy as np
+
+class TimeOptimalReward(gym.RewardWrapper):
+    def __init__(self, env):
+        super().__init__(env)
+        self.prev_action = np.zeros(2)
+    
+    def reward (self, reward):
+        # Get internal simulator state for custom math
+        sim = self.env.unwrapped
+ 
+        pos = sim.cur_pos
+        angle = sim.cur_angle
+        speed = sim.speed
+        current_action = sim.last_action
+
+
+class LapTerminationWrapper(gym.Wrapper):
+    def __init__(self, env):
+        super().__init__(env)
+        self.start_tile = None 
+        self.finish_tile = None 
+        self.left_finish_tile = False
+    
+    def step(self, action): 
+        obs, reward, done, truncated, info = self.env.step(action)
+
+
+        sim = self.env.unwrapped 
+        current_tile = sim.get_grid_coords(sim.cur_pos)
+
+        #Define the starting tile once
+        if self.start_tile is None: 
+            self.start_tile = current_tile
+            
+        #Define the finishing tile as the 2nd tile so the agent will atleast do one full lap 
+        if self.finish_tile is None and current_tile != self.start_tile: 
+            self.finish_tile = current_tile  
+        
+        #Check if the agent have left the finish tile 
+        if self.finish_tile is not None and current_tile != self.finish_tile: 
+            self.left_finish_tile = True
+
+        #Mark the episode as done if the agent have completed a whole lap     
+        if current_tile == self.finish_tile and self.left_finish_tile: 
+            done = True
+        
+
+        return obs, reward, done, truncated, info
+
+
+
+
+
+
 
 class KinematicActionWrapper(gym.ActionWrapper):
     def __init__(self, env, gain=1.0, trim=0.0, wheel_dist=0.102, radius=0.0318, k=27.0, limit=1.0):
