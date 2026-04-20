@@ -12,6 +12,11 @@
 source $(conda info --base)/etc/profile.d/conda.sh
 conda activate duckie-rl
 
+# using my wand account
+export WANDB_API_KEY=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
+export WANDB_DIR=$PWD/wandb
+
+
 echo "Using Python from: $(which python)"
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
@@ -24,9 +29,9 @@ fi
 
 # --- 4. Launch Training ---
 python rl_bm/td3_continuous_action.py \
-    --seed 1 \
-    --env-id AdaptiveV1 \
+    --seed 123 \
+    --env-id oval_loop \
     --total-timesteps 1000000 \
-    --buffer-size 50000 \
+    --buffer-size 5000 \
     --learning-starts 5000 \
     --run-notes "First test run of td3"

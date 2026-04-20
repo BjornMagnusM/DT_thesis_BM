@@ -2,8 +2,8 @@ import os
 import gymnasium as gym
 import numpy as np
 # Duckietown Specific
-from gym_duckietown.envs import DuckietownEnv
-from utils.wrappers import ImgWrapper, ActionWrapper, CropResizeWrapper, CustomRewardWrapper, MotionBlurWrapper
+from gym_duckietown.simulator import Simulator
+from utils.wrappers import ImgWrapper, ActionWrapper, CropResizeWrapper, CustomRewardWrapper, TemporalWrapper, DtRewardWrapper, KinematicActionWrapper, ResizeWrapper
 
 class EnvLunch:
     def __init__(self, 
@@ -18,16 +18,16 @@ class EnvLunch:
         self.grayscale = grayscale
         self.frame_stack = frame_stack
         self.img_shape = img_shape
-        self.sim_to_real_kwargs = sim_to_real_kwargs
+        self.sim_to_real_kwargs = sim_to_rea Ql_kwargs
 
     def _create_base_env(self, seed, render_mode=None):
         """Initializes the raw Duckietown simulator."""
-        return DuckietownEnv(
+        return Simulator(
             seed=seed,
             map_name="oval_loop",
             max_steps=self.max_steps,
-            camera_width=160,
-            camera_height=120,
+            camera_width=640,
+            camera_height=480,
             accept_start_angle_deg=4,
             full_transparency=True,
             render_mode=render_mode,
@@ -35,16 +35,27 @@ class EnvLunch:
             **self.sim_to_real_kwargs
         )
 
-    def _apply_wrappers(self, env, capture_video=False):
+    def _apply_wrappers(self, env, capture_video=False, motion_blur=False):
         """Sequentially applies Gymnasium wrappers."""
-        env = MotionBlurWrapper(env)
+
+        env = KinematicActionWrapper(env)
+
+        if motion_blur:
+            print("motion blur applied")
+            env = TemporalWrapper(env)
+        #else:
+        # Just repeats the action without rendering intermediate frames
+        #    env = gym.wrappers.FrameSkip(env, skip=3)
+
         if capture_video:
             video_folder = f"videos/{self.run_name}"
             os.makedirs(video_folder, exist_ok=True)
             env = gym.wrappers.RecordVideo(env, video_folder, episode_trigger=lambda x: True)
 
         # Vision Preprocessing
+        env = ResizeWrapper(env, shape=(120, 160, 3))
         env = CropResizeWrapper(env, shape=self.img_shape)
+
         if self.grayscale:
             env = gym.wrappers.GrayscaleObservation(env, keep_dim=True)
         
@@ -52,7 +63,10 @@ class EnvLunch:
         
         # Dynamics & Rewards
         env = ActionWrapper(env)
-        env = CustomRewardWrapper(env)
+
+        ##BM rmeove custom rewards
+        #env = DtRewardWrapper(env)
+        #env = CustomRewardWrapper(env)
 
         # Temporal Stacking
         if self.frame_stack > 1:
@@ -76,12 +90,12 @@ class EnvLunch:
 
         return gym.wrappers.RecordEpisodeStatistics(env)
 
-    def make_env_fn(self, seed, idx, capture_video=False):
+    def make_env_fn(self, seed, idx, capture_video=False, motion_blur=False):
         """Returns a 'thunk' function for VectorEnv integration."""
         def thunk():
             render_mode = "rgb_array" if (capture_video and idx == 0) else None
             env = self._create_base_env(seed, render_mode)
-            env = self._apply_wrappers(env, capture_video)
+            env = self._apply_wrappers(env, capture_video, motion_blur)
             env.action_space.seed(seed)
             return env
         return thunk

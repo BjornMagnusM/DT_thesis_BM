@@ -4,6 +4,7 @@ import numpy as np
 from PIL import Image
 
 from gym_duckietown.simulator import Simulator
+from gym_duckietown.simulator import get_dir_vec
 
 
 class TemporalWrapper(gym.Wrapper):
@@ -46,37 +47,6 @@ class TemporalWrapper(gym.Wrapper):
         self.unwrapped.step_count += 1
 
         return processed_obs, d_info.reward, d_info.done, False, self.unwrapped.get_agent_info()
-
-
-class MotionBlurWrapper(Simulator):
-    def __init__(self, env=None):
-        Simulator.__init__(self)
-        self.env = env
-        self.frame_skip = 3
-        self.env.delta_time = self.env.delta_time / self.frame_skip
-
-    def step(self, action: np.ndarray):
-        action = np.clip(action, -1, 1)
-        # Actions could be a Python list
-        action = np.array(action)
-        motion_blur_window = []
-        for _ in range(self.frame_skip):
-            obs = self.env.render_obs()
-            motion_blur_window.append(obs)
-            self.env.update_physics(action)
-
-        # Generate the current camera image
-
-        obs = self.env.render_obs()
-        motion_blur_window.append(obs)
-        obs = np.average(motion_blur_window, axis=0, weights=[0.8, 0.15, 0.04, 0.01])
-
-        misc = self.env.get_agent_info()
-
-        d = self.env._compute_done_reward()
-        misc["Simulator"]["msg"] = d.done_why
-
-        return obs, d.reward, d.done, misc
 
 
 class ResizeWrapper(gym.ObservationWrapper):
@@ -127,6 +97,7 @@ class ImgWrapper(gym.ObservationWrapper):
     def observation(self, observation):
         return observation.transpose(2, 0, 1)
 
+
 class DtRewardWrapper(gym.RewardWrapper):
     def __init__(self, env):
         super().__init__(env)
@@ -136,6 +107,7 @@ class DtRewardWrapper(gym.RewardWrapper):
             reward = -15
 
         return reward
+
 
 # this is needed because at max speed the duckie can't turn anymore
 class ActionWrapper(gym.ActionWrapper):
@@ -160,22 +132,18 @@ class CropResizeWrapper(gym.ObservationWrapper):
         )
 
     def observation(self, obs):
-        # 1. Convert to PIL for easy manipulation
         img = Image.fromarray(obs)
         
         width, height = img.size
         
-        # 2. Crop: Keep the bottom 2/3
         # PIL crop box is (left, top, right, bottom)
-        top_boundary = int(height * (1/3))
+        top_boundary = int(height * (1/4))
         img = img.crop((0, top_boundary, width, height))
         
-        # 3. Resize to target shape (84x84)
-        # Note: Image.resize takes (width, height)
+        # target shape (84x84)
         img = img.resize((self.shape[1], self.shape[0]), Image.BILINEAR)
         
         return np.array(img)
-
     
 class CustomRewardWrapper(gym.RewardWrapper):
     def __init__(self, env):

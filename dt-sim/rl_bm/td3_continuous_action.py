@@ -48,7 +48,7 @@ class Args:
     """if toggled, `torch.backends.cudnn.deterministic=False`"""
     cuda: bool = True
     """if toggled, cuda will be enabled by default"""
-    track: bool = False
+    track: bool = True
     """if toggled, this experiment will be tracked with Weights and Biases"""
     wandb_project_name: str = "Duckie-RL"
     """the wandb's project name"""
@@ -64,7 +64,7 @@ class Args:
     """for wandb tracking notes"""
     save_model: bool = True
     """whether to save model into the `runs/{run_name}` folder"""
-    grayscale: bool = True
+    grayscale: bool = False
     """whether to convert the observation to grayscale"""
 
 
