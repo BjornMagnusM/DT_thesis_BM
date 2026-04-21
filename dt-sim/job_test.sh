@@ -10,19 +10,31 @@
 
 #SBATCH --mem=2G
 
-echo "=== START ==="
 
-echo "User: $(whoami)"
-echo "Node: $(hostname)"
+echo "=== START SMOKE TEST ==="
 
-echo "Checking python..."
-which python
+# activate conda
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate gym-duckietown
+
+echo "Python: $(which python)"
 python --version
 
-echo "Checking conda..."
-which conda
+echo "Testing imports..."
+python -c "
+import numpy
+import torch
+import gymnasium
+import duckietown_world
+print('Core imports OK')
+"
 
-echo "PATH:"
-echo $PATH
+echo "Testing Duckietown env creation..."
+python -c "
+from gym_duckietown.envs import DuckietownEnv
+env = DuckietownEnv(map_name='loop_empty', domain_rand=False, draw_render=False)
+obs = env.reset()
+print('Env reset OK')
+"
 
 echo "=== DONE ==="
