@@ -5,7 +5,7 @@
 #SBATCH --output=output/duckie_%j.out
 #SBATCH -e output/duckie_%j.err
 #SBATCH --time=36:00:00
-#SBATCH --partition=pgpu_most
+#SBATCH --partition allgroups
 #SBATCH --ntasks=1
 #SBATCH --gpus=1
 #SBATCH --mem=16G
