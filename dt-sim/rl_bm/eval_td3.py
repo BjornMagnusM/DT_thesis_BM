@@ -66,7 +66,7 @@ def evaluate():
 
     env_luncher = EnvLunch(
         run_name="eval",
-        max_steps=3000,
+        max_steps=4000,
         grayscale=args.grayscale,
         **sim_params
     )

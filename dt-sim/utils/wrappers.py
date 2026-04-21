@@ -218,21 +218,62 @@ class CustomRewardWrapper(gym.RewardWrapper):
         return reward_speed + reward_alignment + reward_distance + reward_angle + reward_jerk
     
 
+#BM wrapper 
 class TimeOptimalReward(gym.RewardWrapper):
     def __init__(self, env):
         super().__init__(env)
         self.prev_action = np.zeros(2)
+        self.tile_step = 0
+        self.prev_tile = None
     
     def reward (self, reward):
         # Get internal simulator state for custom math
         sim = self.env.unwrapped
- 
+
+        #Speed logic
+        speed = sim.speed
+        reward_speed = 2.0 * speed 
+
+        #Lane logig 
         pos = sim.cur_pos
         angle = sim.cur_angle
-        speed = sim.speed
+        try:
+            lp = sim.get_lane_pos2(pos, angle)
+            reward_alignment = 2.0 * (lp.dot_dir ** 2) if lp.dot_dir > 0 else 4.0 * lp.dot_dir # tanh like behaviour to add a higher gradint near 1
+            reward_angle = -0.1 * np.abs(lp.angle_deg)
+            lane_penalty = 0
+        except Exception:
+            reward_alignment = 0
+            reward_angle = 0
+            lane_penalty = -10.0
+        
+        #Reward for time spent on tile
+        current_tile = sim.get_grid_coords(sim.cur_pos) 
+        tile_reward = 0
+        if self.prev_tile is None:
+            self.prev_tile = current_tile 
+            self.tile_step = 1 
+
+        elif current_tile == self.prev_tile:
+            self.tile_step += 1
+
+        else:
+            tile_reward = 5 * (1/(self.tile_step+1)) #add the +1 so it never divides by 0 
+            self.tile_step = 1
+       
+
+        #Jerk Logic 
         current_action = sim.last_action
+        action_diff = np.linalg.norm(current_action - self.prev_action)
+        reward_jerk = -0.5 * action_diff  # Start with -0.5 and tune if needed
+
+        self.prev_action = current_action.copy()
+        self.prev_tile = current_tile
+        
+        return reward_speed + reward_jerk + tile_reward + reward_alignment + reward_angle + lane_penalty
 
 
+#BM wrapper 
 class LapTerminationWrapper(gym.Wrapper):
     def __init__(self, env):
         super().__init__(env)
