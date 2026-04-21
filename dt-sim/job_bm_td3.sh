@@ -1,16 +1,18 @@
 #!/bin/bash
-#SBATCH --job-name=duckie_rl_td3
+#SBATCH --job-name=bm_duckie_rl_td3
+#SBATCH --mail-user bjoernmagnus.myrhaug@studenti.unipd.it 
+
 #SBATCH --output=output/duckie_%j.out
 #SBATCH -e output/duckie_%j.err
 #SBATCH --time=36:00:00
 #SBATCH --partition=pgpu_most
-#SBATCH --account=dei_most
+#SBATCH --ntasks=1
 #SBATCH --gpus=1
 #SBATCH --mem=16G
 #SBATCH --cpus-per-task=4
 
 source $(conda info --base)/etc/profile.d/conda.sh
-conda activate duckie-rl
+conda activate gym-duckietown
 
 # using my wand account
 export WANDB_API_KEY=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
@@ -27,7 +29,7 @@ if [ ! -f $CONDA_PREFIX/lib/libtiff.so.5 ]; then
     ln -s $CONDA_PREFIX/lib/libtiff.so.6 $CONDA_PREFIX/lib/libtiff.so.5
 fi
 
-# --- 4. Launch Training ---
+# Launch Training
 python rl_bm/td3_continuous_action.py \
     --seed 123 \
     --env-id oval_loop \
