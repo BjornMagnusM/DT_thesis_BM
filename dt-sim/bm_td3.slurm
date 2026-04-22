@@ -23,16 +23,21 @@ export LIBGL_ALWAYS_SOFTWARE=1
 export PYGLET_HEADLESS=True
 export GALLIUM_DRIVER=llvmpipe
 
+# using my wand account
+export WANDB_API_KEY=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
+export WANDB_DIR=$PWD/wandb
 
 srun singularity exec --nv \
--B .:/app \
---pwd /app \
-$SIF_IMAGE \
-bash -c "export PYTHONPATH=\$PYTHONPATH:/app:/app/src && \
-python3 rl_bm/td3_continuous_action.py \
---seed 123 \
---env-id oval_loop \
---total-timesteps 1000000 \
---buffer-size 5000 \
---learning-starts 5000 \
---run-notes 'First test run of td3'"
+    -B .:/app \
+    --pwd /app \
+    --env WANDB_API_KEY=$WANDB_API_KEY \
+    --env WANDB_DIR=$WANDB_DIR \
+    $SIF_IMAGE \
+    bash -c "export PYTHONPATH=\$PYTHONPATH:/app:/app/src && \
+    python3 rl_bm/td3_continuous_action.py \
+    --seed 123 \
+    --env-id oval_loop \
+    --total-timesteps 1000000 \
+    --buffer-size 5000 \
+    --learning-starts 5000 \
+    --run-notes 'First test run of td3'"
