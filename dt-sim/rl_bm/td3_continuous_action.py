@@ -116,6 +116,7 @@ def make_env(seed, idx, run_name, capture_video=False, motion_blur=False, **env_
             motion_blur=motion_blur,
             render_mode=render_mode,
             seed=seed,
+            color_sky=[0.5, 0.7, 1.0],
             **env_kwargs
         )
         env.action_space.seed(seed)

@@ -69,7 +69,7 @@ class EnvLunch:
 
         ##BM removed custom wrappers 
         #env = DtRewardWrapper(env)
-        env = TimeOptimalReward(env)
+        #env = TimeOptimalReward(env)
 
         # Temporal Stacking
         if self.frame_stack > 1:

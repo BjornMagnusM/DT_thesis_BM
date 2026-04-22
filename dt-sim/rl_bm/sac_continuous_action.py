@@ -21,7 +21,7 @@ from cleanrl_utils.atari_wrappers import MaxAndSkipEnv
 
 # Duckietown Specific
 from gym_duckietown.envs import DuckietownEnv
-from utils.wrappers import NormalizeWrapper, ImgWrapper, DtRewardWrapper, ActionWrapper, ResizeWrapper, CropResizeWrapper
+from utils.wrappers import NormalizeWrapper, ImgWrapper, DtRewardWrapper, ActionWrapper, ResizeWrapper, CropResizeWrapper, LapTerminationWrapper
 
 # CNN Architucture 
 from cnn_architectures import DQNEncoder, ImpalaCNN,DrQEncoderV2
@@ -128,6 +128,9 @@ def make_env(seed, idx, capture_video, run_name):
             frame_skip = 3
         )
         print("Initialized environment")
+
+        ##BM added a termination criteria after finishing a lap 
+        #env = LapTerminationWrapper(env)
 
         # 2. Record video if requested (CleanRL standard)   
         if capture_video and idx == 0:

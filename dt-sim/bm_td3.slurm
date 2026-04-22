@@ -1,0 +1,38 @@
+#!/bin/bash
+#SBATCH -J TD3_BM
+#SBATCH -o logs/output_%j.txt
+#SBATCH -e logs/errors_%j.txt
+#SBATCH -t 36:00:00
+#SBATCH -n 1
+#SBATCH -c 6
+#SBATCH -p allgroups
+#SBATCH --mem=16G
+#SBATCH --gres=gpu:rtx
+
+
+cd $HOME/DT_thesis_BM/dt-sim
+mkdir -p logs
+
+
+export DISPLAY=:$((SLURM_JOB_ID % 100 + 100))
+Xvfb $DISPLAY -screen 0 1024x768x24 -ac +extension GLX +render -noreset &> xvfb.log &
+
+SIF_IMAGE="$HOME/duckie_rl.sif"
+
+export LIBGL_ALWAYS_SOFTWARE=1
+export PYGLET_HEADLESS=True
+export GALLIUM_DRIVER=llvmpipe
+
+
+srun singularity exec --nv \
+    -B .:/app \
+    --pwd /app \
+    $SIF_IMAGE \
+    bash -c "export PYTHONPATH=\$PYTHONPATH:/app:/app/src && \
+    python3 rl_bm/td3_continuous_action.py \
+    --seed 123 \
+    --env-id oval_loop \
+    --total-timesteps 1000000 \
+    --buffer-size 5000 \
+    --learning-starts 5000 \
+    --run-notes "First test run of td3"
