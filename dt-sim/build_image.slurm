@@ -2,7 +2,7 @@
 #SBATCH --job-name=build_sif
 #SBATCH --partition=allgroups
 #SBATCH --time=01:00:00
-#SBATCH --mem=8G
+#SBATCH --mem=16G
 
 module load singularity  # or singularity
 
