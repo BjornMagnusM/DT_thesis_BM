@@ -18,18 +18,22 @@ export DISPLAY=:$((SLURM_JOB_ID % 100 + 100))
 Xvfb $DISPLAY -screen 0 1024x768x24 -ac +extension GLX +render -noreset &> xvfb.log &
 
 
-SIF_IMAGE="$HOME/DT_thesis_BM/dt-sim/duckie_rl.sif"
-
 export LIBGL_ALWAYS_SOFTWARE=1
 export GALLIUM_DRIVER=llvmpipe
-
-
+export PYOPENGL_PLATFORM=egl
+export PYGLET_HEADLESS=True
+export EGL_DEVICE_ID=none
 
 
 
 # using my wand account
 export WANDB_API_KEY=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
 export WANDB_DIR=$PWD/wandb
+
+
+
+SIF_IMAGE="$HOME/DT_thesis_BM/dt-sim/duckie_rl.sif"
+
 
 srun singularity exec --nv \
     -B .:/app \
