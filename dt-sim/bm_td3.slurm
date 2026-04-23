@@ -27,8 +27,13 @@ export GALLIUM_DRIVER=llvmpipe
 export WANDB_API_KEY=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
 export WANDB_DIR=$PWD/wandb
 
-srun singularity exec -B .:/app \
+srun singularity exec \
+    -B .:/app \
     --pwd /app \
+    --env DISPLAY=$DISPLAY \
+    --env PYGLET_HEADLESS=False \
+    --env LIBGL_ALWAYS_SOFTWARE=1 \
+    --env GALLIUM_DRIVER=llvmpipe \
     --env WANDB_API_KEY=$WANDB_API_KEY \
     --env WANDB_DIR=$WANDB_DIR \
     $SIF_IMAGE \
