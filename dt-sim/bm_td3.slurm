@@ -16,13 +16,13 @@ mkdir -p logs
 
 export DISPLAY=:$((SLURM_JOB_ID % 100 + 100))
 Xvfb $DISPLAY -screen 0 1024x768x24 -ac +extension GLX +render -noreset &> xvfb.log &
+sleep 2
 
-SIF_IMAGE="$HOME/DT_thesis_BM/dt-sim/duckie_rl.sif"
 
 export LIBGL_ALWAYS_SOFTWARE=1
 export GALLIUM_DRIVER=llvmpipe
-export PYGLET_HEADLESS=True
-
+export PYGLET_HEADLESS=False
+export PYOPENGL_PLATFORM=glx
 
 
 
@@ -30,15 +30,28 @@ export PYGLET_HEADLESS=True
 export WANDB_API_KEY=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
 export WANDB_DIR=$PWD/wandb
 
-srun singularity exec --nv \
+
+SIF_IMAGE="$HOME/DT_thesis_BM/dt-sim/duckie_rl.sif"
+
+
+srun singularity exec \
     -B .:/app \
     --pwd /app \
+    --env DISPLAY=$DISPLAY \
+    --env LIBGL_ALWAYS_SOFTWARE=1 \
+    --env GALLIUM_DRIVER=llvmpipe \
+    --env PYGLET_HEADLESS=False \
+    --env PYOPENGL_PLATFORM=glx \
+    --env WANDB_API_KEY=$WANDB_API_KEY \
+    --env WANDB_DIR=$WANDB_DIR \
     $SIF_IMAGE \
-    bash -c "export PYTHONPATH=\$PYTHONPATH:/app:/app/src && \
-    python3 rl_bm/td3_continuous_action.py \
-    --seed 123 \
-    --env-id oval_loop \
-    --total-timesteps 1000000 \
-    --buffer-size 5000 \
-    --learning-starts 5000 \
-    --run-notes 'First test run of td3'"
+    bash -c "
+        export PYTHONPATH=\$PYTHONPATH:/app:/app/src && \
+        python3 rl_bm/td3_continuous_action.py \
+            --seed 123 \
+            --env-id oval_loop \
+            --total-timesteps 1000000 \
+            --buffer-size 5000 \
+            --learning-starts 5000 \
+            --run-notes 'TD3 test run'
+    "
