@@ -20,8 +20,11 @@ Xvfb $DISPLAY -screen 0 1024x768x24 -ac +extension GLX +render -noreset &> xvfb.
 SIF_IMAGE="$HOME/DT_thesis_BM/dt-sim/duckie_rl.sif"
 
 export LIBGL_ALWAYS_SOFTWARE=1
-export PYGLET_HEADLESS=True
 export GALLIUM_DRIVER=llvmpipe
+export PYGLET_HEADLESS=True
+
+
+
 
 # using my wand account
 export WANDB_API_KEY=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
