@@ -20,15 +20,14 @@ Xvfb $DISPLAY -screen 0 1024x768x24 -ac +extension GLX +render -noreset &> xvfb.
 SIF_IMAGE="$HOME/DT_thesis_BM/dt-sim/duckie_rl.sif"
 
 export LIBGL_ALWAYS_SOFTWARE=1
-export PYGLET_HEADLESS=True
+export PYGLET_HEADLESS=False
 export GALLIUM_DRIVER=llvmpipe
 
 # using my wand account
 export WANDB_API_KEY=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
 export WANDB_DIR=$PWD/wandb
 
-srun singularity exec --nv \
-    -B .:/app \
+srun singularity exec -B .:/app \
     --pwd /app \
     --env WANDB_API_KEY=$WANDB_API_KEY \
     --env WANDB_DIR=$WANDB_DIR \
