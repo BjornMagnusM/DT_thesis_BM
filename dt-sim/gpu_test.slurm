@@ -27,7 +27,7 @@ export EGL_DEVICE_ID=none
 # -------------------------
 # WandB
 # -------------------------
-export WANDB_API_KEY=YOUR_KEY
+export WANDB_API_KEY=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
 export WANDB_DIR=$PWD/wandb
 
 # -------------------------
