@@ -7,7 +7,7 @@
 #SBATCH -c 4
 #SBATCH -p allgroups
 #SBATCH --mem=16G
-#SBATCH --gres=gpu:a40   # (fine to keep, but not used for rendering)
+#SBATCH --gres=gpu:a40
 
 cd $HOME/DT_thesis_BM/dt-sim
 mkdir -p logs
@@ -16,12 +16,13 @@ echo "Running on $(hostname)"
 echo "Job ID: $SLURM_JOB_ID"
 
 # -------------------------
-# Rendering (CPU ONLY)
+# Rendering → CPU ONLY
 # -------------------------
 export LIBGL_ALWAYS_SOFTWARE=1
 export GALLIUM_DRIVER=llvmpipe
-export PYOPENGL_PLATFORM=osmesa
+export PYOPENGL_PLATFORM=egl
 export PYGLET_HEADLESS=True
+export EGL_DEVICE_ID=none
 
 # -------------------------
 # WandB
@@ -37,13 +38,14 @@ SIF_IMAGE="$HOME/DT_thesis_BM/dt-sim/duckie_rl.sif"
 # -------------------------
 # Run
 # -------------------------
-srun singularity exec \
+srun singularity exec --nv \
     -B .:/app \
     --pwd /app \
     --env LIBGL_ALWAYS_SOFTWARE=1 \
     --env GALLIUM_DRIVER=llvmpipe \
-    --env PYOPENGL_PLATFORM=osmesa \
+    --env PYOPENGL_PLATFORM=egl \
     --env PYGLET_HEADLESS=True \
+    --env EGL_DEVICE_ID=none \
     --env WANDB_API_KEY=$WANDB_API_KEY \
     --env WANDB_DIR=$WANDB_DIR \
     $SIF_IMAGE \
@@ -55,5 +57,5 @@ srun singularity exec \
             --total-timesteps 1000000 \
             --buffer-size 5000 \
             --learning-starts 5000 \
-            --run-notes 'TD3 test run'
+            --run-notes 'TD3 GPU training + CPU rendering'
     "
