@@ -222,7 +222,8 @@ if __name__ == "__main__":
         )
         reward_logic = wandb.Artifact('rl-logic-files', type='code')
         reward_logic.add_file('utils/wrappers.py') 
-        reward_logic.add_file('utils/env_lunch.py')
+        reward_logic.add_file('utils/rl_env.py')
+        reward_logic.add_file('rl_bm/td3_continuous_action.py')
         try:
             reward_logic.add_file('job_bm_td3.sh')
         except (ValueError, FileNotFoundError) as e:
@@ -282,6 +283,10 @@ if __name__ == "__main__":
     )
     start_time = time.time()
 
+    #BM intilize values 
+    invalid_episodes = 0
+    total_episodes = 0
+
     # TRY NOT TO MODIFY: start the game
     obs, _ = envs.reset(seed=args.seed)
     for global_step in range(args.total_timesteps):
@@ -302,6 +307,14 @@ if __name__ == "__main__":
             for i in range(envs.num_envs):
                 # Using the mask '_episode' to see which sub-env actually finished
                 if "_episode" in infos and infos["_episode"][i]:
+                    #BM Added for logging of invalid poses
+                    total_episodes += 1 
+                    sim_info = infos["Simulator"]
+                    done_msg = sim_info.get("msg", [""])[0]
+                    if done_msg == "Stopping the simulator because we are at an invalid pose.":
+                        invalid_episodes += 1
+                    writer.add_scalar("charts/Invalide_episode_rate", invalid_episodes/total_episodes, global_step)
+
                     print(f"global_step={global_step}, episodic_return={infos['episode']['r'][i]}")
                     writer.add_scalar("charts/episodic_return", infos['episode']['r'][i], global_step)
                     writer.add_scalar("charts/episodic_length", infos['episode']['l'][i], global_step)  
