@@ -8,7 +8,7 @@
 #SBATCH -p allgroups
 #SBATCH --mem=16G
 #SBATCH --nodelist=gpu5
-#SBATCH --gres=gpu:l40s
+#SBATCH --gres=gpu:a40
 
 cd $HOME/DT_thesis_BM/dt-sim
 mkdir -p logs
