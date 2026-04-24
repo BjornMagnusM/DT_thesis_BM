@@ -386,7 +386,7 @@ if __name__ == "__main__":
             actor=actor,
             args=args,
             device=device,
-            algo_name="TD3",
+            algo_name="TD3_lap",
             num_episodes=10,
             run_name=run_name,
             **env_params

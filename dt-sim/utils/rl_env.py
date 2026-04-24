@@ -5,7 +5,7 @@ from gym_duckietown.simulator import Simulator
 from utils.wrappers import (
     KinematicActionWrapper, ActionWrapper, ResizeWrapper, 
     CropResizeWrapper, ImgWrapper, CustomRewardWrapper, DtRewardWrapper,
-    TemporalWrapper
+    TemporalWrapper,LapTerminationWrapper
 )
 
 class DuckieOvalEnv(Simulator):
@@ -39,8 +39,14 @@ class DuckieOvalEnv(Simulator):
         env = ActionWrapper(env)
         env = KinematicActionWrapper(env, wheel_dist=0.102, radius=0.0318, k=27.0)
 
+
         # 2. Temporal Logic
         env = TemporalWrapper(env, frame_skip=3, motion_blur=motion_blur)
+
+
+        ##BM added a termination criteria after finishing a lap 
+        env = LapTerminationWrapper(env)
+
 
         if capture_video:
             video_folder = f"videos/{run_name}"
