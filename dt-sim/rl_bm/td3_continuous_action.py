@@ -311,8 +311,10 @@ if __name__ == "__main__":
                     total_episodes += 1 
                     sim_info = infos["Simulator"]
                     done_msg = sim_info.get("msg", [""])[0]
+                    #print(done_msg)
                     if done_msg == "Stopping the simulator because we are at an invalid pose.":
                         invalid_episodes += 1
+                   # print(invalid_episodes)
                     writer.add_scalar("charts/Invalide_episode_rate", invalid_episodes/total_episodes, global_step)
 
                     print(f"global_step={global_step}, episodic_return={infos['episode']['r'][i]}")

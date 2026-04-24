@@ -7,6 +7,7 @@
 #SBATCH -c 4
 #SBATCH -p allgroups
 #SBATCH --mem=16G
+#SBATCH --nodelist=gpu5
 #SBATCH --gres=gpu:l40s
 
 cd $HOME/DT_thesis_BM/dt-sim
