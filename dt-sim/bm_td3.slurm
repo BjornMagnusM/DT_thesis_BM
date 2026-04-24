@@ -30,6 +30,7 @@ export WANDB_DIR=$PWD/wandb
 SIF_IMAGE="$HOME/DT_thesis_BM/dt-sim/duckie_rl.sif"
 
 
+
 srun singularity exec --nv \
     -B .:/app \
     --pwd /app \

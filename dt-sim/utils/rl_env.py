@@ -18,7 +18,7 @@ class DuckieOvalEnv(Simulator):
         kwargs.setdefault('camera_height', 120)
         kwargs.setdefault('accept_start_angle_deg', 4)
         kwargs.setdefault('full_transparency', True)
-        kwargs.setdefault('max_steps', 3000)
+        kwargs.setdefault('max_steps', 5000)
         
         kwargs.setdefault('frame_skip', 1) 
         
@@ -60,7 +60,7 @@ class DuckieOvalEnv(Simulator):
         #env = ActionWrapper(env)
         
         # 5. Reward System
-       # env = DtRewardWrapper(env)
+        env = DtRewardWrapper(env)
         #env = CustomRewardWrapper(env)
 
         # 6. Temporal Stacking
