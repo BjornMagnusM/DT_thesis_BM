@@ -50,5 +50,5 @@ srun singularity exec --nv \
             --total-timesteps 1000000 \
             --buffer-size 5000 \
             --learning-starts 5000 \
-            --run-notes 'TD3 GPU training + CPU rendering'
+            --run-notes 'TD3 GPU training + CPU rendering, with lap termination'
     "
