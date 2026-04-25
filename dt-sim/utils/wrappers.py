@@ -303,7 +303,7 @@ class LapTerminationWrapper(gym.Wrapper):
         #Mark the episode as done if the agent have completed a whole lap     
         if current_tile == self.finish_tile and self.left_finish_tile: 
             done = True
-        
+            print("completed a lap")
 
         return obs, reward, done, truncated, info
 

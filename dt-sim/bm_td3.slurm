@@ -7,6 +7,7 @@
 #SBATCH -c 6
 #SBATCH -p allgroups
 #SBATCH --mem=16G
+#SBATCH --nodelist=gpu1
 #SBATCH --gres=gpu:a40
 
 
@@ -48,7 +49,8 @@ srun singularity exec --nv \
             --seed 123 \
             --env-id oval_loop \
             --total-timesteps 1000000 \
-            --buffer-size 5000 \
-            --learning-starts 5000 \
-            --run-notes 'TD3 GPU training + CPU rendering, with lap termination'
+            --buffer-size 10000 \
+            --batch-size 256 \
+            --learning-starts 50000 \
+            --run-notes 'TD3 without reward rapper so we have -1000 for invalid pose'
     "

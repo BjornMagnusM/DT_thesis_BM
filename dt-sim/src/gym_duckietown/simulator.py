@@ -1619,6 +1619,7 @@ class Simulator(gym.Env):
             info["cur_angle"] = float(angle)
             info["wheel_velocities"] = [self.wheelVels[0], self.wheelVels[1]]
 
+
             # put in cartesian coordinates
             # (0,0 is bottom left)
             # q = self.cartesian_from_weird(self.cur_pos, self.)
@@ -1629,6 +1630,7 @@ class Simulator(gym.Env):
             info["timestamp"] = self.timestamp
             info["tile_coords"] = list(self.get_grid_coords(pos))
             # info['map_data'] = self.map_data
+
         misc = {}
         misc["Simulator"] = info
         return misc
@@ -1682,7 +1684,6 @@ class Simulator(gym.Env):
         reward_jerk = -0.5 * action_diff  # Start with -0.5 and tune if needed
 
         reward = reward_speed + reward_alignment + reward_distance + reward_angle + reward_jerk
-
         return reward
 
     def step(self, action: np.ndarray):

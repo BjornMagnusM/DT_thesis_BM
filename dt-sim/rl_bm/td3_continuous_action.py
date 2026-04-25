@@ -42,7 +42,7 @@ from utils.drqv2_augmentation import RandomShiftsAug
 class Args:
     exp_name: str = os.path.basename(__file__)[: -len(".py")]
     """the name of this experiment"""
-    seed: int = 1
+    seed: int = 123
     """seed of the experiment"""
     torch_deterministic: bool = True
     """if toggled, `torch.backends.cudnn.deterministic=False`"""
@@ -301,22 +301,12 @@ if __name__ == "__main__":
 
         # TRY NOT TO MODIFY: execute the game and log data.
         next_obs, rewards, terminations, truncations, infos = envs.step(actions)
-
+  
         # TRY NOT TO MODIFY: record rewards for plotting purposes
         if "episode" in infos:
             for i in range(envs.num_envs):
                 # Using the mask '_episode' to see which sub-env actually finished
                 if "_episode" in infos and infos["_episode"][i]:
-                    #BM Added for logging of invalid poses
-                    total_episodes += 1 
-                    sim_info = infos["Simulator"]
-                    done_msg = sim_info.get("msg", [""])[0]
-                    #print(done_msg)
-                    if done_msg == "Stopping the simulator because we are at an invalid pose.":
-                        invalid_episodes += 1
-                   # print(invalid_episodes)
-                    writer.add_scalar("charts/Invalide_episode_rate", invalid_episodes/total_episodes, global_step)
-
                     print(f"global_step={global_step}, episodic_return={infos['episode']['r'][i]}")
                     writer.add_scalar("charts/episodic_return", infos['episode']['r'][i], global_step)
                     writer.add_scalar("charts/episodic_length", infos['episode']['l'][i], global_step)  
