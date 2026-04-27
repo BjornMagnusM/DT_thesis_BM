@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J l40s duckie_td3 
+#SBATCH -J l40s_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 36:00:00
