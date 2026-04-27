@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J duckie_td3
+#SBATCH -J l40s duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 36:00:00
@@ -7,8 +7,7 @@
 #SBATCH -c 4
 #SBATCH -p allgroups
 #SBATCH --mem=16G
-#SBATCH --nodelist=gpu1
-#SBATCH --gres=gpu:a40
+#SBATCH --gres=gpu:l40s
 
 cd $HOME/DT_thesis_BM/dt-sim
 mkdir -p logs
