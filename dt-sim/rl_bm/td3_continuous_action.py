@@ -132,7 +132,7 @@ class QNetwork(nn.Module):
     def __init__(self, env, feature_dim=256):
         super().__init__()
         in_channels = 4 if args.grayscale else 12
-
+    
         #BM switched to the encoder from DrQ-v2
         self.encoder = DrQEncoderV2(
             obs_shape=env.single_observation_space.shape,
@@ -155,10 +155,10 @@ class QNetwork(nn.Module):
 
 
 class Actor(nn.Module):
-    def __init__(self, env, feature_dim=256 , grayscale=True):
+    def __init__(self, env, feature_dim=256 , grayscale=False):
         super().__init__()
         in_channels = 4 if grayscale else 12
-
+        print(env.single_observation_space.shape)
         #BM switched to the encoder from DrQ-v2
         self.encoder = DrQEncoderV2(
             obs_shape=env.single_observation_space.shape,
@@ -284,10 +284,6 @@ if __name__ == "__main__":
         handle_timeout_termination=False,
     )
     start_time = time.time()
-
-    #BM intilize values 
-    invalid_episodes = 0
-    total_episodes = 0
 
     # TRY NOT TO MODIFY: start the game
     obs, _ = envs.reset(seed=args.seed)

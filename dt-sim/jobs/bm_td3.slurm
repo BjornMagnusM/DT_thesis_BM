@@ -1,12 +1,12 @@
 #!/bin/bash
-#SBATCH -J a40_TD3_BM
+#SBATCH -J RGB_a40_TD3_BM
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
-#SBATCH -t 36:00:00
+#SBATCH -t 76:00:00
 #SBATCH -n 1
 #SBATCH -c 6
 #SBATCH -p allgroups
-#SBATCH --mem=
+#SBATCH --mem=16g
 #SBATCH --gres=gpu:l40s
 
 

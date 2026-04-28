@@ -29,7 +29,7 @@ class DuckieOvalEnv(Simulator):
         self.motor_k = 27.0
 
     @classmethod
-    def create_wrapped(cls, run_name, capture_video=False, motion_blur=False, grayscale=True, frame_stack=4,max_lap_reward=2000 , **kwargs):
+    def create_wrapped(cls, run_name, capture_video=False, motion_blur=False, grayscale=False, frame_stack=4,max_lap_reward=2000 , **kwargs):
         """
         Static method to build the fully wrapped stack.
         """
