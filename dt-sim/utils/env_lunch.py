@@ -3,7 +3,7 @@ import gymnasium as gym
 import numpy as np
 # Duckietown Specific
 from gym_duckietown.simulator import Simulator
-from utils.wrappers import ImgWrapper, ActionWrapper, CropResizeWrapper, CustomRewardWrapper, TemporalWrapper, DtRewardWrapper, KinematicActionWrapper, ResizeWrapper,LapTerminationWrapper,TimeOptimalReward
+from utils.wrappers import ImgWrapper, ActionWrapper, CropResizeWrapper, CustomRewardWrapper, TemporalWrapper,DtRewardWrapper, KinematicActionWrapper, ResizeWrapper,LapTerminationWrapper,TimeOptimalReward,LapTerminationWrapperV2
 
 class EnvLunch:
     def __init__(self, 
@@ -41,7 +41,7 @@ class EnvLunch:
         env = KinematicActionWrapper(env)
 
         ##BM added a termination criteria after finishing a lap 
-        env = LapTerminationWrapper(env)
+        env = LapTerminationWrapperV2(env)
 
         if motion_blur:
             print("motion blur applied")

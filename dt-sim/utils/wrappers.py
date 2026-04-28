@@ -308,7 +308,49 @@ class LapTerminationWrapper(gym.Wrapper):
         return obs, reward, done, truncated, info
 
 
+#BM wrapper 
+class LapTerminationWrapperV2(gym.Wrapper):
+    def __init__(self, env):
+        super().__init__(env)
+        self.start_tile = None 
+        self.finish_tile = None
+        self.visited_tiles = set()
 
+
+    def reset(self, **kwargs):
+        obs, info = self.env.reset(**kwargs)
+        sim = self.env.unwrapped
+
+        self.start_tile = None
+        self.finish_tile = None
+        self.visited_tiles = set()
+
+        return obs, info
+
+
+    def step(self, action): 
+        obs, reward, done, truncated, info = self.env.step(action)
+
+        sim = self.env.unwrapped 
+        current_tile = sim.get_grid_coords(sim.cur_pos)
+
+        #Define the starting tile once
+        if self.start_tile is None: 
+            self.start_tile = current_tile
+        
+        #Define the finishing tile as the 2nd tile so the agent will atleast do one full lap 
+        if self.finish_tile is None and current_tile != self.start_tile: 
+            self.finish_tile = current_tile  
+            
+        #Add current tile of tile is not in the set 
+        self.visited_tiles.add(current_tile)
+        
+         #Mark the episode as done if the agent have completed a whole lap  
+        if len(self.visited_tiles) == 12 and current_tile == self.finish_tile: 
+            done = True
+            print("completed a lap")
+
+        return obs, reward, done, truncated, info
 
 
 

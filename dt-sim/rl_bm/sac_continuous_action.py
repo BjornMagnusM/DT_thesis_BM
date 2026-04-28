@@ -99,7 +99,7 @@ def save_model(actor, qf1, qf2, step, run_name, suffix=""):
         os.makedirs(model_dir)
 
     label = suffix if suffix else "latest"
-    model_path = f"{model_dir}/sac_step_{label}.cleanrl_model"
+    model_path = f"{model_dir}/sac_step_{label}.cleanrl_model"http://localhost:6006/
 
     torch.save({
         'actor_state_dict': actor.state_dict(),
