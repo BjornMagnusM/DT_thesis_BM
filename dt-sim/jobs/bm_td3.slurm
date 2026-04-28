@@ -7,8 +7,7 @@
 #SBATCH -c 6
 #SBATCH -p allgroups
 #SBATCH --mem=
-#SBATCH --nodelist=gpu1
-#SBATCH --gres=gpu:a40
+#SBATCH --gres=gpu:l40s
 
 
 cd $HOME/DT_thesis_BM/dt-sim
@@ -52,5 +51,5 @@ srun singularity exec --nv \
             --buffer-size 10000 \
             --batch-size 256 \
             --learning-starts 50000 \
-            --run-notes 'TD3 without reward rapper so we have -1000 for invalid pose'
+            --run-notes 'TD3 without reward rapper so we have -1000 for invalid pose, new lap termination with reward'
     "

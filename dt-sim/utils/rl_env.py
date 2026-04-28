@@ -61,9 +61,6 @@ class DuckieOvalEnv(Simulator):
             env = gym.wrappers.GrayscaleObservation(env, keep_dim=True)
         
         env = ImgWrapper(env) # Transpose to CHW
-
-        # 4. Action Constraints & Logic
-        #env = ActionWrapper(env)
         
         # 5. Reward System
         #env = DtRewardWrapper(env)
