@@ -1,0 +1,24 @@
+<launch>
+    <arg name="veh" default="pontiac" doc="Name of vehicle. ex: megaman"/>
+    <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+
+    <arg name="pkg_name" value="rl_model"/>
+    <arg name="node_name" default="agent_nodeTD3"/>
+
+
+    <arg name="model_name" default="TD31MnoDis" />
+
+    <arg name="model_path"
+        default="/code/catkin_ws/src/dt-template-ros-bjorn/packages/rl_model/models/$(arg model_name)/models/td3_Final.cleanrl_model"/>
+
+    <group ns="$(arg veh)">
+        <node name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen" required="true">
+        <param name="model_path" value="$(arg model_path)"/>
+        </node>
+
+    </group>
+
+    <!-- Publications -->
+
+    <!-- Subscriptions -->
+</launch>

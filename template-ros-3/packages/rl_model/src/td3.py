@@ -39,6 +39,8 @@ class ImgWrapperROS:
         pass
 
     def observation(self, observation):
+        if observation.ndim == 2:
+            observation = observation[:, :, None]
         return observation.transpose(2, 0, 1)
 
 
@@ -136,18 +138,21 @@ LOG_STD_MIN = -5
 
 
 class Actor(nn.Module):
-    def __init__(self, obs_shape,action_dim):
+    def __init__(self, obs_shape , action_dim, grayscale=True):
         super().__init__()
+        in_channels = 4 if grayscale else 12
 
         #BM switched to the encoder from DrQ-v2
         self.encoder = DrQEncoderV2(
             obs_shape=obs_shape,
             feature_dim=256
         )
-        
 
-        self.fc_mean = nn.Linear(256, action_dim)
-        self.fc_logstd = nn.Linear(256, action_dim)
+        #self.fc1 = nn.Linear(np.array(env.single_observation_space.shape).prod(), 256)
+        #self.fc2 = nn.Linear(256, 256)
+        
+        self.fc_mu = nn.Linear(256, action_dim)
+        # action rescaling
         # action rescaling BM: changed for a manual scaling 
         self.register_buffer(
             "action_scale",
@@ -159,48 +164,13 @@ class Actor(nn.Module):
             torch.tensor([0.0, 0.0], dtype=torch.float32)
         )
 
+
     def forward(self, x):
-        #x = F.relu(self.fc1(x))
-        #x = F.relu(self.fc2(x))
-        x = self.encoder(x)
-        mean = self.fc_mean(x)
-        log_std = self.fc_logstd(x)
-        log_std = torch.tanh(log_std)
-        log_std = LOG_STD_MIN + 0.5 * (LOG_STD_MAX - LOG_STD_MIN) * (log_std + 1)  # From SpinUp / Denis Yarats
-
-        return mean, log_std
-
-    def get_action(self, x):
-        mean, log_std = self(x)
-        std = log_std.exp()
-        normal = torch.distributions.Normal(mean, std)
-
-        x_t = normal.rsample()  # for reparameterization trick (mean + std * N(0,1))
-        v_t = torch.sigmoid(x_t[:,0:1])
-        omega_t = torch.tanh(x_t[:,1:2])
-        y_t = torch.cat([v_t, omega_t], dim=-1)
-
-        #y_t = torch.tanh(x_t)
-        action = y_t * self.action_scale + self.action_bias
-
-        # --- LOG PROB CORRECTION (Jacobian) ---
-        log_prob = normal.log_prob(x_t)
-
-        # Sigmoid correction: log(d/dx sigmoid) = log(sigmoid * (1 - sigmoid))
-        log_prob[:, 0:1] -= torch.log(v_t * (1.0 - v_t) + 1e-6)
-        
-        # Tanh correction: log(d/dx tanh) = log(1 - tanh^2)
-        log_prob[:, 1:2] -= torch.log(1.0 - omega_t.pow(2) + 1e-6)
-        
-        log_prob = log_prob.sum(1, keepdim=True)
-        
-        # Mean for evaluation (Deterministic mode)
-        mean_v = torch.sigmoid(mean[:, 0:1])
-        mean_omega = torch.tanh(mean[:, 1:2])
-        mean_action = torch.cat([mean_v, mean_omega], dim=-1) * self.action_scale + self.action_bias
-
-        # Enforcing Action Bound
-        #log_prob -= torch.log(self.action_scale * (1 - y_t.pow(2)) + 1e-6)
-        #log_prob = log_prob.sum(1, keepdim=True)
-        #mean = torch.tanh(mean) * self.action_scale + self.action_bias
-        return action, log_prob, mean_action
+        visual_features = self.encoder(x)
+        mu = self.fc_mu(visual_features)
+        v_raw = mu[:, 0:1]
+        omega_raw = mu[:, 1:2]
+        v = torch.tanh(v_raw).clamp(min=0.1)
+        omega = torch.tanh(omega_raw)
+        x = torch.cat([v, omega], dim=-1)
+        return x * self.action_scale + self.action_bias

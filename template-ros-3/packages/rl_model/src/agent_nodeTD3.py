@@ -20,11 +20,11 @@ from duckietown_msgs.msg import (
 )
 
 # Helper file with encoder and agent 
-from sac import Actor, CropResizeWrapperROS, ImgWrapperROS,FrameStackObservationROS
+from td3 import Actor, CropResizeWrapperROS, ImgWrapperROS,FrameStackObservationROS
 
-class AgentNode(DTROS):
+class AgentNodeTD3(DTROS):
     def __init__(self, node_name):
-        super(AgentNode, self).__init__(
+        super(AgentNodeTD3, self).__init__(
             node_name=node_name,
             node_type=NodeType.CONTROL
         )
@@ -47,6 +47,7 @@ class AgentNode(DTROS):
 
         self.actor.load_state_dict(checkpoint['actor_state_dict'])
         self.actor.eval()
+
 
 
         self.CropResizeWrapperROS = CropResizeWrapperROS(shape=(84, 84))
@@ -80,11 +81,11 @@ class AgentNode(DTROS):
 
         # Decode from compressed image with OpenCV
         obtained_image = self.bridge.compressed_imgmsg_to_cv2(image_msg)
-    
+
         # Convert image to grayscale if the model was trained in grayscale 
         if self.first_layer.shape[1] == 4: 
             obtained_image = cv2.cvtColor(obtained_image, cv2.COLOR_BGR2GRAY)
-
+    
         #Resize image to same dim as sim 
         obtained_image =  self.CropResizeWrapperROS.observation(obtained_image)
 
@@ -110,7 +111,7 @@ class AgentNode(DTROS):
 
         with torch.no_grad():
             # Use mean_action for deterministic evaluation
-            _, _, action = self.actor.get_action(self.latest_obs)
+            action = self.actor.forward(self.latest_obs)
 
         action = action.cpu().numpy().reshape(-1)
 
@@ -123,7 +124,7 @@ class AgentNode(DTROS):
         rospy.loginfo(f"Published car_cmd: v={car_control_msg.v}, omega={car_control_msg.omega}")
 
     def onShutdown(self):
-        rospy.loginfo("[AgentNode] Shutdown. Stopping robot...")
+        rospy.loginfo("[AgentNodeTD3] Shutdown. Stopping robot...")
     
         ## added for stopping the robot 
         stop_msg = Twist2DStamped()
@@ -139,6 +140,6 @@ class AgentNode(DTROS):
 
 
 if __name__ == "__main__":
-    agent_node = AgentNode(node_name="agent_node")
+    agent_node = AgentNodeTD3(node_name="agent_nodeTD3")
     rospy.on_shutdown(agent_node.onShutdown)
     rospy.spin()
