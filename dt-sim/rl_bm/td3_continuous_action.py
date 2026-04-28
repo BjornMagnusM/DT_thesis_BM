@@ -97,15 +97,15 @@ class Args:
     """noise clip parameter of the Target Policy Smoothing Regularization"""
 
     #Duckietown specific arguments
-    domain_rand: bool = False
+    domain_rand: bool = True
     """texture/light randomization"""
-    distortion: bool = False 
+    distortion: bool = True
     """Simulates the fisheye lens"""
-    dynamics_rand: bool = False
+    dynamics_rand: bool = True
     """Simulates motor/trim imbalances"""
-    camera_rand: bool = False 
+    camera_rand: bool = True 
     """Simulates mounting misalignments"""
-    motion_blur: bool = False
+    motion_blur: bool = True
     """Simulates the blur from the moving duckiebot"""
 
 def make_env(seed, idx, run_name, capture_video=False, motion_blur=False, **env_kwargs):
@@ -116,7 +116,6 @@ def make_env(seed, idx, run_name, capture_video=False, motion_blur=False, **env_
             motion_blur=motion_blur,
             render_mode=render_mode,
             seed=seed,
-            color_sky=[0.5, 0.7, 1.0],
             **env_kwargs
         )
         env.action_space.seed(seed)
