@@ -233,12 +233,11 @@ class TimeOptimalReward(gym.RewardWrapper):
         #Speed logic
         speed = sim.speed
         reward_speed = 2.0 * speed 
-
         #Lane logig 
         pos = sim.cur_pos
         angle = sim.cur_angle
         try:
-            lp = sim.get_lane_pos2(pos, angle)
+            lp = get_road_pos2(pos, angle)
             reward_alignment = 2.0 * (lp.dot_dir ** 2) if lp.dot_dir > 0 else 4.0 * lp.dot_dir # tanh like behaviour to add a higher gradint near 1
             reward_angle = -0.1 * np.abs(lp.angle_deg)
             lane_penalty = 0
@@ -247,21 +246,6 @@ class TimeOptimalReward(gym.RewardWrapper):
             reward_angle = 0
             lane_penalty = -10.0
         
-        #Reward for time spent on tile
-        current_tile = sim.get_grid_coords(sim.cur_pos) 
-        tile_reward = 0
-        if self.prev_tile is None:
-            self.prev_tile = current_tile 
-            self.tile_step = 1 
-
-        elif current_tile == self.prev_tile:
-            self.tile_step += 1
-
-        else:
-            tile_reward = 5 * (1/(self.tile_step+1)) #add the +1 so it never divides by 0 
-            self.tile_step = 1
-       
-
         #Jerk Logic 
         current_action = sim.last_action
         action_diff = np.linalg.norm(current_action - self.prev_action)
@@ -394,3 +378,53 @@ class KinematicActionWrapper(gym.ActionWrapper):
         u_l_limited = np.clip(u_l, -self.limit, self.limit)
 
         return np.array([u_l_limited, u_r_limited], dtype=np.float32)
+
+
+def get_road_pos2(self, pos, angle):
+    """
+    Get the position of the agent relative to the center of the right lane
+
+    Raises NotInLane if the Duckiebot is not in a lane.
+    """
+
+    # Get the closest point along the right lane's Bezier curve,
+    # and the tangent at that point
+    point, tangent = self.closest_curve_point(pos, angle)
+    if point is None or tangent is None:
+        msg = f"Point not in lane: {pos}"
+        raise NotInLane(msg)
+
+    assert point is not None and tangent is not None
+
+    # Compute the alignment of the agent direction with the curve tangent
+    dirVec = get_dir_vec(angle)
+    dotDir = np.dot(dirVec, tangent)
+    dotDir = np.clip(dotDir, -1.0, +1.0)
+
+    # Compute the signed distance to the curve
+    # Right of the curve is negative, left is positive
+   
+    upVec = np.array([0, 1, 0])
+    rightVec = np.cross(tangent, upVec)
+    
+    #Recompute the point so its in the middle of the road and not the lane
+    lane_width = 0.23  #Where width is 0.23m 
+    road_center_point = point + rightVec * (lane_width / 2)
+    posVec = pos - road_center_point
+    signedDist = np.dot(posVec, rightVec)
+  
+  
+
+
+    # Compute the signed angle between the direction and curve tangent
+    # Right of the tangent is negative, left is positive
+    angle_rad = math.acos(dotDir)
+
+    if np.dot(dirVec, rightVec) < 0:
+        angle_rad *= -1
+
+    angle_deg = np.rad2deg(angle_rad)
+    # return signedDist, dotDir, angle_deg
+
+ 
+    return LanePosition(dist=signedDist, dot_dir=dotDir, angle_deg=angle_deg, angle_rad=angle_rad)
