@@ -62,7 +62,7 @@ class Args:
     """whether to evaluate the saved model at the end of training"""
     run_notes: str = ""
     """for wandb tracking notes"""
-    save_model: bool = True
+    save_model: bool = False
     """whether to save model into the `runs/{run_name}` folder"""
     grayscale: bool = False
     """whether to convert the observation to grayscale"""
@@ -116,6 +116,7 @@ def make_env(seed, idx, run_name, capture_video=False, motion_blur=False, max_la
         env = DuckieOvalEnv.create_wrapped(
             run_name=run_name,
             motion_blur=motion_blur,
+            grayscale = args.grayscale,
             render_mode=render_mode,
             seed=seed,
             max_lap_reward=max_lap_reward,
@@ -307,6 +308,7 @@ if __name__ == "__main__":
                 if "_episode" in infos and infos["_episode"][i]:
                     print(f"global_step={global_step}, episodic_return={infos['episode']['r'][i]}")
                     writer.add_scalar("charts/episodic_return", infos['episode']['r'][i], global_step)
+                    print( infos['episode']['l'][i])
                     writer.add_scalar("charts/episodic_length", infos['episode']['l'][i], global_step)  
 
         # TRY NOT TO MODIFY: save data to reply buffer; handle `final_observation`

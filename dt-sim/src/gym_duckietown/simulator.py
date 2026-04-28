@@ -1711,6 +1711,7 @@ class Simulator(gym.Env):
             reward = REWARD_INVALID_POSE
             done_code = "invalid-pose"
             done = True
+            print("ended because invalid pose")
         # If the maximum time step count is reached
         elif self.step_count >= self.max_steps:
             msg = "Stopping the simulator because we reached max_steps = %s" % self.max_steps
@@ -1718,6 +1719,7 @@ class Simulator(gym.Env):
             done = True
             reward = 0
             done_code = "max-steps-reached"
+            print("ended because max step")
         else:
             done = False
             reward = self.compute_reward(self.cur_pos, self.cur_angle, self.robot_speed, action)
