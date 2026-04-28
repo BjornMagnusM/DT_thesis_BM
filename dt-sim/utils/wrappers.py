@@ -223,8 +223,6 @@ class TimeOptimalReward(gym.RewardWrapper):
     def __init__(self, env):
         super().__init__(env)
         self.prev_action = np.zeros(2)
-        self.tile_step = 0
-        self.prev_tile = None
     
     def reward (self, reward):
         # Get internal simulator state for custom math
@@ -252,9 +250,8 @@ class TimeOptimalReward(gym.RewardWrapper):
         reward_jerk = -0.5 * action_diff  # Start with -0.5 and tune if needed
 
         self.prev_action = current_action.copy()
-        self.prev_tile = current_tile
         
-        return reward_speed + reward_jerk + tile_reward + reward_alignment + reward_angle + lane_penalty
+        return reward_speed + reward_jerk + reward_alignment + reward_angle + lane_penalty
 
 
 #BM wrapper 
