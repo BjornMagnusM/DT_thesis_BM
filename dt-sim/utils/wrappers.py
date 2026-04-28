@@ -310,11 +310,13 @@ class LapTerminationWrapper(gym.Wrapper):
 
 #BM wrapper 
 class LapTerminationWrapperV2(gym.Wrapper):
-    def __init__(self, env):
+    def __init__(self, env, max_lap_reward):
         super().__init__(env)
         self.start_tile = None 
         self.finish_tile = None
         self.visited_tiles = set()
+        self.step_counter = 0
+        self.max_lap_reward = max_lap_reward
 
 
     def reset(self, **kwargs):
@@ -324,12 +326,14 @@ class LapTerminationWrapperV2(gym.Wrapper):
         self.start_tile = None
         self.finish_tile = None
         self.visited_tiles = set()
+        self.step_counter = 0
 
         return obs, info
 
 
     def step(self, action): 
-        obs, reward, done, truncated, info = self.env.step(action)
+        obs, reward, done, truncated, misc = self.env.step(action)
+        self.step_counter += 1
 
         sim = self.env.unwrapped 
         current_tile = sim.get_grid_coords(sim.cur_pos)
@@ -348,9 +352,13 @@ class LapTerminationWrapperV2(gym.Wrapper):
          #Mark the episode as done if the agent have completed a whole lap  
         if len(self.visited_tiles) == 12 and current_tile == self.finish_tile: 
             done = True
+            lap_reward = max(self.max_lap_reward-self.step_counter,0.0)
+            print(self.step_counter)
+            reward += lap_reward
             print("completed a lap")
+        
 
-        return obs, reward, done, truncated, info
+        return obs, reward, done, truncated, misc
 
 
 

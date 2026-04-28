@@ -41,7 +41,7 @@ class EnvLunch:
         env = KinematicActionWrapper(env)
 
         ##BM added a termination criteria after finishing a lap 
-        env = LapTerminationWrapperV2(env)
+        env = LapTerminationWrapperV2(env,2000)
 
         if motion_blur:
             print("motion blur applied")

@@ -95,6 +95,8 @@ class Args:
     """the frequency of training policy (delayed)"""
     noise_clip: float = 0.5
     """noise clip parameter of the Target Policy Smoothing Regularization"""
+    max_lap_reward: int = 2000
+    """Max reward when completed a map, this get subtracted by the steps taken """
 
     #Duckietown specific arguments
     domain_rand: bool = True
@@ -108,7 +110,7 @@ class Args:
     motion_blur: bool = True
     """Simulates the blur from the moving duckiebot"""
 
-def make_env(seed, idx, run_name, capture_video=False, motion_blur=False, **env_kwargs):
+def make_env(seed, idx, run_name, capture_video=False, motion_blur=False, max_lap_reward=2000, **env_kwargs):
     def thunk():
         render_mode = "rgb_array" if (capture_video and idx == 0) else None
         env = DuckieOvalEnv.create_wrapped(
@@ -116,6 +118,7 @@ def make_env(seed, idx, run_name, capture_video=False, motion_blur=False, **env_
             motion_blur=motion_blur,
             render_mode=render_mode,
             seed=seed,
+            max_lap_reward=max_lap_reward,
             **env_kwargs
         )
         env.action_space.seed(seed)
@@ -252,7 +255,7 @@ if __name__ == "__main__":
     }
     
     envs = gym.vector.SyncVectorEnv(
-        [make_env(args.seed + i, i, run_name, args.capture_video, args.motion_blur) for i in range(args.num_envs)]
+        [make_env(args.seed + i, i, run_name, args.capture_video, args.motion_blur, args.max_lap_reward) for i in range(args.num_envs)]
     )
     assert isinstance(envs.single_action_space, gym.spaces.Box), "only continuous action space is supported"
 

@@ -5,7 +5,7 @@ from gym_duckietown.simulator import Simulator
 from utils.wrappers import (
     KinematicActionWrapper, ActionWrapper, ResizeWrapper, 
     CropResizeWrapper, ImgWrapper, CustomRewardWrapper, DtRewardWrapper,
-    TemporalWrapper,LapTerminationWrapper
+    TemporalWrapper,LapTerminationWrapper,LapTerminationWrapperV2
 )
 
 class DuckieOvalEnv(Simulator):
@@ -29,7 +29,7 @@ class DuckieOvalEnv(Simulator):
         self.motor_k = 27.0
 
     @classmethod
-    def create_wrapped(cls, run_name, capture_video=False, motion_blur=False, grayscale=True, frame_stack=4, **kwargs):
+    def create_wrapped(cls, run_name, capture_video=False, motion_blur=False, grayscale=True, frame_stack=4,max_lap_reward=2000 , **kwargs):
         """
         Static method to build the fully wrapped stack.
         """
@@ -45,7 +45,7 @@ class DuckieOvalEnv(Simulator):
 
 
         ##BM added a termination criteria after finishing a lap 
-        env = LapTerminationWrapper(env)
+        env = LapTerminationWrapperV2(env,max_lap_reward=max_lap_reward)
 
 
         if capture_video:
