@@ -1,13 +1,14 @@
 #!/bin/bash
-#SBATCH -J l40s_duckie_td3 
+#SBATCH -J a40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 36:00:00
 #SBATCH -n 1
 #SBATCH -c 4
 #SBATCH -p allgroups
-#SBATCH --mem=16G
-#SBATCH --gres=gpu:l40s
+#SBATCH --mem=
+#SBATCH --nodelist=gpu1
+#SBATCH --gres=gpu:a40
 
 cd $HOME/DT_thesis_BM/dt-sim
 mkdir -p logs
@@ -57,5 +58,5 @@ srun singularity exec --nv \
             --total-timesteps 1000000 \
             --buffer-size 5000 \
             --learning-starts 5000 \
-            --run-notes 'TD3 GPU training + CPU rendering'
+            --run-notes 'Removed relu from actor already in encoder'
     "

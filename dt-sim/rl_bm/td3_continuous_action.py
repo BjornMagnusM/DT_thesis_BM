@@ -186,7 +186,7 @@ class Actor(nn.Module):
         )
 
     def forward(self, x):
-        visual_features = F.relu(self.encoder(x))
+        visual_features = self.encoder(x)
         mu = self.fc_mu(visual_features)
         v_raw = mu[:, 0:1]
         omega_raw = mu[:, 1:2]
