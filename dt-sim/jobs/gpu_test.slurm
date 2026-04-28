@@ -6,7 +6,7 @@
 #SBATCH -n 1
 #SBATCH -c 4
 #SBATCH -p allgroups
-#SBATCH --mem=
+#SBATCH --mem=16g
 #SBATCH --nodelist=gpu1
 #SBATCH --gres=gpu:a40
 
