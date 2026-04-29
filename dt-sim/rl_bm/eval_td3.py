@@ -22,8 +22,6 @@ def parse_args():
                         help="Capture video of the evaluation episodes")
     parser.add_argument("--max-steps", type=int, default=1500,
                         help="Maximum number of steps for each episode" )
-    parser.add_argument("--grayscale", type=bool, default=False,
-                        help="Maximum number of steps for each episode" )
     parser.add_argument("--local", type=bool, default=False,
                         help="Whether the model path is the wandb artifact or local")
     return parser.parse_args()
@@ -44,8 +42,14 @@ def evaluate():
     print(f"Loading model from {model_path}")
     checkpoint = torch.load(model_path, map_location=device)
 
+    #Check for rgb or grayscale
+    state_dict = checkpoint['actor_state_dict']
+    first_layer = state_dict['encoder.convnet.0.weight']
+    grayscale = True if first_layer.shape[1] == 4 else False
+
+
     env_id = args.env_id or checkpoint.get("env_id", "oval_loop")
-    grayscale = args.grayscale if args.grayscale is not None else checkpoint.get("grayscale", True)
+    
 
     # Handle randomization toggles (env_params)
     if "env_params" in checkpoint:
@@ -67,7 +71,7 @@ def evaluate():
     env_luncher = EnvLunch(
         run_name="eval",
         max_steps=4000,
-        grayscale=args.grayscale,
+        grayscale=grayscale,
         **sim_params
     )
     env_func = env_luncher.make_env_fn(
@@ -100,7 +104,7 @@ def evaluate():
             self.single_action_space = env.action_space
     
     dummy = DummyEnv(env)
-    actor = Actor(dummy, grayscale=args.grayscale).to(device)
+    actor = Actor(dummy, grayscale=grayscale).to(device)
 
     actor.load_state_dict(checkpoint['actor_state_dict'])
     actor.eval()
