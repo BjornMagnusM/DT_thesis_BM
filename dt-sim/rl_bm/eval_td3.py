@@ -22,7 +22,7 @@ def parse_args():
                         help="Capture video of the evaluation episodes")
     parser.add_argument("--max-steps", type=int, default=1500,
                         help="Maximum number of steps for each episode" )
-    parser.add_argument("--grayscale", type=bool, default=True,
+    parser.add_argument("--grayscale", type=bool, default=False,
                         help="Maximum number of steps for each episode" )
     parser.add_argument("--local", type=bool, default=False,
                         help="Whether the model path is the wandb artifact or local")
