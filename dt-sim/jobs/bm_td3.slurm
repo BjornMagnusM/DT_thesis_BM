@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J RGB_a40_TD3_BM
+#SBATCH -J a40_TD3_BM
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -7,7 +7,8 @@
 #SBATCH -c 6
 #SBATCH -p allgroups
 #SBATCH --mem=16g
-#SBATCH --gres=gpu:l40s
+#SBATCH --nodelist=gpu1
+#SBATCH --gres=gpu:a40
 
 
 cd $HOME/DT_thesis_BM/dt-sim

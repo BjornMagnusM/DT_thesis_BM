@@ -250,7 +250,6 @@ class TimeOptimalReward(gym.RewardWrapper):
         reward_jerk = -0.5 * action_diff  # Start with -0.5 and tune if needed
 
         self.prev_action = current_action.copy()
-        
         return reward_speed + reward_jerk + reward_alignment + reward_angle + lane_penalty
 
 
@@ -410,9 +409,6 @@ def get_road_pos2(self, pos, angle):
     posVec = pos - road_center_point
     signedDist = np.dot(posVec, rightVec)
   
-  
-
-
     # Compute the signed angle between the direction and curve tangent
     # Right of the tangent is negative, left is positive
     angle_rad = math.acos(dotDir)
