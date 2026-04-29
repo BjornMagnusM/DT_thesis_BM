@@ -2,7 +2,7 @@
 #SBATCH -J Mid_l40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
-#SBATCH -t 36:00:00
+#SBATCH -t 76:00:00
 #SBATCH -n 1
 #SBATCH -c 4
 #SBATCH -p allgroups
