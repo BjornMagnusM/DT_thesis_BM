@@ -408,7 +408,7 @@ def get_road_pos2(self, pos, angle):
     rightVec = np.cross(tangent, upVec)
     
     #Recompute the point so its in the middle of the road and not the lane
-    lane_width = 0.23  #Where width is 0.23m 
+    lane_width = 0.115  #Where width is 0.23m 
     road_center_point = point + rightVec * (lane_width / 2)
     posVec = pos - road_center_point
     signedDist = np.dot(posVec, rightVec)
