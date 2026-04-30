@@ -45,7 +45,7 @@ class DuckieOvalEnv(Simulator):
 
 
         ##BM added a termination criteria after finishing a lap 
-        env = LapTerminationWrapperV2(env,max_lap_reward=max_lap_reward)
+        #env = LapTerminationWrapperV2(env,max_lap_reward=max_lap_reward)
 
 
         if capture_video:
@@ -63,7 +63,7 @@ class DuckieOvalEnv(Simulator):
         env = ImgWrapper(env) # Transpose to CHW
         
         # 5. Reward System
-        env = TimeOptimalReward(env)
+        #env = TimeOptimalReward(env)
 
         # 6. Temporal Stacking
         if frame_stack > 1:

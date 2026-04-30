@@ -56,7 +56,7 @@ def save_models(actor, qf1, qf2, step, run_name, args, env_params, suffix=""):
     
     print(f"Saved: {model_path} | Metadata: {args.env_id}, Grayscale={args.grayscale}")
 
-def evaluate_policy(actor, args, device, algo_name, run_name = "run_name", num_episodes=10, **env_params):
+def evaluate_policy(actor, args, device, algo_name, run_name = "run_name",grayscale=False, num_episodes=10, **env_params):
     print(f"\n--- Starting Final Evaluation: {num_episodes} Episodes ---")
     actor.eval()
 
@@ -66,7 +66,7 @@ def evaluate_policy(actor, args, device, algo_name, run_name = "run_name", num_e
     eval_env = DuckieOvalEnv.create_wrapped(
         run_name=custom_run_name,
         motion_blur=args.motion_blur, 
-        grayscale=True,
+        grayscale=grayscale,
         frame_stack=4,
         capture_video = True,
         render_mode = "rgb_array",

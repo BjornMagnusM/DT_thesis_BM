@@ -42,9 +42,9 @@ class TemporalWrapper(gym.Wrapper):
                     weights=current_weights
                 ).astype(np.uint8)
 
-
         d_info = self.unwrapped._compute_done_reward(processed_action)
         self.unwrapped.step_count += 1
+
 
         return processed_obs, d_info.reward, d_info.done, False, self.unwrapped.get_agent_info()
 
@@ -224,6 +224,10 @@ class TimeOptimalReward(gym.RewardWrapper):
         super().__init__(env)
         self.prev_action = np.zeros(2)
     
+    def reset(self, **kwargs):
+        self.prev_action = np.zeros(2)
+        return self.env.reset(**kwargs)
+
     def reward (self, reward):
         # Get internal simulator state for custom math
         sim = self.env.unwrapped

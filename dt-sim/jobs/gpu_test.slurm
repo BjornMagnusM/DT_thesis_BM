@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J RGB_l40_duckie_td3 
+#SBATCH -J S_RGB_l40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -57,5 +57,5 @@ srun singularity exec --nv \
             --total-timesteps 1000000 \
             --buffer-size 5000 \
             --learning-starts 5000 \
-            --run-notes 'Removed relu from actor already in encoder now with proper RGB'
+            --run-notes 'Standard RGB'
     "
