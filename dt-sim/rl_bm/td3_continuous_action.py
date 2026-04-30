@@ -392,7 +392,7 @@ if __name__ == "__main__":
             args=args,
             device=device,
             algo_name="TD3_lap",
-            grayscale = args.grayscale
+            grayscale = args.grayscale,
             num_episodes=10,
             run_name=run_name,
             **env_params
