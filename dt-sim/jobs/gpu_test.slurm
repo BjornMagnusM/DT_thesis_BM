@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J S_RGB_l40_duckie_td3 
+#SBATCH -J L_RGB_a40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -7,7 +7,8 @@
 #SBATCH -c 4
 #SBATCH -p allgroups
 #SBATCH --mem=16g
-#SBATCH --gres=gpu:l40s
+#SBATCH --nodelist=gpu1
+#SBATCH --gres=gpu:a40
 
 cd $HOME/DT_thesis_BM/dt-sim
 mkdir -p logs
@@ -56,6 +57,6 @@ srun singularity exec --nv \
             --env-id oval_loop \
             --total-timesteps 1000000 \
             --buffer-size 5000 \
-            --learning-starts 5000 \
-            --run-notes 'Standard RGB'
+            --learning-starts 50000 \
+            --run-notes 'Lap termination RGB'
     "
