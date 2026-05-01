@@ -58,5 +58,5 @@ srun singularity exec --nv \
             --total-timesteps 1000000 \
             --buffer-size 5000 \
             --learning-starts 10000 \
-            --run-notes 'MIdlane wiht lap RGB'
+            --run-notes 'MIdlane wiht termiantion and max 20 of start angle RGB'
     "

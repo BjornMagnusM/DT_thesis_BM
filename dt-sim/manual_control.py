@@ -15,7 +15,7 @@ import pyglet
 from pyglet.window import key
 
 from src.gym_duckietown.envs import DuckietownEnv
-from utils.wrappers import CropResizeWrapper,TimeOptimalReward
+from utils.wrappers import CropResizeWrapper,TimeOptimalReward,LapTerminationWrapperV2
 
 # from experiments.utils import save_img
 
@@ -29,7 +29,7 @@ parser.add_argument("--draw-bbox", action="store_true", help="draw collision det
 parser.add_argument("--domain-rand", action="store_true", help="enable domain randomization")
 parser.add_argument("--dynamics_rand", action="store_true", help="enable dynamics randomization")
 parser.add_argument("--frame-skip", default=1, type=int, help="number of frames to skip")
-parser.add_argument("--seed", default=1, type=int, help="seed")
+parser.add_argument("--seed", default=None, type=int, help="seed")
 args = parser.parse_args()
 
 
@@ -46,11 +46,13 @@ if args.env_name and args.env_name.find("Duckietown") != -1:
         dynamics_rand=args.dynamics_rand,
         camera_width=160,
         camera_height=120,
+        accept_start_angle_deg=20
     )
     env = CropResizeWrapper(env, shape=(84, 84))
 else:
     env = gym.make(args.env_name)
 
+env = LapTerminationWrapperV2(env,2000)
 env = TimeOptimalReward(env)
 render_modes = ["human", "top_down", "free_cam", "rgb_array"]
 view = render_modes[0]
