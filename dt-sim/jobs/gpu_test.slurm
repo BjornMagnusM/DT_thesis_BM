@@ -55,8 +55,8 @@ srun singularity exec --nv \
         python3 rl_bm/td3_continuous_action.py \
             --seed 123 \
             --env-id oval_loop \
-            --total-timesteps 100000 \
+            --total-timesteps 1000000 \
             --buffer-size 5000 \
             --learning-starts 10000 \
-            --run-notes 'Original RGB'
+            --run-notes 'Original full step RGB'
     "
