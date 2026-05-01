@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J O_RGB_l40_duckie_td3 
+#SBATCH -J TM_RGB_l40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -58,5 +58,5 @@ srun singularity exec --nv \
             --total-timesteps 1000000 \
             --buffer-size 5000 \
             --learning-starts 10000 \
-            --run-notes 'Original full step RGB'
+            --run-notes 'MIdlane wiht lap RGB'
     "

@@ -45,7 +45,7 @@ class DuckieOvalEnv(Simulator):
 
 
         ##BM added a termination criteria after finishing a lap 
-        #env = LapTerminationWrapperV2(env,max_lap_reward=max_lap_reward)
+        env = LapTerminationWrapperV2(env,max_lap_reward=max_lap_reward)
 
 
         if capture_video:
