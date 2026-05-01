@@ -28,7 +28,7 @@ class EnvLunch:
             max_steps=self.max_steps,
             camera_width=640,
             camera_height=480,
-            accept_start_angle_deg=4,
+            accept_start_angle_deg=2,
             full_transparency=True,
             render_mode=render_mode,
             frame_skip=3,

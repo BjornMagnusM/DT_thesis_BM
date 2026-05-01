@@ -21,7 +21,7 @@ from utils.wrappers import CropResizeWrapper,TimeOptimalReward,LapTerminationWra
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--env-name", default= "Duckietown")
-parser.add_argument("--map-name", default="oval_loop")
+parser.add_argument("--map-name", default="oval_loop_backround")
 parser.add_argument("--distortion", default=False, action="store_true")
 parser.add_argument("--camera_rand", default=False, action="store_true")
 parser.add_argument("--draw-curve", action="store_true", help="draw the lane following curve")
@@ -55,7 +55,7 @@ else:
 env = LapTerminationWrapperV2(env,2000)
 env = TimeOptimalReward(env)
 render_modes = ["human", "top_down", "free_cam", "rgb_array"]
-view = render_modes[0]
+view = render_modes[1]
 
 env.reset(seed=args.seed)
 
@@ -134,7 +134,6 @@ def update(dt):
 
     obs, reward, done, truncated, info = env.step(action)
     print("step_count = %s, reward=%.3f" % (env.unwrapped.step_count, reward))
-    print(f"Observation shape: {obs.shape}")
 
     if key_handler[key.RETURN]:
 

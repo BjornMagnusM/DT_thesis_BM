@@ -1,0 +1,50 @@
+# 5x3 tiles with left turns at the corners going in a counter-clockwise loop
+tiles:
+- [floor, floor        , floor     , floor     , floor     , floor       , floor]
+- [floor, curve_left/W , straight/W, straight/W, straight/W, curve_left/N, floor]
+- [floor, straight/S   ,   floor,    floor,    floor, straight/N         , floor]
+- [floor, curve_left/S , straight/E, straight/E, straight/E, curve_left/E, floor]
+- [floor, floor        , floor     , floor     , floor     , floor       , floor]
+
+
+
+objects: 
+- kind: house
+  pos: [7, 3, 0]
+  rotate: 0
+  scale: 0.1
+
+- kind: house
+  pos: [3, 6, 0]
+  rotate: 90
+  scale: 0.1
+
+
+- kind: tree
+  pos: [5, 6, 0]
+  rotate: 0
+  scale: 0.3
+
+
+
+- kind: duckie
+  pos: [1.5, 0, 3.5]
+  rotate: 90
+  scale: 0.2 
+
+
+- kind: duckie
+  pos: [0, 6, 0]
+  rotate: 0
+  scale: 0.2 
+
+
+
+- kind: barrier
+  pos: [0, 3, 0]
+  rotate: 90
+  scale: 0.1
+
+
+
+tile_size: 0.585
