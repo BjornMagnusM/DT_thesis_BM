@@ -1673,7 +1673,6 @@ class Simulator(gym.Env):
             lp = self.get_lane_pos2(pos, angle)
         except NotInLane:
             return -10.0  
-        
         reward_speed = 2.0 * speed
         reward_alignment = 2.0 * (lp.dot_dir ** 2) if lp.dot_dir > 0 else 4.0 * lp.dot_dir # tanh like behaviour to add a higher gradint near 1
         reward_distance = -10.0 * np.abs(lp.dist)

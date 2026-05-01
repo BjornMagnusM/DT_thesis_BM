@@ -6,6 +6,10 @@ from PIL import Image
 from gym_duckietown.simulator import Simulator
 from gym_duckietown.simulator import get_dir_vec
 
+from gym_duckietown.exceptions import InvalidMapException, NotInLane
+from typing import Tuple, Optional
+import math
+from collections import namedtuple
 
 class TemporalWrapper(gym.Wrapper):
     def __init__(self, env=None, frame_skip=3, motion_blur=True):
@@ -166,7 +170,7 @@ class CustomRewardWrapper(gym.RewardWrapper):
         
         try:
             lp = sim.get_lane_pos2(pos, angle)
-        except Exception:
+        except NotInLane:
             return -10.0 
             
         # Asymmetric Logic
@@ -232,29 +236,27 @@ class TimeOptimalReward(gym.RewardWrapper):
         # Get internal simulator state for custom math
         sim = self.env.unwrapped
 
-        #Speed logic
         speed = sim.speed
-        reward_speed = 2.0 * speed 
         #Lane logig 
         pos = sim.cur_pos
         angle = sim.cur_angle
-        try:
-            lp = get_road_pos2(pos, angle)
-            reward_alignment = 2.0 * (lp.dot_dir ** 2) if lp.dot_dir > 0 else 4.0 * lp.dot_dir # tanh like behaviour to add a higher gradint near 1
-            reward_angle = -0.1 * np.abs(lp.angle_deg)
-            lane_penalty = 0
-        except Exception:
-            reward_alignment = 0
-            reward_angle = 0
-            lane_penalty = -10.0
-        
-        #Jerk Logic 
         current_action = sim.last_action
+        try:
+            lp = sim.get_lane_pos2( pos, angle)
+        except NotInLane:
+            return -10.0  
+        
+        reward_speed = 4.0 * speed
+        reward_alignment = 2.0 * (lp.dot_dir ** 2) if lp.dot_dir > 0 else 4.0 * lp.dot_dir # tanh like behaviour to add a higher gradint near 1
+        reward_distance = -10.0 * np.abs(lp.dist)
+        reward_angle = -0.1 * np.abs(lp.angle_deg)
+        # Jerk Penalty: Penalize sudden changes in angle
+        # self.last_action stores the [v, omega] from the PREVIOUS step
         action_diff = np.linalg.norm(current_action - self.prev_action)
         reward_jerk = -0.5 * action_diff  # Start with -0.5 and tune if needed
-
         self.prev_action = current_action.copy()
-        return reward_speed + reward_jerk + reward_alignment + reward_angle + lane_penalty
+        reward = reward_speed + reward_alignment + reward_distance + reward_angle + reward_jerk
+        return reward
 
 
 #BM wrapper 
@@ -380,7 +382,7 @@ class KinematicActionWrapper(gym.ActionWrapper):
         return np.array([u_l_limited, u_r_limited], dtype=np.float32)
 
 
-def get_road_pos2(self, pos, angle):
+def get_road_pos2(sim ,pos, angle):
     """
     Get the position of the agent relative to the center of the right lane
 
@@ -389,7 +391,7 @@ def get_road_pos2(self, pos, angle):
 
     # Get the closest point along the right lane's Bezier curve,
     # and the tangent at that point
-    point, tangent = self.closest_curve_point(pos, angle)
+    point, tangent = sim.closest_curve_point(pos, angle)
     if point is None or tangent is None:
         msg = f"Point not in lane: {pos}"
         raise NotInLane(msg)
@@ -408,7 +410,7 @@ def get_road_pos2(self, pos, angle):
     rightVec = np.cross(tangent, upVec)
     
     #Recompute the point so its in the middle of the road and not the lane
-    lane_width = 0.115  #Where width is 0.23m 
+    lane_width = 0.23  #Where width is 0.23m 
     road_center_point = point + rightVec * (lane_width / 2)
     posVec = pos - road_center_point
     signedDist = np.dot(posVec, rightVec)
@@ -425,3 +427,10 @@ def get_road_pos2(self, pos, angle):
 
  
     return LanePosition(dist=signedDist, dot_dir=dotDir, angle_deg=angle_deg, angle_rad=angle_rad)
+
+LanePosition0 = namedtuple("LanePosition", "dist dot_dir angle_deg angle_rad")
+
+class LanePosition(LanePosition0):
+    def as_json_dict(self):
+        """Serialization-friendly format."""
+        return dict(dist=self.dist, dot_dir=self.dot_dir, angle_deg=self.angle_deg, angle_rad=self.angle_rad)

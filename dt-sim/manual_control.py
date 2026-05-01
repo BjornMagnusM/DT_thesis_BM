@@ -15,7 +15,7 @@ import pyglet
 from pyglet.window import key
 
 from src.gym_duckietown.envs import DuckietownEnv
-from utils.wrappers import CropResizeWrapper
+from utils.wrappers import CropResizeWrapper,TimeOptimalReward
 
 # from experiments.utils import save_img
 
@@ -51,6 +51,7 @@ if args.env_name and args.env_name.find("Duckietown") != -1:
 else:
     env = gym.make(args.env_name)
 
+env = TimeOptimalReward(env)
 render_modes = ["human", "top_down", "free_cam", "rgb_array"]
 view = render_modes[0]
 
