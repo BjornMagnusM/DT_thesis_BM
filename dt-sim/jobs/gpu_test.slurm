@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J 0.5M_RGB_a40_duckie_td3 
+#SBATCH -J O_RGB_a40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -55,8 +55,8 @@ srun singularity exec --nv \
         python3 rl_bm/td3_continuous_action.py \
             --seed 123 \
             --env-id oval_loop \
-            --total-timesteps 1000000 \
+            --total-timesteps 100000 \
             --buffer-size 5000 \
-            --learning-starts 50000 \
-            --run-notes '0.115 width Mid RGB'
+            --learning-starts 10000 \
+            --run-notes 'Original RGB'
     "

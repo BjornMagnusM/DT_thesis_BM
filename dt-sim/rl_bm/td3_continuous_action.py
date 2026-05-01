@@ -62,7 +62,7 @@ class Args:
     """whether to evaluate the saved model at the end of training"""
     run_notes: str = ""
     """for wandb tracking notes"""
-    save_model: bool = False
+    save_model: bool = True
     """whether to save model into the `runs/{run_name}` folder"""
     grayscale: bool = False
     """whether to convert the observation to grayscale"""
