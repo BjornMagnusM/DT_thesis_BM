@@ -13,7 +13,7 @@ class DuckieOvalEnv(Simulator):
     A specialized Duckietown environment for Oval navigation.
     """
     def __init__(self, **kwargs):
-        kwargs.setdefault('map_name', "oval_loop_backround")
+        kwargs.setdefault('map_name', "oval_loop")
         kwargs.setdefault('camera_width', 160)
         kwargs.setdefault('camera_height', 120)
         kwargs.setdefault('accept_start_angle_deg', 4)
@@ -45,7 +45,7 @@ class DuckieOvalEnv(Simulator):
 
 
         ##BM added a termination criteria after finishing a lap 
-        env = LapTerminationWrapperV2(env,max_lap_reward=max_lap_reward)
+        #env = LapTerminationWrapperV2(env,max_lap_reward=max_lap_reward)
 
 
         if capture_video:

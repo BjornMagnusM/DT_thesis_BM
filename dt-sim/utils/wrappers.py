@@ -379,7 +379,6 @@ def get_road_pos2(sim ,pos, angle):
     road_center_point = point - rightVec * (lane_width / 2)
     posVec = pos - road_center_point
     signedDist = np.dot(posVec, rightVec)
-    print(signedDist)
   
     # Compute the signed angle between the direction and curve tangent
     # Right of the tangent is negative, left is positive
