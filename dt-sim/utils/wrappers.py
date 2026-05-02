@@ -235,27 +235,27 @@ class TimeOptimalReward(gym.RewardWrapper):
     def reward (self, reward):
         # Get internal simulator state for custom math
         sim = self.env.unwrapped
-
+        reward_const = 2.4 
         speed = sim.speed
         #Lane logig 
         pos = sim.cur_pos
         angle = sim.cur_angle
         current_action = sim.last_action
         try:
-            lp = sim.get_lane_pos2( pos, angle)
+            lp = get_road_pos2(sim, pos, angle)
         except NotInLane:
             return -10.0  
         
-        reward_speed = 4.0 * speed
+        reward_speed = 1.0 * speed
         reward_alignment = 2.0 * (lp.dot_dir ** 2) if lp.dot_dir > 0 else 4.0 * lp.dot_dir # tanh like behaviour to add a higher gradint near 1
-        reward_distance = -10.0 * np.abs(lp.dist)
+        reward_distance = -30.0 * np.abs(lp.dist)
         reward_angle = -0.1 * np.abs(lp.angle_deg)
         # Jerk Penalty: Penalize sudden changes in angle
         # self.last_action stores the [v, omega] from the PREVIOUS step
         action_diff = np.linalg.norm(current_action - self.prev_action)
         reward_jerk = -0.5 * action_diff  # Start with -0.5 and tune if needed
         self.prev_action = current_action.copy()
-        reward = reward_speed + reward_alignment + reward_distance + reward_angle + reward_jerk
+        reward = reward_const+reward_speed + reward_alignment + reward_distance + reward_angle + reward_jerk
         return reward
 
 
@@ -376,9 +376,10 @@ def get_road_pos2(sim ,pos, angle):
     
     #Recompute the point so its in the middle of the road and not the lane
     lane_width = 0.23  #Where width is 0.23m 
-    road_center_point = point + rightVec * (lane_width / 2)
+    road_center_point = point - rightVec * (lane_width / 2)
     posVec = pos - road_center_point
     signedDist = np.dot(posVec, rightVec)
+    print(signedDist)
   
     # Compute the signed angle between the direction and curve tangent
     # Right of the tangent is negative, left is positive
