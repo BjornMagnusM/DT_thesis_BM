@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J M_RGB_l40_duckie_td3 
+#SBATCH -J M_RGB_a40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -7,8 +7,8 @@
 #SBATCH -c 4
 #SBATCH -p allgroups
 #SBATCH --mem=16g
-#SBATCH --nodelist=gpu7
-#SBATCH --gres=gpu:l40s
+#SBATCH --nodelist=gpu1
+#SBATCH --gres=gpu:a40
 
 cd $HOME/DT_thesis_BM/dt-sim
 mkdir -p logs
@@ -58,5 +58,5 @@ srun singularity exec --nv \
             --total-timesteps 1500000 \
             --buffer-size 5000 \
             --learning-starts 10000 \
-            --run-notes 'Middlelane, less speed'
+            --run-notes 'MiddlelaneV3, less speed and a const reward'
     "
