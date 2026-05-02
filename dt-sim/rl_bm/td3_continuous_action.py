@@ -99,15 +99,15 @@ class Args:
     """Max reward when completed a map, this get subtracted by the steps taken """
 
     #Duckietown specific arguments
-    domain_rand: bool = True
+    domain_rand: bool = False
     """texture/light randomization"""
-    distortion: bool = True
+    distortion: bool = False
     """Simulates the fisheye lens"""
-    dynamics_rand: bool = True
+    dynamics_rand: bool = False
     """Simulates motor/trim imbalances"""
-    camera_rand: bool = True 
+    camera_rand: bool = False 
     """Simulates mounting misalignments"""
-    motion_blur: bool = True
+    motion_blur: bool = False
     """Simulates the blur from the moving duckiebot"""
 
 def make_env(seed, idx, run_name, capture_video=False, motion_blur=False, max_lap_reward=2000, **env_kwargs):
