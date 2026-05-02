@@ -15,7 +15,7 @@ import torch.optim as optim
 import tyro
 from torch.utils.tensorboard import SummaryWriter
 
-from cleanrl_utils.buffers import ReplayBuffer
+from replay_buffer import ReplayBufferStorage, make_replay_loader
 
 # CNN Architucture 
 from cnn_architectures import DQNEncoder,DrQEncoderV2
@@ -120,6 +120,7 @@ def make_env(seed, idx, run_name, capture_video=False, motion_blur=False, max_la
             render_mode=render_mode,
             seed=seed,
             max_lap_reward=max_lap_reward,
+            accept_start_angle_deg=20,
             **env_kwargs
         )
         env.action_space.seed(seed)

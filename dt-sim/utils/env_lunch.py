@@ -3,13 +3,13 @@ import gymnasium as gym
 import numpy as np
 # Duckietown Specific
 from gym_duckietown.simulator import Simulator
-from utils.wrappers import ImgWrapper, ActionWrapper, CropResizeWrapper, CustomRewardWrapper, TemporalWrapper,DtRewardWrapper, KinematicActionWrapper, ResizeWrapper,LapTerminationWrapper,TimeOptimalReward,LapTerminationWrapperV2
+from utils.wrappers import ImgWrapper, ActionWrapper, CropResizeWrapper, CustomRewardWrapper, TemporalWrapper,DtRewardWrapper, KinematicActionWrapper, ResizeWrapper,TimeOptimalReward,LapTerminationWrapperV2
 
 class EnvLunch:
     def __init__(self, 
                  run_name: str, 
                  max_steps: int = 1500, 
-                 grayscale: bool = True, 
+                 grayscale: bool = False, 
                  frame_stack: int = 4, 
                  img_shape: tuple = (84, 84),
                  **sim_to_real_kwargs):
@@ -24,7 +24,7 @@ class EnvLunch:
         """Initializes the raw Duckietown simulator."""
         return Simulator(
             seed=seed,
-            map_name="oval_loop",
+            map_name="oval_loop_backround",
             max_steps=self.max_steps,
             camera_width=640,
             camera_height=480,
@@ -69,7 +69,7 @@ class EnvLunch:
 
         ##BM removed custom wrappers 
         #env = DtRewardWrapper(env)
-        #env = TimeOptimalReward(env)
+        env = TimeOptimalReward(env)
 
         # Temporal Stacking
         if self.frame_stack > 1:

@@ -21,7 +21,7 @@ from cleanrl_utils.atari_wrappers import MaxAndSkipEnv
 
 # Duckietown Specific
 from gym_duckietown.envs import DuckietownEnv
-from utils.wrappers import NormalizeWrapper, ImgWrapper, DtRewardWrapper, ActionWrapper, ResizeWrapper, CropResizeWrapper, LapTerminationWrapper
+from utils.wrappers import NormalizeWrapper, ImgWrapper, DtRewardWrapper, ActionWrapper, ResizeWrapper, CropResizeWrapper
 
 # CNN Architucture 
 from cnn_architectures import DQNEncoder, ImpalaCNN,DrQEncoderV2
@@ -99,7 +99,7 @@ def save_model(actor, qf1, qf2, step, run_name, suffix=""):
         os.makedirs(model_dir)
 
     label = suffix if suffix else "latest"
-    model_path = f"{model_dir}/sac_step_{label}.cleanrl_model"http://localhost:6006/
+    model_path = f"{model_dir}/sac_step_{label}.cleanrl_model"
 
     torch.save({
         'actor_state_dict': actor.state_dict(),

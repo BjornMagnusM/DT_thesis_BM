@@ -51,26 +51,21 @@ def evaluate():
     env_id = args.env_id or checkpoint.get("env_id", "oval_loop")
     
 
-    # Handle randomization toggles (env_params)
-    if "env_params" in checkpoint:
-        print("Using the parameters inside the checkpoint")
-        sim_params = checkpoint["env_params"]
-    else:
-        print("Could not find the metadata")
-        sim_params = {
-            "domain_rand": checkpoint.get("domain_rand", False),
-            "distortion": checkpoint.get("distortion", False),
-            "dynamics_rand": checkpoint.get("dynamics_rand", False),
-            "camera_rand": checkpoint.get("camera_rand", False),
-        }
-    
+    # Do not use distortions under eval
+    sim_params = {
+    "domain_rand": checkpoint.get("domain_rand", False),
+    "distortion": checkpoint.get("distortion", False),
+    "dynamics_rand": checkpoint.get("dynamics_rand", False),
+    "camera_rand": checkpoint.get("camera_rand", False),
+    }
+
     print(f"--- Metadata Extracted ---")
     print(f"Map: {env_id} | Grayscale: {grayscale}")
     print(f"Randomizations: {sim_params}")
 
     env_luncher = EnvLunch(
         run_name="eval",
-        max_steps=4000,
+        max_steps=5000,
         grayscale=grayscale,
         **sim_params
     )

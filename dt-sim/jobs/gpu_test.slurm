@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J TM_RGB_l40_duckie_td3 
+#SBATCH -J M_RGB_l40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -55,8 +55,8 @@ srun singularity exec --nv \
         python3 rl_bm/td3_continuous_action.py \
             --seed 123 \
             --env-id oval_loop \
-            --total-timesteps 1000000 \
+            --total-timesteps 1500000 \
             --buffer-size 5000 \
             --learning-starts 10000 \
-            --run-notes 'Original wiht backround object in loop'
+            --run-notes 'Middlelane, less speed'
     "

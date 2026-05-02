@@ -619,8 +619,15 @@ class Simulator(gym.Env):
                 if not self.drivable_tiles:
                     msg = "There are no drivable tiles. Use start_tile or self.user_tile_start"
                     raise Exception(msg)
-                tile_idx = self.np_random.integers(0, len(self.drivable_tiles))
-                tile = self.drivable_tiles[tile_idx]
+                straight_tiles = [t for t in self.drivable_tiles if t["kind"] == "straight"]
+        
+                if not straight_tiles:
+                    # Fallback to any drivable tile if no straight tiles exist in the map
+                    tile_idx = self.np_random.integers(0, len(self.drivable_tiles))
+                    tile = self.drivable_tiles[tile_idx]
+                else:
+                    tile_idx = self.np_random.integers(0, len(straight_tiles))
+                    tile = straight_tiles[tile_idx]
 
         # If the map specifies a starting pose
         if self.start_pose is not None:
@@ -636,6 +643,37 @@ class Simulator(gym.Env):
             #logger.info(f"Using map pose start. \n Pose: {propose_pos}, Angle: {propose_angle}")
 
         else:
+
+            # ======================================================
+            # NEW PERFECT SPAWN LOGIC (Using Geometry)
+            # ======================================================
+
+            # Finding the coordinate and curves of the specific tile
+            i, j = tile["coords"]
+            curves = tile["curves"]
+
+            # Randomly picking one of the cureves 
+            curve_idx = self.np_random.integers(0, len(curves))
+            curve_rand = curves[curve_idx]
+
+            # Choosing a random point along the curve
+            t = self.np_random.uniform(0.2, 0.8)
+
+            # Getting the complete position and angles on the selected point
+            propose_pos = bezier_point(curve_rand, t)
+            tangent = bezier_tangent(curve_rand, t)
+
+            # Converting to heading angle
+            # In Duckietown's coordinate system, angle is math.atan2(-dz, dx)
+            curve_angle = math.atan2(-tangent[2], tangent[0]) #in radian
+            accept_limit_rad = np.deg2rad(self.accept_start_angle_deg)
+            propose_angle = self.np_random.uniform(curve_angle - accept_limit_rad, curve_angle + accept_limit_rad)
+
+            # ======================================================
+            # ORIGINAL DUCKIETOWN SPAWN LOGIC (Commented out)
+            # ======================================================
+
+            '''
             # Keep trying to find a valid spawn position on this tile
             for _ in range(MAX_SPAWN_ATTEMPTS):
                 i, j = tile["coords"]
@@ -684,9 +722,13 @@ class Simulator(gym.Env):
                 propose_angle = 1
 
                 # raise Exception(msg)
+            '''
 
         self.cur_pos = propose_pos
         self.cur_angle = propose_angle
+
+        self.episode_dir = get_driving_direction(tile, propose_angle)
+        
 
         init_vel = np.array([0, 0])
 
@@ -707,7 +749,9 @@ class Simulator(gym.Env):
         # Generate the first camera image
         obs = self.render_obs(segment=segment)
         
-        info = {}
+        info = {
+            "episode_direction": self.episode_dir
+        }
         
         # Update world objects
         for obj in self.objects:
@@ -1619,7 +1663,6 @@ class Simulator(gym.Env):
             info["cur_angle"] = float(angle)
             info["wheel_velocities"] = [self.wheelVels[0], self.wheelVels[1]]
 
-
             # put in cartesian coordinates
             # (0,0 is bottom left)
             # q = self.cartesian_from_weird(self.cur_pos, self.)
@@ -1629,8 +1672,8 @@ class Simulator(gym.Env):
 
             info["timestamp"] = self.timestamp
             info["tile_coords"] = list(self.get_grid_coords(pos))
+            info["episode_direction"] = getattr(self, "episode_dir", None)
             # info['map_data'] = self.map_data
-
         misc = {}
         misc["Simulator"] = info
         return misc
@@ -1673,14 +1716,19 @@ class Simulator(gym.Env):
             lp = self.get_lane_pos2(pos, angle)
         except NotInLane:
             return -10.0  
+        
         reward_speed = 2.0 * speed
-        reward_alignment = 2.0 * (lp.dot_dir ** 2) if lp.dot_dir > 0 else 4.0 * lp.dot_dir # tanh like behaviour to add a higher gradint near 1
+        # Squared term creates a smooth gradient toward perfect alignment
+        reward_alignment = 2.0 * (lp.dot_dir ** 2) if lp.dot_dir > 0 else 4.0 * lp.dot_dir
+        
+        # Penalties
         reward_distance = -10.0 * np.abs(lp.dist)
         reward_angle = -0.1 * np.abs(lp.angle_deg)
-        # Jerk Penalty: Penalize sudden changes in angle
-        # self.last_action stores the [v, omega] from the PREVIOUS step
+        
+        # Smoothness
         action_diff = np.linalg.norm(action - self.last_action)
-        reward_jerk = -0.5 * action_diff  # Start with -0.5 and tune if needed
+        self.jerk_alpha =0.5
+        reward_jerk = -self.jerk_alpha * action_diff 
 
         reward = reward_speed + reward_alignment + reward_distance + reward_angle + reward_jerk
         return reward
@@ -1710,7 +1758,6 @@ class Simulator(gym.Env):
             reward = REWARD_INVALID_POSE
             done_code = "invalid-pose"
             done = True
-            print("ended because invalid pose")
         # If the maximum time step count is reached
         elif self.step_count >= self.max_steps:
             msg = "Stopping the simulator because we reached max_steps = %s" % self.max_steps
@@ -1718,10 +1765,9 @@ class Simulator(gym.Env):
             done = True
             reward = 0
             done_code = "max-steps-reached"
-            print("ended because max step")
         else:
             done = False
-            reward = self.compute_reward(self.cur_pos, self.cur_angle, self.robot_speed, action)
+            reward = self.compute_reward(self.cur_pos, self.cur_angle, self.speed, action)
             msg = ""
             done_code = "in-progress"
         return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
@@ -2194,3 +2240,25 @@ def draw_axes():
     gl.glEnd()
 
     gl.glPopMatrix()
+
+def get_driving_direction(tile, angle):
+    """
+    Returns 'CCW' (Counter-Clockwise) or 'CW' (Clockwise)
+    based on the spawn location of Duckiebot.
+    """
+
+    tile_dir_idx = tile["angle"]
+
+    direction_idx = int(round(angle / (np.pi / 2)) + 1) % 4
+
+    if direction_idx == tile_dir_idx:
+
+        return "CCW"
+
+    elif (direction_idx + 2) % 4 == tile_dir_idx:
+
+        return "CW"
+
+    else:
+
+        return "TRANSITION" 
