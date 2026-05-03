@@ -40,8 +40,6 @@ SIF_IMAGE="$HOME/DT_thesis_BM/dt-sim/duckie_rl.sif"
 srun singularity exec --nv \
     -B .:/app \
     --pwd /app \
-    --env WANDB_API_KEY=$WANDB_API_KEY \
-    --env WANDB_DIR=$WANDB_DIR \
     $SIF_IMAGE \
     bash -c "
         export PYTHONPATH=\$PYTHONPATH:/app:/app/src && \
