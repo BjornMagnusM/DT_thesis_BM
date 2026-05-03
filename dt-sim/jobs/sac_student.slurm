@@ -1,47 +1,36 @@
 #!/bin/bash
-#SBATCH -J a40_TD3_BM
+#SBATCH -J M3_RGB_a40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
 #SBATCH -n 1
-#SBATCH -c 6
+#SBATCH -c 4
 #SBATCH -p allgroups
 #SBATCH --mem=16g
-#SBATCH --gres=gpu:a40
 #SBATCH --nodelist=gpu1
-
+#SBATCH --gres=gpu:a40
 
 cd $HOME/DT_thesis_BM/dt-sim
 mkdir -p logs
 
+echo "Running on $(hostname)"
+echo "Job ID: $SLURM_JOB_ID"
 
 export LIBGL_ALWAYS_SOFTWARE=1
-export GALLIUM_DRIVER=llvmpipe
-export PYOPENGL_PLATFORM=egl
 export PYGLET_HEADLESS=True
-export EGL_DEVICE_ID=none
+export GALLIUM_DRIVER=llvmpipe
 
 
-# using my wand account
 export WANDB_API_KEY=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
 export WANDB_DIR=$PWD/wandb
-
 
 
 SIF_IMAGE="$HOME/DT_thesis_BM/dt-sim/duckie_rl.sif"
 
 
-
 srun singularity exec --nv \
     -B .:/app \
     --pwd /app \
-    --env LIBGL_ALWAYS_SOFTWARE=1 \
-    --env GALLIUM_DRIVER=llvmpipe \
-    --env PYOPENGL_PLATFORM=egl \
-    --env PYGLET_HEADLESS=True \
-    --env EGL_DEVICE_ID=none \
-    --env WANDB_API_KEY=$WANDB_API_KEY \
-    --env WANDB_DIR=$WANDB_DIR \
     $SIF_IMAGE \
     bash -c "
         export PYTHONPATH=\$PYTHONPATH:/app:/app/src && \
@@ -49,8 +38,7 @@ srun singularity exec --nv \
             --seed 123 \
             --env-id oval_loop \
             --total-timesteps 1000000 \
-            --buffer-size 10000 \
-            --batch-size 256 \
-            --learning-starts 50000 \
-            --run-notes 'TD3 without reward rapper so we have -1000 for invalid pose, new lap termination with reward'
+            --buffer-size 5000 \
+            --learning-starts 10000 \
+            --run-notes 'Midlane3  with no back, ter and less speed and const with no dis '
     "

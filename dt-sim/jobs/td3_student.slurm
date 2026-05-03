@@ -7,9 +7,8 @@
 #SBATCH -c 4
 #SBATCH -p allgroups
 #SBATCH --mem=16g
-#SBATCH --nodelist=gpu1,gpu7
-#SBATCH --gres=gpu:1
-#SBATCH -p allgroups
+#SBATCH --nodelist=gpu1
+#SBATCH --gres=gpu:a40
 
 cd $HOME/DT_thesis_BM/dt-sim
 mkdir -p logs
@@ -17,27 +16,18 @@ mkdir -p logs
 echo "Running on $(hostname)"
 echo "Job ID: $SLURM_JOB_ID"
 
-# -------------------------
-# Rendering → CPU ONLY
-# -------------------------
 export LIBGL_ALWAYS_SOFTWARE=1
 export PYGLET_HEADLESS=True
 export GALLIUM_DRIVER=llvmpipe
 
-# -------------------------
-# WandB
-# -------------------------
+
 export WANDB_API_KEY=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
 export WANDB_DIR=$PWD/wandb
 
-# -------------------------
-# Container
-# -------------------------
+
 SIF_IMAGE="$HOME/DT_thesis_BM/dt-sim/duckie_rl.sif"
 
-# -------------------------
-# Run
-# -------------------------
+
 srun singularity exec --nv \
     -B .:/app \
     --pwd /app \
