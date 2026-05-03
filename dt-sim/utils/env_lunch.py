@@ -3,13 +3,13 @@ import gymnasium as gym
 import numpy as np
 # Duckietown Specific
 from gym_duckietown.simulator import Simulator
-from utils.wrappers import ImgWrapper, ActionWrapper, CropResizeWrapper, CustomRewardWrapper, TemporalWrapper,DtRewardWrapper, KinematicActionWrapper, ResizeWrapper,LapTerminationWrapper,TimeOptimalReward,LapTerminationWrapperV2
+from utils.wrappers import ImgWrapper, ActionWrapper, CropResizeWrapper, CustomRewardWrapper, TemporalWrapper,DtRewardWrapper, KinematicActionWrapper, ResizeWrapper,TimeOptimalReward,LapTerminationWrapperV2
 
 class EnvLunch:
     def __init__(self, 
                  run_name: str, 
-                 max_steps: int = 1500, 
-                 grayscale: bool = True, 
+                 max_steps: int = 5000, 
+                 grayscale: bool = False, 
                  frame_stack: int = 4, 
                  img_shape: tuple = (84, 84),
                  **sim_to_real_kwargs):
@@ -38,7 +38,12 @@ class EnvLunch:
     def _apply_wrappers(self, env, capture_video=False, motion_blur=False):
         """Sequentially applies Gymnasium wrappers."""
 
-        env = KinematicActionWrapper(env)
+        # Dynamics
+        env = ActionWrapper(env)
+        env = KinematicActionWrapper(env, wheel_dist=0.102, radius=0.0318, k=27.0)
+
+        # 2. Temporal Logic
+        env = TemporalWrapper(env, frame_skip=3, motion_blur=motion_blur)
 
         ##BM added a termination criteria after finishing a lap 
         env = LapTerminationWrapperV2(env,2000)
@@ -64,9 +69,7 @@ class EnvLunch:
         
         env = ImgWrapper(env) # CHW format
         
-        # Dynamics & Rewards
-        env = ActionWrapper(env)
-
+        # Dynamics
         ##BM removed custom wrappers 
         #env = DtRewardWrapper(env)
         #env = TimeOptimalReward(env)

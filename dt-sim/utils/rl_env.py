@@ -18,7 +18,7 @@ class DuckieOvalEnv(Simulator):
         kwargs.setdefault('camera_height', 120)
         kwargs.setdefault('accept_start_angle_deg', 4)
         kwargs.setdefault('full_transparency', True)
-        kwargs.setdefault('max_steps', 10000)
+        kwargs.setdefault('max_steps', 5000)
         
         kwargs.setdefault('frame_skip', 1) 
         
@@ -29,7 +29,7 @@ class DuckieOvalEnv(Simulator):
         self.motor_k = 27.0
 
     @classmethod
-    def create_wrapped(cls, run_name, capture_video=False, motion_blur=False, grayscale=False, frame_stack=4,max_lap_reward=2000 , **kwargs):
+    def create_wrapped(cls, run_name, capture_video=False, motion_blur=False, grayscale=False, frame_stack=4,max_lap_reward=2000,lap_termination=False,time_optimal_reward=False , **kwargs):
         """
         Static method to build the fully wrapped stack.
         """
@@ -45,7 +45,9 @@ class DuckieOvalEnv(Simulator):
 
 
         ##BM added a termination criteria after finishing a lap 
-        env = LapTerminationWrapperV2(env,max_lap_reward=max_lap_reward)
+        if lap_termination:
+            print("using lap termination")
+            env = LapTerminationWrapperV2(env,max_lap_reward=max_lap_reward)
 
 
         if capture_video:
@@ -63,7 +65,9 @@ class DuckieOvalEnv(Simulator):
         env = ImgWrapper(env) # Transpose to CHW
         
         # 5. Reward System
-        env = TimeOptimalReward(env)
+        if time_optimal_reward:
+            print("using time optimal reward")
+            env = TimeOptimalReward(env)
 
         # 6. Temporal Stacking
         if frame_stack > 1:

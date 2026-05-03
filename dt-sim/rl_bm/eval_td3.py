@@ -20,7 +20,7 @@ def parse_args():
                         help="Whether to render the environment")
     parser.add_argument("--capture-video", type=bool, default=True,
                         help="Capture video of the evaluation episodes")
-    parser.add_argument("--max-steps", type=int, default=1500,
+    parser.add_argument("--max-steps", type=int, default=5000,
                         help="Maximum number of steps for each episode" )
     parser.add_argument("--local", type=bool, default=False,
                         help="Whether the model path is the wandb artifact or local")
@@ -52,12 +52,7 @@ def evaluate():
     
 
     # Handle randomization toggles (env_params)
-    if "env_params" in checkpoint:
-        print("Using the parameters inside the checkpoint")
-        sim_params = checkpoint["env_params"]
-    else:
-        print("Could not find the metadata")
-        sim_params = {
+    sim_params = {
             "domain_rand": checkpoint.get("domain_rand", False),
             "distortion": checkpoint.get("distortion", False),
             "dynamics_rand": checkpoint.get("dynamics_rand", False),

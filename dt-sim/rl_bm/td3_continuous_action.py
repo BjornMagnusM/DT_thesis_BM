@@ -66,6 +66,10 @@ class Args:
     """whether to save model into the `runs/{run_name}` folder"""
     grayscale: bool = False
     """whether to convert the observation to grayscale"""
+    lap_termination: bool = False
+    """wether to use lap termination wrapper"""
+    time_optimal_reward: bool = False
+    """wether to use time optimal reward wrapper"""
 
 
     # Algorithm specific arguments
@@ -110,7 +114,7 @@ class Args:
     motion_blur: bool = False
     """Simulates the blur from the moving duckiebot"""
 
-def make_env(seed, idx, run_name, capture_video=False, motion_blur=False, max_lap_reward=2000, **env_kwargs):
+def make_env(seed, idx, run_name, capture_video=False, motion_blur=False, max_lap_reward=2000,lap_termination = False,time_optimal_reward = False, **env_kwargs):
     def thunk():
         render_mode = "rgb_array" if (capture_video and idx == 0) else None
         env = DuckieOvalEnv.create_wrapped(
@@ -120,7 +124,8 @@ def make_env(seed, idx, run_name, capture_video=False, motion_blur=False, max_la
             render_mode=render_mode,
             seed=seed,
             max_lap_reward=max_lap_reward,
-            accept_start_angle_deg=20,
+            lap_termination=lap_termination, 
+            time_optimal_reward=time_optimal_reward,
             **env_kwargs
         )
         env.action_space.seed(seed)
@@ -257,7 +262,7 @@ if __name__ == "__main__":
     }
     
     envs = gym.vector.SyncVectorEnv(
-        [make_env(args.seed + i, i, run_name, args.capture_video, args.motion_blur, args.max_lap_reward) for i in range(args.num_envs)]
+        [make_env(args.seed + i, i, run_name, args.capture_video, args.motion_blur, args.max_lap_reward, args.lap_termination ,args.time_optimal_reward) for i in range(args.num_envs)]
     )
     assert isinstance(envs.single_action_space, gym.spaces.Box), "only continuous action space is supported"
 
