@@ -22,7 +22,6 @@ echo "Job ID: $SLURM_JOB_ID"
 export LIBGL_ALWAYS_SOFTWARE=1
 export PYGLET_HEADLESS=True
 export GALLIUM_DRIVER=llvmpipe
-export WANDB_MODE=offline
 
 # -------------------------
 # WandB
