@@ -20,10 +20,9 @@ echo "Job ID: $SLURM_JOB_ID"
 # Rendering → CPU ONLY
 # -------------------------
 export LIBGL_ALWAYS_SOFTWARE=1
-export GALLIUM_DRIVER=llvmpipe
-export PYOPENGL_PLATFORM=egl
 export PYGLET_HEADLESS=True
-export EGL_DEVICE_ID=none
+export GALLIUM_DRIVER=llvmpipe
+export WANDB_MODE=offline
 
 # -------------------------
 # WandB
@@ -42,11 +41,6 @@ SIF_IMAGE="$HOME/DT_thesis_BM/dt-sim/duckie_rl.sif"
 srun singularity exec --nv \
     -B .:/app \
     --pwd /app \
-    --env LIBGL_ALWAYS_SOFTWARE=1 \
-    --env GALLIUM_DRIVER=llvmpipe \
-    --env PYOPENGL_PLATFORM=egl \
-    --env PYGLET_HEADLESS=True \
-    --env EGL_DEVICE_ID=none \
     --env WANDB_API_KEY=$WANDB_API_KEY \
     --env WANDB_DIR=$WANDB_DIR \
     $SIF_IMAGE \
