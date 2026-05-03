@@ -55,7 +55,7 @@ else:
 env = LapTerminationWrapperV2(env,2000)
 env = TimeOptimalReward(env)
 render_modes = ["human", "top_down", "free_cam", "rgb_array"]
-view = render_modes[1]
+view = render_modes[0]
 
 env.reset(seed=args.seed)
 

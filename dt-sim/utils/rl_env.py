@@ -63,7 +63,7 @@ class DuckieOvalEnv(Simulator):
         env = ImgWrapper(env) # Transpose to CHW
         
         # 5. Reward System
-        #env = TimeOptimalReward(env)
+        env = TimeOptimalReward(env)
 
         # 6. Temporal Stacking
         if frame_stack > 1:
