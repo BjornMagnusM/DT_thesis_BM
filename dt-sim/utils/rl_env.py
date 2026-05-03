@@ -29,7 +29,8 @@ class DuckieOvalEnv(Simulator):
         self.motor_k = 27.0
 
     @classmethod
-    def create_wrapped(cls, run_name, capture_video=False, motion_blur=False, grayscale=False, frame_stack=4,max_lap_reward=2000,lap_termination=False,time_optimal_reward=False , **kwargs):
+    def create_wrapped(cls, run_name, capture_video=False, motion_blur=False, grayscale=False, frame_stack=4,max_lap_reward=2000,lap_termination=False, 
+                       time_optimal_reward=False , cap_reward=False,  **kwargs):
         """
         Static method to build the fully wrapped stack.
         """
@@ -64,10 +65,15 @@ class DuckieOvalEnv(Simulator):
         
         env = ImgWrapper(env) # Transpose to CHW
         
+
         # 5. Reward System
         if time_optimal_reward:
             print("using time optimal reward")
             env = TimeOptimalReward(env)
+
+        if cap_reward:
+            env = DtRewardWrapper(env)
+
 
         # 6. Temporal Stacking
         if frame_stack > 1:

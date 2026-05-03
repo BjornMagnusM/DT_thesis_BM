@@ -38,7 +38,8 @@ srun singularity exec --nv \
             --seed 123 \
             --env-id oval_loop \
             --total-timesteps 1000000 \
-            --buffer-size 5000 \
+            --buffer-size 10000 \
             --learning-starts 10000 \
-            --run-notes 'Midlane3  with no back, ter and less speed and const with no dis '
+            --cap_reward \
+            --run-notes 'Original, with cap on reward '
     "

@@ -70,6 +70,8 @@ class Args:
     """wether to use lap termination wrapper"""
     time_optimal_reward: bool = False
     """wether to use time optimal reward wrapper"""
+    cap_reward: bool = False
+    """wether to use reward wrapper that caps negativ reward at -15"""
 
 
     # Algorithm specific arguments
@@ -114,7 +116,8 @@ class Args:
     motion_blur: bool = False
     """Simulates the blur from the moving duckiebot"""
 
-def make_env(seed, idx, run_name, capture_video=False, motion_blur=False, max_lap_reward=2000,lap_termination = False,time_optimal_reward = False, **env_kwargs):
+def make_env(seed, idx, run_name, capture_video=False, motion_blur=False,   
+             max_lap_reward=2000,lap_termination = False,time_optimal_reward = False,cap_reward = False , **env_kwargs):
     def thunk():
         render_mode = "rgb_array" if (capture_video and idx == 0) else None
         env = DuckieOvalEnv.create_wrapped(
