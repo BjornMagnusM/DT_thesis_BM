@@ -40,6 +40,6 @@ srun singularity exec --nv \
             --total-timesteps 1000000 \
             --buffer-size 10000 \
             --learning-starts 10000 \
-            --cap_reward \
-            --run-notes 'Original, with cap on reward '
+            --lap_termination \
+            --run-notes 'Original, with lap termination '
     "
