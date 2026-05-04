@@ -21,7 +21,7 @@ from utils.wrappers import CropResizeWrapper,TimeOptimalReward,LapTerminationWra
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--env-name", default= "Duckietown")
-parser.add_argument("--map-name", default="oval_loop_backround")
+parser.add_argument("--map-name", default="oval_loop")
 parser.add_argument("--distortion", default=False, action="store_true")
 parser.add_argument("--camera_rand", default=False, action="store_true")
 parser.add_argument("--draw-curve", action="store_true", help="draw the lane following curve")
@@ -29,7 +29,7 @@ parser.add_argument("--draw-bbox", action="store_true", help="draw collision det
 parser.add_argument("--domain-rand", action="store_true", help="enable domain randomization")
 parser.add_argument("--dynamics_rand", action="store_true", help="enable dynamics randomization")
 parser.add_argument("--frame-skip", default=1, type=int, help="number of frames to skip")
-parser.add_argument("--seed", default=None, type=int, help="seed")
+parser.add_argument("--seed", default=2, type=int, help="seed")
 args = parser.parse_args()
 
 

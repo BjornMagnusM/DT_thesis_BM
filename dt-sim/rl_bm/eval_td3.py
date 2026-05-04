@@ -70,7 +70,7 @@ def evaluate():
         **sim_params
     )
     env_func = env_luncher.make_env_fn(
-        seed=1, 
+        seed=2, 
         idx=0,
         capture_video=True)
 
@@ -107,7 +107,7 @@ def evaluate():
 
     all_rewards = []
     for episode in range(args.num_episodes):
-        obs, info = env.reset()
+        obs, info = env.reset(seed=2)
         done = False
         episodic_reward = 0
         

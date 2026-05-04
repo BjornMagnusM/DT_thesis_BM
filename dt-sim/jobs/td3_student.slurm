@@ -35,11 +35,12 @@ srun singularity exec --nv \
     bash -c "
         export PYTHONPATH=\$PYTHONPATH:/app:/app/src && \
         python3 rl_bm/td3_continuous_action.py \
-            --seed 123 \
+            --seed 2 \
             --env-id oval_loop \
             --total-timesteps 1000000 \
             --buffer-size 10000 \
             --learning-starts 10000 \
             --lap_termination \
-            --run-notes 'Original, with lap termination '
+            --time_optimal_reward \
+            --run-notes 'Original, with lap termination speed*1 '
     "
