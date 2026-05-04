@@ -246,7 +246,7 @@ class TimeOptimalReward(gym.RewardWrapper):
         except NotInLane:
             return -10.0  
         
-        reward_speed = 1.0 * speed
+        reward_speed = 2.0 * speed
         reward_alignment = 2.0 * (lp.dot_dir ** 2) if lp.dot_dir > 0 else 4.0 * lp.dot_dir # tanh like behaviour to add a higher gradint near 1
         reward_distance = -30.0 * np.abs(lp.dist)
         reward_angle = -0.1 * np.abs(lp.angle_deg)
