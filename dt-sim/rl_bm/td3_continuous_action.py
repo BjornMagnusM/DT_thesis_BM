@@ -72,6 +72,8 @@ class Args:
     """wether to use time optimal reward wrapper"""
     cap_reward: bool = False
     """wether to use reward wrapper that caps negativ reward at -15"""
+    norm_reward: bool = False
+    """wether to use reward normalization wrapper """
 
 
     # Algorithm specific arguments
@@ -117,7 +119,7 @@ class Args:
     """Simulates the blur from the moving duckiebot"""
 
 def make_env(seed, idx, run_name, capture_video=False, motion_blur=False,   
-             max_lap_reward=2000,lap_termination = False,time_optimal_reward = False,cap_reward = False , **env_kwargs):
+             max_lap_reward=5000,lap_termination = False,time_optimal_reward = False,cap_reward = False ,norm_reward= False, **env_kwargs):
     def thunk():
         render_mode = "rgb_array" if (capture_video and idx == 0) else None
         env = DuckieOvalEnv.create_wrapped(
@@ -129,6 +131,7 @@ def make_env(seed, idx, run_name, capture_video=False, motion_blur=False,
             max_lap_reward=max_lap_reward,
             lap_termination=lap_termination, 
             time_optimal_reward=time_optimal_reward,
+            norm_reward=norm_reward,
             **env_kwargs
         )
         env.action_space.seed(seed)
@@ -265,7 +268,7 @@ if __name__ == "__main__":
     }
     
     envs = gym.vector.SyncVectorEnv(
-        [make_env(args.seed + i, i, run_name, args.capture_video, args.motion_blur, args.max_lap_reward, args.lap_termination ,args.time_optimal_reward) for i in range(args.num_envs)]
+        [make_env(args.seed + i, i, run_name, args.capture_video, args.motion_blur, args.max_lap_reward, args.lap_termination ,args.time_optimal_reward,args.cap_reward,args.norm_reward) for i in range(args.num_envs)]
     )
     assert isinstance(envs.single_action_space, gym.spaces.Box), "only continuous action space is supported"
 

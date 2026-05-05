@@ -42,5 +42,6 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --lap_termination \
             --time_optimal_reward \
+            --norm_reward \
             --run-notes 'Original, with lap termination speed*1 '
     "

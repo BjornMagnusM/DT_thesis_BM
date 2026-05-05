@@ -29,7 +29,7 @@ parser.add_argument("--draw-bbox", action="store_true", help="draw collision det
 parser.add_argument("--domain-rand", action="store_true", help="enable domain randomization")
 parser.add_argument("--dynamics_rand", action="store_true", help="enable dynamics randomization")
 parser.add_argument("--frame-skip", default=1, type=int, help="number of frames to skip")
-parser.add_argument("--seed", default=2, type=int, help="seed")
+parser.add_argument("--seed", default=1, type=int, help="seed")
 args = parser.parse_args()
 
 
@@ -54,6 +54,7 @@ else:
 
 env = LapTerminationWrapperV2(env,2000)
 env = TimeOptimalReward(env)
+env = gym.wrappers.RecordEpisodeStatistics(env)
 render_modes = ["human", "top_down", "free_cam", "rgb_array"]
 view = render_modes[0]
 
@@ -143,6 +144,7 @@ def update(dt):
 
     if done:
         print("done!")
+        print(info["episode"]["r"]) 
         env.reset(seed=args.seed)
         env.unwrapped.render(view)
 

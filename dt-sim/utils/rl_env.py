@@ -2,6 +2,7 @@ import os
 import gymnasium as gym
 import numpy as np
 from gym_duckietown.simulator import Simulator
+from gymnasium.wrappers import NormalizeReward
 from utils.wrappers import (
     KinematicActionWrapper, ActionWrapper, ResizeWrapper, 
     CropResizeWrapper, ImgWrapper, CustomRewardWrapper, DtRewardWrapper,
@@ -30,7 +31,7 @@ class DuckieOvalEnv(Simulator):
 
     @classmethod
     def create_wrapped(cls, run_name, capture_video=False, motion_blur=False, grayscale=False, frame_stack=4,max_lap_reward=2000,lap_termination=False, 
-                       time_optimal_reward=False , cap_reward=False,  **kwargs):
+                       time_optimal_reward=False , cap_reward=False, norm_reward=False,  **kwargs):
         """
         Static method to build the fully wrapped stack.
         """
@@ -71,8 +72,16 @@ class DuckieOvalEnv(Simulator):
             print("using time optimal reward")
             env = TimeOptimalReward(env)
 
+
         if cap_reward:
+            print("using reward cap")
             env = DtRewardWrapper(env)
+        
+
+        if norm_reward:
+            print("using Normalize reward wrapper")
+            env = NormalizeReward(env, gamma=0.99, epsilon=1e-8)
+
 
 
         # 6. Temporal Stacking
