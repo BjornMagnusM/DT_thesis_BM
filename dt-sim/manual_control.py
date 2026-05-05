@@ -56,7 +56,7 @@ env = LapTerminationWrapperV2(env,2000)
 env = TimeOptimalRewardV2(env)
 env = gym.wrappers.RecordEpisodeStatistics(env)
 render_modes = ["human", "top_down", "free_cam", "rgb_array"]
-view = render_modes[0]
+view = render_modes[1]
 
 env.reset(seed=args.seed)
 
@@ -64,6 +64,7 @@ pure_internal_obs = env.unwrapped.render_obs()
 print(f"Internal Renderer Shape: {pure_internal_obs.shape}")
 
 env.unwrapped.render(view)
+
 
 
 @env.unwrapped.window.event

@@ -3,7 +3,8 @@ import gymnasium as gym
 import numpy as np
 # Duckietown Specific
 from gym_duckietown.simulator import Simulator
-from utils.wrappers import ImgWrapper, ActionWrapper, CropResizeWrapper, CustomRewardWrapper, TemporalWrapper,DtRewardWrapper, KinematicActionWrapper, ResizeWrapper,TimeOptimalReward,LapTerminationWrapperV2
+from utils.wrappers import (ImgWrapper, ActionWrapper, CropResizeWrapper, CustomRewardWrapper, TemporalWrapper,DtRewardWrapper, 
+                            KinematicActionWrapper, ResizeWrapper,TimeOptimalReward,LapTerminationWrapperV2,VideoOverlayWrapper)
 
 class EnvLunch:
     def __init__(self, 
@@ -59,6 +60,7 @@ class EnvLunch:
         if capture_video:
             video_folder = f"videos/{self.run_name}"
             os.makedirs(video_folder, exist_ok=True)
+            env = VideoOverlayWrapper(env)
             env = gym.wrappers.RecordVideo(env, video_folder, episode_trigger=lambda x: True)
 
         # Vision Preprocessing

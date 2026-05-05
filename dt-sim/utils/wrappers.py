@@ -10,6 +10,7 @@ from gym_duckietown.exceptions import InvalidMapException, NotInLane
 from typing import Tuple, Optional
 import math
 from collections import namedtuple
+import cv2
 
 class TemporalWrapper(gym.Wrapper):
     def __init__(self, env=None, frame_skip=3, motion_blur=True):
@@ -237,7 +238,6 @@ class TimeOptimalReward(gym.RewardWrapper):
         sim = self.env.unwrapped
         reward_const = 2.4 
         speed = sim.speed
-        print(speed)
         #Lane logig 
         pos = sim.cur_pos
         angle = sim.cur_angle
@@ -436,3 +436,37 @@ class LanePosition(LanePosition0):
     def as_json_dict(self):
         """Serialization-friendly format."""
         return dict(dist=self.dist, dot_dir=self.dot_dir, angle_deg=self.angle_deg, angle_rad=self.angle_rad)
+
+
+class VideoOverlayWrapper(gym.Wrapper):
+    def __init__(self, env):
+        super().__init__(env)
+        self.last_action = None
+
+    def step(self, action):
+        self.last_action = action
+        return self.env.step(action)
+
+    def render(self, *args, **kwargs):
+        frame = self.env.render(*args, **kwargs)
+
+        if frame is None or self.last_action is None:
+            return frame
+
+        v, omega = self.last_action
+
+        text = f"v={v:.2f}, omega={omega:.2f}, speed={self.env.unwrapped.speed:.2f}"
+
+        # Draw text on frame
+        frame = cv2.putText(
+            frame,
+            text,
+            (10, 30),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.7,
+            (255, 255, 255),
+            2,
+            cv2.LINE_AA,
+        )
+
+        return frame
