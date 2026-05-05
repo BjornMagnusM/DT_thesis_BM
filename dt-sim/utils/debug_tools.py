@@ -72,7 +72,10 @@ def evaluate_policy(actor, args, device, algo_name, run_name = "run_name",graysc
         render_mode = "rgb_array",
         domain_rand=args.domain_rand,
         dynamics_rand=args.dynamics_rand,
-        distortion=args.distortion
+        distortion=args.distortion,
+        lap_termination=args.lap_termination,
+        time_optimal_reward=args.time_optimal_reward,
+        cap_reward=args.cap_reward
     )
     
 
@@ -136,5 +139,75 @@ def evaluate_policy(actor, args, device, algo_name, run_name = "run_name",graysc
             metrics[f"final_eval/worst_video"] = wandb.Video(worst_path, format="mp4", caption=f"Worst Run (Reward: {all_rewards[worst_idx]:.2f})")
         
         wandb.log(metrics)
+        
+    actor.train() # just in case
+
+
+
+
+def interval_evaluate_policy(actor, args, device,global_step ,algo_name, run_name = "run_name",grayscale=False, num_episodes=10, **env_params):
+    print(f"\n--- Starting Final Evaluation: {num_episodes} Episodes ---")
+    actor.eval()
+
+    custom_run_name = f"{algo_name}/{run_name}"
+    
+    # Create a separate evaluation environment
+    eval_env = DuckieOvalEnv.create_wrapped(
+        run_name=custom_run_name,
+        motion_blur=args.motion_blur, 
+        grayscale=grayscale,
+        frame_stack=4,
+        capture_video = False,
+        render_mode = "rgb_array",
+        domain_rand=args.domain_rand,
+        dynamics_rand=args.dynamics_rand,
+        distortion=args.distortion,
+        lap_termination=args.lap_termination,
+        time_optimal_reward=args.time_optimal_reward,
+        cap_reward=args.cap_reward
+    )
+    
+
+    all_rewards = []
+    all_lengths = []
+    for ep in range(num_episodes):
+        obs, _ = eval_env.reset()
+        done = False
+        episodic_reward = 0
+        episodic_length = 0
+        
+        while not done:
+            with torch.no_grad():
+                obs_tensor = torch.Tensor(obs).unsqueeze(0).to(device)
+                if hasattr(actor, "get_action"):
+                    _, _, action = actor.get_action(obs_tensor) # Use mean_action for eval
+                else:
+                    action = actor(obs_tensor) #TD3 actor returns action directly
+            
+                action = action.cpu().numpy().reshape(-1)
+            
+            next_obs, reward, terminated, truncated, _ = eval_env.step(action)
+            
+            obs = next_obs
+            episodic_reward += reward
+            episodic_length += 1
+            done = terminated or truncated
+
+        all_rewards.append(episodic_reward)
+        all_lengths.append(episodic_length)
+        print(f"Eval Episode {ep+1}: Reward = {episodic_reward:.2f}")
+
+    avg_reward = np.mean(all_rewards)
+    std_reward = np.std(all_rewards)
+    print(f"Evaluation Average Reward: {avg_reward:.2f}, with Std: {std_reward}")
+    eval_env.close()
+    # Log to WandB
+    if args.track:
+        import wandb
+        wandb.log({"eval/mean_reward": avg_reward,
+                    "eval/std_reward": std_reward,
+                    "eval/reward_dist": wandb.Histogram(all_rewards),
+                    }, step=global_step)
+        
         
     actor.train() # just in case

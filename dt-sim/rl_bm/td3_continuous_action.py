@@ -64,6 +64,8 @@ class Args:
     """for wandb tracking notes"""
     save_model: bool = True
     """whether to save model into the `runs/{run_name}` folder"""
+    eval_interval: int = 100000
+    """the interval to save the Actor periodically"""
     grayscale: bool = False
     """whether to convert the observation to grayscale"""
     lap_termination: bool = False
@@ -265,6 +267,9 @@ if __name__ == "__main__":
         "distortion": args.distortion,
         "dynamics_rand": args.dynamics_rand,
         "camera_rand": args.camera_rand,
+        "lap_termination": args.lap_termination,
+        "time_optimal_reward": args.time_optimal_reward,
+        "cap_reward": args.cap_reward
     }
     
     envs = gym.vector.SyncVectorEnv(
@@ -394,6 +399,18 @@ if __name__ == "__main__":
                     "charts/SPS",
                     int(global_step / (time.time() - start_time)),
                     global_step,
+                )
+            if global_step % args.eval_interval == 0: 
+                 interval_evaluate_policy(
+                    actor=actor,
+                    args=args,
+                    device=device,
+                    global_step = global_step,
+                    algo_name="TD3_lap",
+                    grayscale = args.grayscale,
+                    num_episodes=10,
+                    run_name=run_name,
+                    **env_params
                 )
 
     if args.save_model:
