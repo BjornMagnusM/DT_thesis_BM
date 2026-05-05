@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J M4_a40_duckie_td3 
+#SBATCH -J NoT_M4_a40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
