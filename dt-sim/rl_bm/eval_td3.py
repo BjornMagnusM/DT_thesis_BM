@@ -119,6 +119,7 @@ def evaluate():
                 action = actor(obs_tensor)
             
             action = action.cpu().numpy().reshape(-1)
+            print(action)
             
             # Step the environment
             obs, reward, terminated, truncated, info = env.step(action)

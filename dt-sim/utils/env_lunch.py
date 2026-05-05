@@ -39,11 +39,12 @@ class EnvLunch:
         """Sequentially applies Gymnasium wrappers."""
 
         # Dynamics
-        env = ActionWrapper(env)
         env = KinematicActionWrapper(env, wheel_dist=0.102, radius=0.0318, k=27.0)
+        env = ActionWrapper(env)
+
 
         # 2. Temporal Logic
-        env = TemporalWrapper(env, frame_skip=3, motion_blur=motion_blur)
+        #env = TemporalWrapper(env, frame_skip=3, motion_blur=motion_blur)
 
         ##BM added a termination criteria after finishing a lap 
         env = LapTerminationWrapperV2(env,2000)
@@ -72,7 +73,7 @@ class EnvLunch:
         # Dynamics
         ##BM removed custom wrappers 
         #env = DtRewardWrapper(env)
-        #env = TimeOptimalReward(env)
+        env = TimeOptimalReward(env)
 
         # Temporal Stacking
         if self.frame_stack > 1:

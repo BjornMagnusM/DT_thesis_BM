@@ -146,7 +146,7 @@ class DtRewardWrapper(gym.RewardWrapper):
 
     def reward(self, reward):
         if reward == -1000:
-            reward = -15
+            reward = -50
 
         return reward
 
@@ -237,6 +237,7 @@ class TimeOptimalReward(gym.RewardWrapper):
         sim = self.env.unwrapped
         reward_const = 2.4 
         speed = sim.speed
+        print(speed)
         #Lane logig 
         pos = sim.cur_pos
         angle = sim.cur_angle
@@ -282,6 +283,7 @@ class TimeOptimalRewardV2(gym.RewardWrapper):
             return -10.0  
         
         reward_speed = 2.0 * speed
+
         reward_alignment = 2.0 * (lp.dot_dir ** 2) if lp.dot_dir > 0 else 4.0 * lp.dot_dir # tanh like behaviour to add a higher gradint near 1
         reward_distance = -10.0 * np.abs(lp.dist)
         reward_angle = -0.1 * np.abs(lp.angle_deg)

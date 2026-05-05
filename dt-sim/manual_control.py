@@ -15,7 +15,7 @@ import pyglet
 from pyglet.window import key
 
 from src.gym_duckietown.envs import DuckietownEnv
-from utils.wrappers import CropResizeWrapper,TimeOptimalReward,LapTerminationWrapperV2
+from utils.wrappers import CropResizeWrapper,TimeOptimalRewardV2,LapTerminationWrapperV2
 
 # from experiments.utils import save_img
 
@@ -53,7 +53,7 @@ else:
     env = gym.make(args.env_name)
 
 env = LapTerminationWrapperV2(env,2000)
-env = TimeOptimalReward(env)
+env = TimeOptimalRewardV2(env)
 env = gym.wrappers.RecordEpisodeStatistics(env)
 render_modes = ["human", "top_down", "free_cam", "rgb_array"]
 view = render_modes[0]

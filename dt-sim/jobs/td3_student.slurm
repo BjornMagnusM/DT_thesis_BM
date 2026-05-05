@@ -42,5 +42,5 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --lap_termination \
             --time_optimal_reward \
-            --run-notes 'MidlaneV3 with -10 for align  '
+            --run-notes 'MIdlane Without TemporalWrapper  '
     "

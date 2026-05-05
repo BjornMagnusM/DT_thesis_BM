@@ -400,18 +400,18 @@ if __name__ == "__main__":
                     int(global_step / (time.time() - start_time)),
                     global_step,
                 )
-            # if global_step % args.eval_interval == 0: 
-            #      interval_evaluate_policy(
-            #         actor=actor,
-            #         args=args,
-            #         device=device,
-            #         global_step = global_step,
-            #         algo_name="TD3_lap",
-            #         grayscale = args.grayscale,
-            #         num_episodes=10,
-            #         run_name=run_name,
-            #         **env_params
-            #     )
+            if global_step % args.eval_interval == 0: 
+                 interval_evaluate_policy(
+                    actor=actor,
+                    args=args,
+                    device=device,
+                    global_step = global_step,
+                    algo_name="TD3_lap",
+                    grayscale = args.grayscale,
+                    num_episodes=10,
+                    run_name=run_name,
+                    **env_params
+                )
 
     if args.save_model:
         save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix="Final")
