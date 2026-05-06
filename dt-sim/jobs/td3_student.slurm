@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J NoT_M4_a40_duckie_td3 
+#SBATCH -J NoT_M4_2M_a40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -42,5 +42,6 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --lap_termination \
             --time_optimal_reward \
-            --run-notes 'MIdlane Without TemporalWrapper  '
+            --norm_reward \
+            --run-notes 'MIdlane Without TemporalWrapper'
     "
