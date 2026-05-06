@@ -146,7 +146,7 @@ def evaluate_policy(actor, args, device, algo_name, run_name = "run_name",graysc
 
 
 def interval_evaluate_policy(actor, args, device,global_step ,algo_name, run_name = "run_name",grayscale=False, num_episodes=10, **env_params):
-    print(f"\n--- Starting Final Evaluation: {num_episodes} Episodes ---")
+    print(f"\n--- Starting Evaluation interval: {num_episodes} Episodes ---")
     actor.eval()
 
     custom_run_name = f"{algo_name}/{run_name}"

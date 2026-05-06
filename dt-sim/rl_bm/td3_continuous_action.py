@@ -64,7 +64,7 @@ class Args:
     """for wandb tracking notes"""
     save_model: bool = True
     """whether to save model into the `runs/{run_name}` folder"""
-    eval_interval: int = 10000
+    eval_interval: int = 2000
     """the interval to save the Actor periodically"""
     grayscale: bool = False
     """whether to convert the observation to grayscale"""
@@ -99,7 +99,7 @@ class Args:
     """the scale of policy noise"""
     exploration_noise: float = 0.1
     """the scale of exploration noise"""
-    learning_starts: int = 5000
+    learning_starts: int = 10000
     """timestep to start learning"""
     policy_frequency: int = 2
     """the frequency of training policy (delayed)"""
@@ -340,7 +340,6 @@ if __name__ == "__main__":
         # ALGO LOGIC: training.
         if global_step > args.learning_starts:
             data = rb.sample(args.batch_size)
-            
             s_obs = data.observations.to(device, non_blocking=True)
             s_next_obs = data.next_observations.to(device, non_blocking=True)
 
@@ -399,19 +398,19 @@ if __name__ == "__main__":
                     int(global_step / (time.time() - start_time)),
                     global_step,
                 )
-            # if global_step % args.eval_interval == 0: 
-            #     print("in eval p")
-            #     interval_evaluate_policy(
-            #         actor=actor,
-            #         args=args,
-            #         device=device,
-            #         global_step = global_step,
-            #         algo_name="TD3_lap",
-            #         grayscale = args.grayscale,
-            #         num_episodes=10,
-            #         run_name=run_name,
-            #         **env_params
-            #     )
+            if global_step % args.eval_interval == 0: 
+                print("in eval p")
+                interval_evaluate_policy(
+                    actor=actor,
+                    args=args,
+                    device=device,
+                    global_step = global_step,
+                    algo_name="TD3_lap",
+                    grayscale = args.grayscale,
+                    num_episodes=10,
+                    run_name=run_name,
+                    **env_params
+                )
 
     if args.save_model:
         save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix="Final")
