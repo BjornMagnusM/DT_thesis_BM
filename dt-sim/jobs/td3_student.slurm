@@ -42,5 +42,5 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --lap_termination \
             --time_optimal_reward \
-            --run-notes '1M steps MIdlane Without TemporalWrapper'
+            --run-notes '1M steps MIdlaneV2 Without TemporalWrapper'
     "
