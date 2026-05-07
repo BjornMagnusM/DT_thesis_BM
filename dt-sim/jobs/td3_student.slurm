@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J Term3_NoconstReward_a40_duckie_td3 
+#SBATCH -J Term3_100R_NoconstReward_a40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
