@@ -64,7 +64,7 @@ class Args:
     """for wandb tracking notes"""
     save_model: bool = True
     """whether to save model into the `runs/{run_name}` folder"""
-    eval_interval: int = 2000
+    eval_interval: int = 10000
     """the interval to save the Actor periodically"""
     grayscale: bool = False
     """whether to convert the observation to grayscale"""
@@ -272,7 +272,8 @@ if __name__ == "__main__":
     }
     
     envs = gym.vector.SyncVectorEnv(
-        [make_env(args.seed + i, i, run_name, args.capture_video, args.motion_blur, args.max_lap_reward, args.lap_termination ,args.time_optimal_reward,args.cap_reward,args.norm_reward) for i in range(args.num_envs)]
+        [make_env(args.seed + i, i, run_name, args.capture_video, args.motion_blur, args.max_lap_reward, args.lap_termination ,
+         args.time_optimal_reward,args.cap_reward,args.norm_reward) for i in range(args.num_envs)]
     )
     assert isinstance(envs.single_action_space, gym.spaces.Box), "only continuous action space is supported"
 

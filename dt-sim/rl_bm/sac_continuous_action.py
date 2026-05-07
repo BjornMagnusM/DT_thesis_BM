@@ -5,6 +5,7 @@ os.environ["MKL_NUM_THREADS"] = "1"
 import random
 import time
 from dataclasses import dataclass
+from datetime import datetime
 
 import gymnasium as gym
 from gymnasium import spaces
@@ -17,14 +18,13 @@ import tyro
 from torch.utils.tensorboard import SummaryWriter
 
 from cleanrl_utils.buffers import ReplayBuffer
-from cleanrl_utils.atari_wrappers import MaxAndSkipEnv
-
-# Duckietown Specific
-from gym_duckietown.envs import DuckietownEnv
-from utils.wrappers import NormalizeWrapper, ImgWrapper, DtRewardWrapper, ActionWrapper, ResizeWrapper, CropResizeWrapper, LapTerminationWrapper
 
 # CNN Architucture 
 from cnn_architectures import DQNEncoder, ImpalaCNN,DrQEncoderV2
+
+# Utilities
+from utils.rl_env import DuckieOvalEnv
+from utils.debug_tools import save_models, evaluate_policy
 
 # Target the specific logger used in the simulator
 import logging
@@ -43,25 +43,46 @@ from utils.drqv2_augmentation import RandomShiftsAug
 class Args:
     exp_name: str = os.path.basename(__file__)[: -len(".py")]
     """the name of this experiment"""
-    seed: int = 1
+    seed: int | None = 2
     """seed of the experiment"""
     torch_deterministic: bool = True
     """if toggled, `torch.backends.cudnn.deterministic=False`"""
     cuda: bool = True
     """if toggled, cuda will be enabled by default"""
-    track: bool = False
+    track: bool = True
     """if toggled, this experiment will be tracked with Weights and Biases"""
-    wandb_project_name: str = "cleanRL"
+    wandb_project_name: str = "Duckie-RL"
     """the wandb's project name"""
+    wandb_group: str = "TD3"
+    """The algorithm"""
     wandb_entity: str = None
     """the entity (team) of wandb's project"""
     capture_video: bool = False
     """whether to capture videos of the agent performances (check out `videos` folder)"""
+    eval_model: bool = True
+    """whether to evaluate the saved model at the end of training"""
+    run_notes: str = ""
+    """for wandb tracking notes"""
+    save_model: bool = True
+    """whether to save model into the `runs/{run_name}` folder"""
+    eval_interval: int = 10000
+    """the interval to save the Actor periodically"""
+    grayscale: bool = False
+    """whether to convert the observation to grayscale"""
+    lap_termination: bool = False
+    """wether to use lap termination wrapper"""
+    time_optimal_reward: bool = False
+    """wether to use time optimal reward wrapper"""
+    cap_reward: bool = False
+    """wether to use reward wrapper that caps negativ reward at -15"""
+    norm_reward: bool = False
+    """wether to use reward normalization wrapper """
+
 
     # Algorithm specific arguments
-    env_id: str = "Oval-v1.2"
+    env_id: str = "Oval-"
     """the environment id of the task"""
-    total_timesteps: int = 1000000
+    total_timesteps: int = 1000001
     """total timesteps of the experiments"""
     num_envs: int = 1
     """the number of parallel game environments"""
@@ -73,7 +94,7 @@ class Args:
     """target smoothing coefficient (default: 0.005)"""
     batch_size: int = 256    #256 before ... Currently the best performing speed wise is 256 (1 env , SyncVectorEnv)
     """the batch size of sample from the reply memory"""
-    learning_starts: int = 50000
+    learning_starts: int = 5e3
     """timestep to start learning"""
     policy_lr: float = 3e-4
     """the learning rate of the policy network optimizer"""
@@ -87,90 +108,50 @@ class Args:
     """Entropy regularization coefficient."""
     autotune: bool = True
     """automatic tuning of the entropy coefficient"""
-    save_interval: int = 100000
-    """the interval to save the Actor periodically"""
-    save_model: bool = True
-    """whether to save model into the `runs/{run_name}` folder"""
+    max_lap_reward: int = 2000
+    """Max reward when completed a map, this get subtracted by the steps taken """
 
-def save_model(actor, qf1, qf2, step, run_name, suffix=""):
-    
-    model_dir = f"runs/{run_name}/models"
-    if not os.path.exists(model_dir):
-        os.makedirs(model_dir)
+    #Duckietown specific arguments
+    domain_rand: bool = False
+    """texture/light randomization"""
+    distortion: bool = False
+    """Simulates the fisheye lens"""
+    dynamics_rand: bool = False
+    """Simulates motor/trim imbalances"""
+    camera_rand: bool = False 
+    """Simulates mounting misalignments"""
+    motion_blur: bool = False
+    """Simulates the blur from the moving duckiebot"""
+    action_latency: bool = False
+    """Simulates the action latency from the duckiebot"""
 
-    label = suffix if suffix else "latest"
-    model_path = f"{model_dir}/sac_step_{label}.cleanrl_model"http://localhost:6006/
-
-    torch.save({
-        'actor_state_dict': actor.state_dict(),
-        'qf1_state_dict': qf1.state_dict(),
-        'qf2_state_dict': qf2.state_dict(),
-        'global_step': step,
-    }, model_path)
-    print(f"Saved: {model_path} at Step:{step}")
-
-
-def make_env(seed, idx, capture_video, run_name):
+def make_env(seed, idx, run_name, capture_video=False, motion_blur=False,   
+             max_lap_reward=5000,lap_termination = False,time_optimal_reward = False,cap_reward = False ,norm_reward= False, **env_kwargs):
     def thunk():
         render_mode = "rgb_array" if (capture_video and idx == 0) else None
-        # 1. Initializing the Duckietown env
-        env = DuckietownEnv(
-            seed=123,  # random seed
-            map_name="oval_loop",
-            max_steps=5000,  # we don't want the gym to reset itself
-            domain_rand=False,
-            camera_width=160,
-            camera_height=120,
-            accept_start_angle_deg=4,  # start close to straight
-            full_transparency=True,
-            distortion=False,
+        env = DuckieOvalEnv.create_wrapped(
+            run_name=run_name,
+            motion_blur=motion_blur,
+            grayscale = args.grayscale,
             render_mode=render_mode,
-            frame_skip = 3
+            seed=seed,
+            max_lap_reward=max_lap_reward,
+            lap_termination=lap_termination, 
+            time_optimal_reward=time_optimal_reward,
+            norm_reward=norm_reward,
+            **env_kwargs
         )
-        print("Initialized environment")
-
-        ##BM added a termination criteria after finishing a lap 
-        #env = LapTerminationWrapper(env)
-
-        # 2. Record video if requested (CleanRL standard)   
-        if capture_video and idx == 0:
-            env = gym.wrappers.RecordVideo(env, f"videos/{run_name}")
-
-        # 3. Crop and Resize first (from 120x160 to 84x84)
-        env = CropResizeWrapper(env, shape=(84, 84))
-
-        # 4. To make the images from W*H*C into C*W*H
-        env = ImgWrapper(env)
-
-
-        env = ActionWrapper(env)
-        env = DtRewardWrapper(env)
-        print("Initialized Wrappers")
-
-        # 5. Stack 4 frames
-        env = gym.wrappers.FrameStackObservation(env, stack_size=4)
-        #Flatten the 4x3 channels into 12 for the DQNEncoder
-        new_obs_space = gym.spaces.Box(low=0.0, high=1.0, shape=(12, 84, 84), dtype=np.uint8)
-        
-        env = gym.wrappers.TransformObservation(
-            env, 
-            lambda obs: obs.reshape(12, 84, 84),
-            observation_space=new_obs_space  
-        )   
-        # 6. Basic RL statistics for Tensorboard
-        env = gym.wrappers.RecordEpisodeStatistics(env)
-
         env.action_space.seed(seed)
         return env
 
     return thunk
-
-
 # ALGO LOGIC: initialize agent here:
 class SoftQNetwork(nn.Module):
     def __init__(self, env, feature_dim=256):
         super().__init__()
-        
+
+        self.channels = 4 if args.grayscale else 12
+        # Independent Visual Encoder
         #BM switched to the encoder from DrQ-v2
         self.encoder = DrQEncoderV2(
             obs_shape=env.single_observation_space.shape,
@@ -183,8 +164,6 @@ class SoftQNetwork(nn.Module):
         self.fc1 = nn.Linear(feature_dim + action_dim, 512)
         self.fc2 = nn.Linear(512, 256)
         self.fc_q = nn.Linear(256, 1)
-
-
 
     def forward(self, x, a):
         # x: Image observations (Batch, 12, 120, 160)
@@ -209,14 +188,17 @@ LOG_STD_MIN = -5
 
 
 class Actor(nn.Module):
-    def __init__(self, env):
+    def __init__(self, env, grayscale=True):
         super().__init__()
+
+        self.channels = 4 if grayscale else 12
 
         #BM switched to the encoder from DrQ-v2
         self.encoder = DrQEncoderV2(
             obs_shape=env.single_observation_space.shape,
             feature_dim=256
         )
+        
         
 
 
@@ -290,19 +272,41 @@ class Actor(nn.Module):
 if __name__ == "__main__":
 
     args = tyro.cli(Args)
-    run_name = f"{args.env_id}__sac__{args.seed}__{int(time.time())}"
+    input_mode = "" if args.grayscale else "_RGB"
+    timestamp = datetime.now().strftime("%m%d_%H%M")
+    run_name = f"sac__{args.env_id}{input_mode}__{args.seed}__{timestamp}"
     if args.track:
         import wandb
+        active_tags = [args.env_id]
+        active_tags.append("Grayscale" if args.grayscale else "RGB")
+        if args.domain_rand: active_tags.append("DomainRand")
+        if args.dynamics_rand: active_tags.append("DynamicsRand")
+        if args.camera_rand: active_tags.append("CameraRand")
+        if args.distortion: active_tags.append("Distortion")
+        if args.motion_blur: active_tags.append("MotionBlur")
+        if args.action_latency: active_tags.append("ActionLatency")
 
-        wandb.init(
+        run = wandb.init(
             project=args.wandb_project_name,
             entity=args.wandb_entity,
+            group=args.wandb_group,
+            tags=active_tags,
             sync_tensorboard=True,
             config=vars(args),
             name=run_name,
-            monitor_gym=True,
+            monitor_gym=False,
             save_code=True,
         )
+        reward_logic = wandb.Artifact('rl-logic-files', type='code')
+        reward_logic.add_file('utils/wrappers.py') 
+        reward_logic.add_file('utils/rl_env.py')
+        reward_logic.add_file('rl_bm/sac_continuous_action.py')
+        try:
+            reward_logic.add_file('jobs/sac_student.slurm')
+        except (ValueError, FileNotFoundError) as e:
+            print(f"Warning: Could not find job file for artifact logging: {e}")
+        run.log_artifact(reward_logic)
+    
     writer = SummaryWriter(f"runs/{run_name}")
     writer.add_text(
         "hyperparameters",
@@ -318,14 +322,22 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() and args.cuda else "cpu")
 
     # env setup
+    env_params = {
+        "domain_rand": args.domain_rand,
+        "distortion": args.distortion,
+        "dynamics_rand": args.dynamics_rand,
+        "camera_rand": args.camera_rand,
+    }
+
     envs = gym.vector.SyncVectorEnv(
-        [make_env(args.seed + i, i, args.capture_video, run_name) for i in range(args.num_envs)]
+        [make_env(args.seed + i, i, run_name, args.capture_video, args.motion_blur, args.max_lap_reward, 
+        args.lap_termination ,args.time_optimal_reward,args.cap_reward,args.norm_reward) for i in range(args.num_envs)]
     )
     assert isinstance(envs.single_action_space, gym.spaces.Box), "only continuous action space is supported"
 
     max_action = float(envs.single_action_space.high[0])
 
-    actor = Actor(envs).to(device)
+    actor = Actor(envs, grayscale=args.grayscale).to(device)
     qf1 = SoftQNetwork(envs, feature_dim=256).to(device)
     qf2 = SoftQNetwork(envs, feature_dim=256).to(device)
     qf1_target = SoftQNetwork(envs, feature_dim=256).to(device)
@@ -335,7 +347,7 @@ if __name__ == "__main__":
     q_optimizer = optim.Adam(list(qf1.parameters()) + list(qf2.parameters()), lr=args.q_lr)
     actor_optimizer = optim.Adam(list(actor.parameters()), lr=args.policy_lr)
 
-    #BM augmention 
+        #BM augmention 
     aug = RandomShiftsAug(pad=4).to(device)
 
     # Automatic entropy tuning
@@ -373,6 +385,13 @@ if __name__ == "__main__":
         # TRY NOT TO MODIFY: execute the game and log data.
         next_obs, rewards, terminations, truncations, infos = envs.step(actions)
 
+        # Curriculum spawn
+        if any(terminations) or any(truncations):
+            new_difficulty = min(1.0, global_step / (0.6 * args.total_timesteps))
+            # This sets the attribute for ALL parallel sub-environments
+            envs.set_attr("spawn_difficulty", new_difficulty)
+            writer.add_scalar("charts/spawn_difficulty", new_difficulty, global_step)
+
         # TRY NOT TO MODIFY: record rewards for plotting purposes
         if "episode" in infos:
             for i in range(envs.num_envs):
@@ -395,16 +414,13 @@ if __name__ == "__main__":
         # ALGO LOGIC: training.
         if global_step > args.learning_starts:
             data = rb.sample(args.batch_size)
-            #adding some parts
-            #CAST TO FLOAT HERE
-            # This converts the uint8 images from the buffer into float32 for the GPU
+        
             s_obs = data.observations.to(device, non_blocking=True)
             s_next_obs = data.next_observations.to(device, non_blocking=True)
 
             #BM applying the augmentation
             a_obs = aug(s_obs.float())
             a_next_obs = aug(s_next_obs.float())
-
 
             with torch.no_grad():
                 next_state_actions, next_state_log_pi, _ = actor.get_action(a_next_obs)
@@ -471,11 +487,34 @@ if __name__ == "__main__":
                 )
                 if args.autotune:
                     writer.add_scalar("losses/alpha_loss", alpha_loss.item(), global_step)
+            if global_step == 300000:
+                print("Curriculum Step 1: Activating Domain Randomization")
+                envs.call("set_randomization", domain_rand=args.domain_rand)
+            elif global_step == 500000:
+                print("Curriculum Step 2: Activating Camera and Dynamics Randomization")
+                envs.call("set_randomization", camera_rand=args.camera_rand, dynamics_rand=args.dynamics_rand)
+            elif global_step == 800000:
+                print("Curriculum Step 3: Activating Lens Distortion")
+                envs.call("set_randomization", distortion=args.distortion)
+            
+            if global_step == 499000:
+                save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix=f"v{args.version}_PRE_RAND")
+            if global_step % args.save_interval == 0 and global_step > 5e5:
+                save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix=f"v{args.version}")
 
-            # Periodic Model Saving 
-            if global_step > 0 and global_step % args.save_interval == 0:
-                save_model(actor, qf1, qf2, global_step, run_name)
 
-    save_model(actor, qf1, qf2, global_step, run_name, suffix="Final")    
+    if args.save_model:
+        save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix=f"v{args.version}_Final")
+    if args.eval_model:
+        evaluate_policy(
+            actor=actor,
+            args=args,
+            device=device,
+            algo_name="SAC",
+            num_episodes=10,
+            run_name=run_name,
+            **env_params
+        )
+    
     envs.close()
     writer.close()

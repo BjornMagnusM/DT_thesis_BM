@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J M3_RGB_a40_duckie_td3 
+#SBATCH -J SAC_M4_100R_l40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -7,8 +7,8 @@
 #SBATCH -c 4
 #SBATCH -p allgroups
 #SBATCH --mem=16g
-#SBATCH --nodelist=gpu1
-#SBATCH --gres=gpu:a40
+#SBATCH --nodelist=gpu7
+#SBATCH --gres=gpu:l40s
 
 cd $HOME/DT_thesis_BM/dt-sim
 mkdir -p logs
@@ -34,11 +34,13 @@ srun singularity exec --nv \
     $SIF_IMAGE \
     bash -c "
         export PYTHONPATH=\$PYTHONPATH:/app:/app/src && \
-        python3 rl_bm/td3_continuous_action.py \
-            --seed 123 \
+        python3 rl_bm/sac_continuous_action.py \
+            --seed 2 \
             --env-id oval_loop \
             --total-timesteps 1000000 \
-            --buffer-size 5000 \
+            --buffer-size 10000 \
             --learning-starts 10000 \
-            --run-notes 'Midlane3  with no back, ter and less speed and const with no dis '
+            --lap_termination \
+            --time_optimal_reward \
+            --run-notes '1M steps MIdlaneV2 Using Term3 with 500 for completed tile and no constreward'
     "
