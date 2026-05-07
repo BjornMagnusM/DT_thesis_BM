@@ -272,27 +272,26 @@ class TimeOptimalRewardV2(gym.RewardWrapper):
         # Get internal simulator state for custom math
         sim = self.env.unwrapped
         reward_const = 2.4 
-        speed = sim.speed
+        speed = sim.speed / 0.83 
         #Lane logig 
         pos = sim.cur_pos
-        angle = sim.cur_angle
-        current_action = sim.last_action
+        angle = sim.cur_angle  #This is in Radians where max is 2pi 
+        current_action = sim.last_action 
         try:
             lp = get_road_pos2(sim, pos, angle)
         except NotInLane:
             return -10.0  
         
-        reward_speed = 2.0 * speed
+        reward_speed_align = 2.5 * speed*lp.dot_dir
+        
+        reward_distance = -3.0 * (np.abs(lp.dist) / 0.23)**2  #Max would be 0.23
+        #reward_angle = -0.1 * np.abs(lp.angle_deg)  ##where max would be +-90deg 
 
-        reward_alignment = 2.0 * (lp.dot_dir ** 2) if lp.dot_dir > 0 else 4.0 * lp.dot_dir # tanh like behaviour to add a higher gradint near 1
-        reward_distance = -10.0 * np.abs(lp.dist)
-        reward_angle = -0.1 * np.abs(lp.angle_deg)
         # Jerk Penalty: Penalize sudden changes in angle
-        # self.last_action stores the [v, omega] from the PREVIOUS step
         action_diff = np.linalg.norm(current_action - self.prev_action)
-        reward_jerk = -0.5 * action_diff  # Start with -0.5 and tune if needed
+        reward_jerk = -0.5 * action_diff / 2.2  # Start with -0.5 and tune if needed, and max would be 2.2
         self.prev_action = current_action.copy()
-        reward = reward_const+reward_speed + reward_alignment + reward_distance + reward_angle + reward_jerk
+        reward = reward_const + reward_speed_align + reward_distance + reward_jerk
         return reward
 
 

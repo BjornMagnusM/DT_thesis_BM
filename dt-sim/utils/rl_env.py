@@ -6,7 +6,7 @@ from gymnasium.wrappers import NormalizeReward
 from utils.wrappers import (
     KinematicActionWrapper, ActionWrapper, ResizeWrapper, 
     CropResizeWrapper, ImgWrapper, CustomRewardWrapper, DtRewardWrapper,
-    TemporalWrapper,LapTerminationWrapperV2,TimeOptimalReward
+    TemporalWrapper,LapTerminationWrapperV2,TimeOptimalReward,TimeOptimalRewardV2
 )
 
 class DuckieOvalEnv(Simulator):
@@ -71,7 +71,7 @@ class DuckieOvalEnv(Simulator):
         # 5. Reward System
         if time_optimal_reward:
             print("using time optimal reward")
-            env = TimeOptimalReward(env)
+            env = TimeOptimalRewardV2(env)
 
 
         if cap_reward:

@@ -21,7 +21,7 @@ from utils.wrappers import CropResizeWrapper,TimeOptimalRewardV2,LapTerminationW
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--env-name", default= "Duckietown")
-parser.add_argument("--map-name", default="oval_loop")
+parser.add_argument("--map-name", default="oval_loop_backround")
 parser.add_argument("--distortion", default=False, action="store_true")
 parser.add_argument("--camera_rand", default=False, action="store_true")
 parser.add_argument("--draw-curve", action="store_true", help="draw the lane following curve")
@@ -56,7 +56,7 @@ env = LapTerminationWrapperV2(env,2000)
 env = TimeOptimalRewardV2(env)
 env = gym.wrappers.RecordEpisodeStatistics(env)
 render_modes = ["human", "top_down", "free_cam", "rgb_array"]
-view = render_modes[1]
+view = render_modes[0]
 
 env.reset(seed=args.seed)
 
