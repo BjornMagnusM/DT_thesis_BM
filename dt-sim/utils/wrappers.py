@@ -271,7 +271,7 @@ class TimeOptimalRewardV2(gym.RewardWrapper):
     def reward (self, reward):
         # Get internal simulator state for custom math
         sim = self.env.unwrapped
-        reward_const = 2.4 
+        reward_const = -1 
         speed = sim.speed / 0.83 
         #Lane logig 
         pos = sim.cur_pos
@@ -293,6 +293,69 @@ class TimeOptimalRewardV2(gym.RewardWrapper):
         self.prev_action = current_action.copy()
         reward = reward_const + reward_speed_align + reward_distance + reward_jerk
         return reward
+
+
+#BM wrapper 
+class LapTerminationWrapperV3(gym.Wrapper):
+    def __init__(self, env, max_lap_reward):
+        super().__init__(env)
+        self.start_tile = None 
+        self.finish_tile = None
+        self.prev_lenght=1
+        self.visited_tiles = set()
+        self.step_counter = 0
+        self.max_lap_reward = max_lap_reward
+
+
+    def reset(self, **kwargs):
+        obs, info = self.env.reset(**kwargs)
+        sim = self.env.unwrapped
+
+        self.start_tile = None
+        self.finish_tile = None
+        self.prev_lenght = 1
+        self.visited_tiles = set()
+        self.step_counter = 0
+
+        return obs, info
+
+
+    def step(self, action): 
+        obs, reward, done, truncated, misc = self.env.step(action)
+        self.step_counter += 1
+
+        sim = self.env.unwrapped 
+        current_tile = sim.get_grid_coords(sim.cur_pos)
+
+        #Define the starting tile once
+        if self.start_tile is None: 
+            self.start_tile = current_tile
+        
+        #Define the finishing tile as the 2nd tile so the agent will atleast do one full lap 
+        if self.finish_tile is None and current_tile != self.start_tile: 
+            self.finish_tile = current_tile  
+        
+
+        #Add current tile of tile is not in the set 
+        self.visited_tiles.add(current_tile)
+        
+        if len(self.visited_tiles)>self.prev_lenght: 
+            print("Completed one tile")
+            reward += 10
+        
+         #Mark the episode as done if the agent have completed a whole lap  
+        if len(self.visited_tiles) == 12 and current_tile == self.finish_tile: 
+            done = True
+            lap_reward = max(self.max_lap_reward-self.step_counter,0.0)
+            print(self.step_counter)
+            reward += lap_reward
+            print("completed a lap")
+        self.prev_lenght = len(self.visited_tiles)
+        
+
+        return obs, reward, done, truncated, misc
+
+
 
 
 #BM wrapper 

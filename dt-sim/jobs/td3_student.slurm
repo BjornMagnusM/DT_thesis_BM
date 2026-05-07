@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J MV2_l40_duckie_td3 
+#SBATCH -J Term3_NoconstReward_a40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -7,8 +7,8 @@
 #SBATCH -c 4
 #SBATCH -p allgroups
 #SBATCH --mem=16g
-#SBATCH --nodelist=gpu7
-#SBATCH --gres=gpu:l40s
+#SBATCH --nodelist=gpu1
+#SBATCH --gres=gpu:a40
 
 cd $HOME/DT_thesis_BM/dt-sim
 mkdir -p logs
@@ -37,10 +37,10 @@ srun singularity exec --nv \
         python3 rl_bm/td3_continuous_action.py \
             --seed 2 \
             --env-id oval_loop \
-            --total-timesteps 2000000 \
+            --total-timesteps 1000000 \
             --buffer-size 10000 \
             --learning-starts 10000 \
             --lap_termination \
             --time_optimal_reward \
-            --run-notes '1M steps MIdlaneV2 Without TemporalWrapper'
+            --run-notes '1M steps MIdlaneV2 Using Term3 and no constreward'
     "

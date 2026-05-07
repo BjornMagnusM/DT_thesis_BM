@@ -6,7 +6,7 @@ from gymnasium.wrappers import NormalizeReward
 from utils.wrappers import (
     KinematicActionWrapper, ActionWrapper, ResizeWrapper, 
     CropResizeWrapper, ImgWrapper, CustomRewardWrapper, DtRewardWrapper,
-    TemporalWrapper,LapTerminationWrapperV2,TimeOptimalReward,TimeOptimalRewardV2
+    TemporalWrapper,LapTerminationWrapperV3,TimeOptimalReward,TimeOptimalRewardV2
 )
 
 class DuckieOvalEnv(Simulator):
@@ -37,28 +37,17 @@ class DuckieOvalEnv(Simulator):
         """
         env = cls(**kwargs)
 
-        # 1. Kinematics (v, w -> wl, wr)
+        # Kinematics (v, w -> wl, wr)
         env = KinematicActionWrapper(env, wheel_dist=0.102, radius=0.0318, k=27.0)
         env = ActionWrapper(env)
         
-
-
-        # 2. Temporal Logic
-        #env = TemporalWrapper(env, frame_skip=3, motion_blur=motion_blur)
-
-
-        ##BM added a termination criteria after finishing a lap 
-        if lap_termination:
-            print("using lap termination")
-            env = LapTerminationWrapperV2(env,max_lap_reward=max_lap_reward)
-
 
         if capture_video:
             video_folder = f"videos/{run_name}"
             os.makedirs(video_folder, exist_ok=True)
             env = gym.wrappers.RecordVideo(env, video_folder, episode_trigger=lambda x: True)
 
-        # 3. Vision Pipeline (Sim2Real Insurance)
+        # Vision Pipeline (Sim2Real Insurance)
         env = ResizeWrapper(env, shape=(120, 160, 3)) # Ensure 120x160 base
         env = CropResizeWrapper(env, shape=(84, 84))  # Crop sky, resize to 84x84
         
@@ -68,10 +57,17 @@ class DuckieOvalEnv(Simulator):
         env = ImgWrapper(env) # Transpose to CHW
         
 
-        # 5. Reward System
+        #  Reward System
         if time_optimal_reward:
             print("using time optimal reward")
             env = TimeOptimalRewardV2(env)
+        
+
+        ##BM added a termination criteria after finishing a lap 
+        if lap_termination:
+            print("using lap termination")
+            env = LapTerminationWrapperV3(env,max_lap_reward=max_lap_reward)
+
 
 
         if cap_reward:
@@ -85,7 +81,7 @@ class DuckieOvalEnv(Simulator):
 
 
 
-        # 6. Temporal Stacking
+        #  Temporal Stacking
         if frame_stack > 1:
             env = gym.wrappers.FrameStackObservation(env, stack_size=frame_stack)
             c = 1 if grayscale else 3
