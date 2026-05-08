@@ -65,7 +65,7 @@ class Args:
     """for wandb tracking notes"""
     save_model: bool = True
     """whether to save model into the `runs/{run_name}` folder"""
-    eval_interval: int = 10000
+    save_interval: int = 100000
     """the interval to save the Actor periodically"""
     eval_interval: int = 10000
     """the interval to save the Actor periodically"""
