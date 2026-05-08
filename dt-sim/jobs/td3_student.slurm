@@ -7,8 +7,8 @@
 #SBATCH -c 4
 #SBATCH -p allgroups
 #SBATCH --mem=16g
-#SBATCH --nodelist=gpu7
-#SBATCH --gres=gpu:l40s
+#SBATCH --nodelist=gpu1
+#SBATCH --gres=gpu:a40
 
 cd $HOME/DT_thesis_BM/dt-sim
 mkdir -p logs
@@ -37,10 +37,10 @@ srun singularity exec --nv \
         python3 rl_bm/td3_continuous_action.py \
             --seed 2 \
             --env-id oval_loop \
-            --total-timesteps 1000000 \
+            --total-timesteps 2000000 \
             --buffer-size 10000 \
             --learning-starts 10000 \
             --lap_termination \
             --time_optimal_reward \
-            --run-notes '1M steps MIdlaneV2 Using Term3 with 500 for completed tile and no constreward'
+            --run-notes 'added back penelty for angle 2M steps MIdlaneV2 Using Term3 with 100 for completed tile and no constreward'
     "
