@@ -24,7 +24,7 @@ from cnn_architectures import DQNEncoder, ImpalaCNN,DrQEncoderV2
 
 # Utilities
 from utils.rl_env import DuckieOvalEnv
-from utils.debug_tools import save_models, evaluate_policy
+from utils.debug_tools import save_models, evaluate_policy,interval_evaluate_policy
 
 # Target the specific logger used in the simulator
 import logging
@@ -501,7 +501,20 @@ if __name__ == "__main__":
                 save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix=f"v{args.version}_PRE_RAND")
             if global_step % args.save_interval == 0 and global_step > 5e5:
                 save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix=f"v{args.version}")
-
+            
+            if global_step % args.eval_interval == 0: 
+                print("in eval p")
+                interval_evaluate_policy(
+                    actor=actor,
+                    args=args,
+                    device=device,
+                    global_step = global_step,
+                    algo_name="SAC_lap",
+                    grayscale = args.grayscale,
+                    num_episodes=10,
+                    run_name=run_name,
+                    **env_params
+                )
 
     if args.save_model:
         save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix=f"v{args.version}_Final")
