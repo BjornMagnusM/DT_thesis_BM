@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J M20thRerun_l40_duckie_td3 
+#SBATCH -J Mid2_Ter3_10_l40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -40,7 +40,7 @@ srun singularity exec --nv \
             --total-timesteps 2000000 \
             --buffer-size 10000 \
             --learning-starts 10000 \
-            --lap_termination \
             --time_optimal_reward \
-            --run-notes 'UsingTimeoptimalV version 1 and ter2'
+            --lap_termination \
+            --run-notes 'UsingTimeoptimalV2 no Ter'
     "
