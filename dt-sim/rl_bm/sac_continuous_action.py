@@ -67,6 +67,8 @@ class Args:
     """whether to save model into the `runs/{run_name}` folder"""
     eval_interval: int = 10000
     """the interval to save the Actor periodically"""
+    eval_interval: int = 10000
+    """the interval to save the Actor periodically"""
     grayscale: bool = False
     """whether to convert the observation to grayscale"""
     lap_termination: bool = False
