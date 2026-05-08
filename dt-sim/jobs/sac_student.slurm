@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J SAC_M4_100R_l40_duckie_td3 
+#SBATCH -J 20thRerun_l40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -42,5 +42,5 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --lap_termination \
             --time_optimal_reward \
-            --run-notes '1M steps MIdlaneV2 Using Term3 with 500 for completed tile and no constreward'
+            --run-notes 'Re running same as 20th'
     "
