@@ -291,7 +291,7 @@ class TimeOptimalRewardV2(gym.RewardWrapper):
         action_diff = np.linalg.norm(current_action - self.prev_action)
         reward_jerk = -0.5 * action_diff / 2.2  # Start with -0.5 and tune if needed, and max would be 2.2
         self.prev_action = current_action.copy()
-        reward = reward_const + reward_speed_align + reward_distance + reward_jerk
+        reward = reward_const + reward_speed_align + reward_distance + reward_jerk + reward_angle
         return reward
 
 
