@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J Term3_100R_NoconstReward_a40_duckie_td3 
+#SBATCH -J Mid1_Term3_100R_l40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -7,8 +7,8 @@
 #SBATCH -c 4
 #SBATCH -p allgroups
 #SBATCH --mem=16g
-#SBATCH --nodelist=gpu1
-#SBATCH --gres=gpu:a40
+#SBATCH --nodelist=gpu7
+#SBATCH --gres=gpu:l40s
 
 cd $HOME/DT_thesis_BM/dt-sim
 mkdir -p logs
@@ -42,5 +42,5 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --lap_termination \
             --time_optimal_reward \
-            --run-notes 'added back penelty for angle 2M steps MIdlaneV2 Using Term3 with 100 for completed tile and no constreward'
+            --run-notes 'UsingTimeoptimal version 1 and terminal3 so with 100 tile reward'
     "
