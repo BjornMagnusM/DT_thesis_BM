@@ -42,5 +42,5 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --lap_termination \
             --time_optimal_reward \
-            --run-notes 'UsingTimeoptimal version 1 and terminal3 so with 100 tile reward'
+            --run-notes 'UsingTimeoptimalV version 1 and terminal3 so with 100 tile reward'
     "

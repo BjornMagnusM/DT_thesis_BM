@@ -489,15 +489,6 @@ if __name__ == "__main__":
                 )
                 if args.autotune:
                     writer.add_scalar("losses/alpha_loss", alpha_loss.item(), global_step)
-            if global_step == 300000:
-                print("Curriculum Step 1: Activating Domain Randomization")
-                envs.call("set_randomization", domain_rand=args.domain_rand)
-            elif global_step == 500000:
-                print("Curriculum Step 2: Activating Camera and Dynamics Randomization")
-                envs.call("set_randomization", camera_rand=args.camera_rand, dynamics_rand=args.dynamics_rand)
-            elif global_step == 800000:
-                print("Curriculum Step 3: Activating Lens Distortion")
-                envs.call("set_randomization", distortion=args.distortion)
             
             if global_step == 499000:
                 save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix=f"v{args.version}_PRE_RAND")

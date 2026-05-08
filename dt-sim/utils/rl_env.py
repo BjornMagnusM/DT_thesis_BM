@@ -59,13 +59,13 @@ class DuckieOvalEnv(Simulator):
         #  Reward System
         if time_optimal_reward:
             print("using time optimal reward")
-            env = TimeOptimalReward(env)
+            env = TimeOptimalRewardV2(env)
         
 
         ##BM added a termination criteria after finishing a lap 
         if lap_termination:
             print("using lap termination")
-            env = LapTerminationWrapperV2(env,max_lap_reward=max_lap_reward)
+            env = LapTerminationWrapperV3(env,max_lap_reward=max_lap_reward)
 
 
 
