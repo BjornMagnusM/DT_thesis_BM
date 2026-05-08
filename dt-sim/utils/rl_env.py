@@ -5,7 +5,7 @@ from gym_duckietown.simulator import Simulator
 from gymnasium.wrappers import NormalizeReward
 from utils.wrappers import (
     KinematicActionWrapper, ActionWrapper, ResizeWrapper, 
-    CropResizeWrapper, ImgWrapper, CustomRewardWrapper, DtRewardWrapper,LapTerminationWrapperV3,TimeOptimalReward,TimeOptimalRewardV2
+    CropResizeWrapper, ImgWrapper, CustomRewardWrapper, DtRewardWrapper,LapTerminationWrapperV3,TimeOptimalReward,TimeOptimalRewardV2,LapTerminationWrapperV2
 )
 
 class DuckieOvalEnv(Simulator):
@@ -65,7 +65,7 @@ class DuckieOvalEnv(Simulator):
         ##BM added a termination criteria after finishing a lap 
         if lap_termination:
             print("using lap termination")
-            env = LapTerminationWrapperV3(env,max_lap_reward=max_lap_reward)
+            env = LapTerminationWrapperV2(env,max_lap_reward=max_lap_reward)
 
 
 
