@@ -52,8 +52,9 @@ if args.env_name and args.env_name.find("Duckietown") != -1:
 else:
     env = gym.make(args.env_name)
 
-env = TimeOptimalReward(env)
 env = LapTerminationWrapperV3(env,2000)
+env = TimeOptimalRewardV2(env)
+
 
 env = gym.wrappers.RecordEpisodeStatistics(env)
 render_modes = ["human", "top_down", "free_cam", "rgb_array"]
