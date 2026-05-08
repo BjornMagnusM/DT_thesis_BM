@@ -341,7 +341,7 @@ class LapTerminationWrapperV3(gym.Wrapper):
         
         if len(self.visited_tiles)>self.prev_lenght: 
             print("Completed one tile")
-            reward += 100
+            reward += 500
         
          #Mark the episode as done if the agent have completed a whole lap  
         if len(self.visited_tiles) == 12 and current_tile == self.finish_tile: 
