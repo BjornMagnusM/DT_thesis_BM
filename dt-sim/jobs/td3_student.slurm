@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J +=Mid2_Ter3_5_0const_a40_duckie_td3 
+#SBATCH -J +=Mid2_Ter3_5_0const_l40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
