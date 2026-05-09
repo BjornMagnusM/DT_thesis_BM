@@ -271,7 +271,7 @@ class TimeOptimalRewardV2(gym.RewardWrapper):
     def reward (self, reward):
         # Get internal simulator state for custom math
         sim = self.env.unwrapped
-        reward_const = -1 
+        reward_const = 0 
         speed = sim.speed / 0.83 
         #Lane logig 
         pos = sim.cur_pos
@@ -341,7 +341,7 @@ class LapTerminationWrapperV3(gym.Wrapper):
         
         if len(self.visited_tiles)>self.prev_lenght: 
             print("Completed one tile")
-            reward += 100
+            reward += 5
         
          #Mark the episode as done if the agent have completed a whole lap  
         if len(self.visited_tiles) == 12 and current_tile == self.finish_tile: 
