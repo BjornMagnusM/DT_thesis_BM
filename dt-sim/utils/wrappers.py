@@ -258,7 +258,8 @@ class TimeOptimalReward(gym.RewardWrapper):
         self.prev_action = current_action.copy()
         reward = reward_const+reward_speed + reward_alignment + reward_distance + reward_angle + reward_jerk
         return reward
-    
+
+
 class TimeOptimalRewardV2(gym.RewardWrapper):
     def __init__(self, env):
         super().__init__(env)
@@ -271,7 +272,7 @@ class TimeOptimalRewardV2(gym.RewardWrapper):
     def reward (self, reward):
         # Get internal simulator state for custom math
         sim = self.env.unwrapped
-        reward_const = 0 
+        reward_const = -1 
         speed = sim.speed / 0.83 
         #Lane logig 
         pos = sim.cur_pos
@@ -295,7 +296,6 @@ class TimeOptimalRewardV2(gym.RewardWrapper):
         return reward
 
 
-#BM wrapper 
 class LapTerminationWrapperV3(gym.Wrapper):
     def __init__(self, env, max_lap_reward):
         super().__init__(env)
@@ -341,7 +341,7 @@ class LapTerminationWrapperV3(gym.Wrapper):
         
         if len(self.visited_tiles)>self.prev_lenght: 
             print("Completed one tile")
-            reward += 5
+            reward += 10
         
          #Mark the episode as done if the agent have completed a whole lap  
         if len(self.visited_tiles) == 12 and current_tile == self.finish_tile: 
@@ -356,9 +356,6 @@ class LapTerminationWrapperV3(gym.Wrapper):
         return obs, reward, done, truncated, misc
 
 
-
-
-#BM wrapper 
 class LapTerminationWrapperV2(gym.Wrapper):
     def __init__(self, env, max_lap_reward):
         super().__init__(env)
