@@ -491,9 +491,9 @@ if __name__ == "__main__":
                     writer.add_scalar("losses/alpha_loss", alpha_loss.item(), global_step)
             
             if global_step == 499000:
-                save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix=f"v{args.version}_PRE_RAND")
+                save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix="_PRE_RAND")
             if global_step % args.save_interval == 0 and global_step > 5e5:
-                save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix=f"v{args.version}")
+                save_models(actor, qf1, qf2, global_step, run_name, args, env_params)
             
             if global_step % args.eval_interval == 0: 
                 print("in eval p")
@@ -510,7 +510,7 @@ if __name__ == "__main__":
                 )
 
     if args.save_model:
-        save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix=f"v{args.version}_Final")
+        save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix=f"v_Final")
     if args.eval_model:
         evaluate_policy(
             actor=actor,

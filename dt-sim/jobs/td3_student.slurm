@@ -42,5 +42,5 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
-            --run-notes "-3.5 Const Mid2**3 Ter3_100 Jerk 3"
+            --run-notes "-3.5 Const Mid2**3 Ter4_100 Jerk 3"
     "
