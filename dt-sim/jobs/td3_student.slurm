@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J Mid2**3_Ter3_100_cap_l40_duckie_td3 
+#SBATCH -J -3.5Const_Mid2**3_Ter3_100_cap_l40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -43,5 +43,5 @@ srun singularity exec --nv \
             --time_optimal_reward \
             --lap_termination \
             --cap_reward \
-            --run-notes "Mid2**3 Ter3_100 and Cap Jerk 3"
+            --run-notes "-3.5 Const Mid2**3 Ter3_100 and Cap Jerk 3"
     "

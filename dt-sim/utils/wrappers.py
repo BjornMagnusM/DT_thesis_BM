@@ -272,7 +272,7 @@ class TimeOptimalRewardV2(gym.RewardWrapper):
     def reward (self, reward):
         # Get internal simulator state for custom math
         sim = self.env.unwrapped
-        reward_const = -1 
+        reward_const = -3.5 
         speed = sim.speed / 0.83 
         #Lane logig 
         pos = sim.cur_pos
