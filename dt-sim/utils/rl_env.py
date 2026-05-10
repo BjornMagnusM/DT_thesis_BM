@@ -98,5 +98,7 @@ class DuckieOvalEnv(Simulator):
                 lambda obs: np.array(obs).reshape(final_channels, 84, 84),
                 observation_space=new_obs_space
             )
+        
+
 
         return gym.wrappers.RecordEpisodeStatistics(env)

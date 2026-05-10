@@ -272,7 +272,7 @@ class TimeOptimalRewardV2(gym.RewardWrapper):
     def reward (self, reward):
         # Get internal simulator state for custom math
         sim = self.env.unwrapped
-        reward_const = -1
+        reward_const = -3.5
         speed = sim.speed / 0.83 
         #Lane logig 
         pos = sim.cur_pos
@@ -283,9 +283,9 @@ class TimeOptimalRewardV2(gym.RewardWrapper):
         except NotInLane:
             return -10.0  
         
-        reward_speed_align = 2.5 * speed*lp.dot_dir
+        reward_speed_align = 5 * speed*lp.dot_dir
         
-        reward_distance = -3 (np.abs(lp.dist) / 0.23)**2 #Max would be 0.23
+        reward_distance = -3.0 * (np.abs(lp.dist) / 0.23)**3 #Max would be 0.23
         reward_angle = -10 * np.abs(lp.angle_deg) / 90  ##where max would be +-90deg 
 
         # Jerk Penalty: Penalize sudden changes in angle

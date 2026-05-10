@@ -64,7 +64,7 @@ class Args:
     """for wandb tracking notes"""
     save_model: bool = True
     """whether to save model into the `runs/{run_name}` folder"""
-    eval_interval: int = 10000
+    eval_interval: int = 50000
     """the interval to save the Actor periodically"""
     grayscale: bool = False
     """whether to convert the observation to grayscale"""
@@ -302,7 +302,6 @@ if __name__ == "__main__":
         handle_timeout_termination=False,
     )
     start_time = time.time()
-
     # TRY NOT TO MODIFY: start the game
     obs, _ = envs.reset(seed=args.seed)
     for global_step in range(args.total_timesteps):
