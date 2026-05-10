@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J 50ktest_l40_duckie_td3 
+#SBATCH -J Mid2**3Ter4_100_l40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -42,5 +42,5 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
-            --run-notes "50k test for wrapper "
+            --run-notes "Speed 2.5 Mid2 Ter4 "
     "
