@@ -6,7 +6,7 @@ from gymnasium.wrappers import NormalizeReward
 from utils.wrappers import (
     KinematicActionWrapper, ActionWrapper, ResizeWrapper, 
     CropResizeWrapper, ImgWrapper, CustomRewardWrapper, DtRewardWrapper,LapTerminationWrapperV3,
-    TimeOptimalReward,TimeOptimalRewardV2,LapTerminationWrapperV2,LapTerminationWrapperV4
+    TimeOptimalReward,TimeOptimalRewardV2,LapTerminationWrapperV2,LapTerminationWrapperV4, VideoOverlayWrapper
 )
 
 class DuckieOvalEnv(Simulator):
@@ -45,6 +45,7 @@ class DuckieOvalEnv(Simulator):
         if capture_video:
             video_folder = f"videos/{run_name}"
             os.makedirs(video_folder, exist_ok=True)
+            env = VideoOverlayWrapper(env)
             env = gym.wrappers.RecordVideo(env, video_folder, episode_trigger=lambda x: True)
 
         # Vision Pipeline (Sim2Real Insurance)

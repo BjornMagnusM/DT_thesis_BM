@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J Mid2**3_Ter4_100_l40_duckie_td3 
+#SBATCH -J 50ktest_l40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -37,10 +37,10 @@ srun singularity exec --nv \
         python3 rl_bm/td3_continuous_action.py \
             --seed 2 \
             --env-id oval_loop \
-            --total-timesteps 1000000 \
+            --total-timesteps 50000 \
             --buffer-size 10000 \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
-            --run-notes "Speed5 Mid2**3 Ter4_100 Jerk 3"
+            --run-notes "50k test for wrapper "
     "
