@@ -285,7 +285,7 @@ class TimeOptimalRewardV2(gym.RewardWrapper):
         
         reward_speed_align = 2.5 * speed*lp.dot_dir
         
-        reward_distance = - (np.abs(lp.dist) / 0.23)**3  #Max would be 0.23
+        reward_distance = -3 (np.abs(lp.dist) / 0.23)**2 #Max would be 0.23
         reward_angle = -10 * np.abs(lp.angle_deg) / 90  ##where max would be +-90deg 
 
         # Jerk Penalty: Penalize sudden changes in angle
