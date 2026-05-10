@@ -42,5 +42,5 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
-            --run-notes  " Speed5 Mid2**3 Ter4_100 Jerk 3"
+            --run-notes "Speed5 Mid2**3 Ter4_100 Jerk 3"
     "
