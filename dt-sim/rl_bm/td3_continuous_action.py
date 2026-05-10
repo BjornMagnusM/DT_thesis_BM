@@ -105,7 +105,7 @@ class Args:
     """the frequency of training policy (delayed)"""
     noise_clip: float = 0.5
     """noise clip parameter of the Target Policy Smoothing Regularization"""
-    max_lap_reward: int = 2000
+    max_lap_reward: int = 4000
     """Max reward when completed a map, this get subtracted by the steps taken """
 
     #Duckietown specific arguments
