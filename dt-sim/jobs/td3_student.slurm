@@ -37,7 +37,7 @@ srun singularity exec --nv \
         python3 rl_bm/td3_continuous_action.py \
             --seed 2 \
             --env-id oval_loop \
-            --total-timesteps 50000 \
+            --total-timesteps 1000000 \
             --buffer-size 10000 \
             --learning-starts 10000 \
             --time_optimal_reward \
