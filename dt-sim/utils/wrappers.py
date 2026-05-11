@@ -273,7 +273,7 @@ class TimeOptimalRewardV2(gym.RewardWrapper):
     def reward (self, reward):
         # Get internal simulator state for custom math
         sim = self.env.unwrapped
-        reward_const = -3.5 
+        reward_const = -1
         speed = sim.speed / 0.83 
         #Lane logig 
         pos = sim.cur_pos
@@ -344,18 +344,19 @@ class LapTerminationWrapperV4(gym.Wrapper):
         self.visited_tiles.add(current_tile)
         
         if len(self.visited_tiles)>self.prev_lenght: 
-            print("Completed one tile")
             tile_reward = max(300-self.step_tile,0.0)
             reward += tile_reward
             self.step_tile = 0 
+
+        misc["progress_ratio"] = len(self.visited_tiles) / 12
         
          #Mark the episode as done if the agent have completed a whole lap  
         if len(self.visited_tiles) == 12 and current_tile == self.finish_tile: 
             done = True
             lap_reward = max(self.max_lap_reward-self.step_counter,0.0)
-            print(self.step_counter)
+            misc["lap_step"] =  self.step_counter
             reward += lap_reward
-            print("completed a lap")
+            print(f"completed a lap within {self.step_counter} steps")
         self.prev_lenght = len(self.visited_tiles)
         
 
@@ -406,7 +407,6 @@ class LapTerminationWrapperV3(gym.Wrapper):
         self.visited_tiles.add(current_tile)
         
         if len(self.visited_tiles)>self.prev_lenght: 
-            print("Completed one tile")
             reward += 100
         
         misc["progress_ratio"] = len(self.visited_tiles) / 12
@@ -415,10 +415,9 @@ class LapTerminationWrapperV3(gym.Wrapper):
         if len(self.visited_tiles) == 12 and current_tile == self.finish_tile: 
             done = True
             lap_reward = max(self.max_lap_reward-2*self.step_counter,0.0)
-            print(self.step_counter)
             misc["lap_step"] =  self.step_counter
             reward += lap_reward
-            print("completed a lap")
+            print(f"completed a lap within {self.step_counter} steps")
         self.prev_lenght = len(self.visited_tiles)
         
 
@@ -469,9 +468,8 @@ class LapTerminationWrapperV2(gym.Wrapper):
         if len(self.visited_tiles) == 12 and current_tile == self.finish_tile: 
             done = True
             lap_reward = max(self.max_lap_reward-self.step_counter,0.0)
-            print(self.step_counter)
             reward += lap_reward
-            print("completed a lap")
+            print(f"completed a lap within {self.step_counter} steps")
         
 
         return obs, reward, done, truncated, misc
