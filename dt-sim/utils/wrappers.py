@@ -11,6 +11,7 @@ from typing import Tuple, Optional
 import math
 from collections import namedtuple
 import cv2
+import wandb
 
 class TemporalWrapper(gym.Wrapper):
     def __init__(self, env=None, frame_skip=3, motion_blur=True):
@@ -408,11 +409,14 @@ class LapTerminationWrapperV3(gym.Wrapper):
             print("Completed one tile")
             reward += 100
         
+        misc["progress_ratio"] = len(self.visited_tiles) / 12
+        
          #Mark the episode as done if the agent have completed a whole lap  
         if len(self.visited_tiles) == 12 and current_tile == self.finish_tile: 
             done = True
             lap_reward = max(self.max_lap_reward-2*self.step_counter,0.0)
             print(self.step_counter)
+            misc["lap_step"] =  self.step_counter
             reward += lap_reward
             print("completed a lap")
         self.prev_lenght = len(self.visited_tiles)

@@ -326,6 +326,11 @@ if __name__ == "__main__":
                     writer.add_scalar("charts/episodic_return", infos['episode']['r'][i], global_step)
                     print( infos['episode']['l'][i])
                     writer.add_scalar("charts/episodic_length", infos['episode']['l'][i], global_step)  
+                if "_progress_ratio" in infos and infos["_episode"][i]:
+                    writer.add_scalar("charts/progress_ratio", infos['progress_ratio'][i], global_step)  
+                if "_lap_step" in infos and infos["_episode"][i]:
+                    writer.add_scalar("charts/lap_step", infos['lap_step'][i], global_step)  
+                
 
         # TRY NOT TO MODIFY: save data to reply buffer; handle `final_observation`
         real_next_obs = next_obs.copy()
