@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J NormMid2_Ter3_100_l40_duckie_td3 
+#SBATCH -J S5Mid2**3_Ter3_100_l40_duckie_td3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -42,6 +42,5 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
-            --norm_reward \
-            --run-notes "Rerun 30th with normalization"
+            --run-notes "S5id2**3Ter3_100"
     "
