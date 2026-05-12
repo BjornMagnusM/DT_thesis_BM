@@ -105,7 +105,7 @@ class Args:
     """the frequency of training policy (delayed)"""
     noise_clip: float = 0.5
     """noise clip parameter of the Target Policy Smoothing Regularization"""
-    max_lap_reward: int = 4000
+    max_lap_reward: int = 2000
     """Max reward when completed a map, this get subtracted by the steps taken """
 
     #Duckietown specific arguments
@@ -121,7 +121,7 @@ class Args:
     """Simulates the blur from the moving duckiebot"""
 
 def make_env(seed, idx, run_name, capture_video=False, motion_blur=False,   
-             max_lap_reward=5000,lap_termination = False,time_optimal_reward = False,cap_reward = False ,norm_reward= False, **env_kwargs):
+             max_lap_reward=2000,lap_termination = False,time_optimal_reward = False,cap_reward = False ,norm_reward= False, **env_kwargs):
     def thunk():
         render_mode = "rgb_array" if (capture_video and idx == 0) else None
         env = DuckieOvalEnv.create_wrapped(
@@ -406,7 +406,7 @@ if __name__ == "__main__":
                     global_step = global_step,
                     algo_name="TD3_lap",
                     grayscale = args.grayscale,
-                    num_episodes=10,
+                    num_episodes=2,
                     run_name=run_name,
                     **env_params
                 )
@@ -420,7 +420,7 @@ if __name__ == "__main__":
             device=device,
             algo_name="TD3_lap",
             grayscale = args.grayscale,
-            num_episodes=10,
+            num_episodes=2,
             run_name=run_name,
             **env_params
         )

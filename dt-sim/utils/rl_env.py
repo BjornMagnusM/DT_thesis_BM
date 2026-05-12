@@ -29,6 +29,13 @@ class DuckieOvalEnv(Simulator):
         self.robot_radius = 0.0318
         self.motor_k = 27.0
 
+    def reset(self, **kwargs):
+        self.start_pose =  (np.array([1.7, 0, 0.3]),0.0)
+        obs, info = super().reset(**kwargs)
+
+        return obs, info
+
+
     @classmethod
     def create_wrapped(cls, run_name, capture_video=False, motion_blur=False, grayscale=False, frame_stack=4,max_lap_reward=2000,lap_termination=False, 
                        time_optimal_reward=False , cap_reward=False, norm_reward=False,  **kwargs):
