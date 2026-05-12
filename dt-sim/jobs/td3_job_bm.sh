@@ -11,7 +11,8 @@
 
 
 source $(conda info --base)/etc/profile.d/conda.sh
-conda activate gym-duckietown
+conda activate duckie-rl
+
 
 # using my wand account
 export WANDB_API_KEY=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
