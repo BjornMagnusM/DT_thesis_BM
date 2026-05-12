@@ -18,7 +18,7 @@ from torch.utils.tensorboard import SummaryWriter
 from cleanrl_utils.buffers import ReplayBuffer
 
 # CNN Architucture 
-from rl_bm.cnn_architectures import DQNEncoder,DrQEncoderV2
+from cnn_architectures import DQNEncoder,DrQEncoderV2
 
 # Utilities
 from utils.rl_env import DuckieOvalEnv
@@ -303,6 +303,7 @@ if __name__ == "__main__":
     start_time = time.time()
     # TRY NOT TO MODIFY: start the game
     obs, _ = envs.reset(seed=args.seed)
+
     for global_step in range(args.total_timesteps):
         # ALGO LOGIC: put action logic here
         if global_step < args.learning_starts:

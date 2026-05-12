@@ -32,6 +32,8 @@ class DuckieOvalEnv(Simulator):
     def reset(self, **kwargs):
         self.start_pose =  (np.array([1.7, 0, 0.3]),0.0)
         obs, info = super().reset(**kwargs)
+        print("spawned at:", self.cur_pos, self.cur_angle)
+        print("requested:", self.start_pose)
 
         return obs, info
 
