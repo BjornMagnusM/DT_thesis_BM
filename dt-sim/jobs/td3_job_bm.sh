@@ -28,7 +28,7 @@ if [ ! -f $CONDA_PREFIX/lib/libtiff.so.5 ]; then
     ln -s $CONDA_PREFIX/lib/libtiff.so.6 $CONDA_PREFIX/lib/libtiff.so.5
 fi
 
-python3 -m rl_bm.td3_continuous_action \
+python3  rl_bm/td3_continuous_action \
     --seed 2 \
     --env-id oval_loop \
     --total-timesteps 1000000 \
