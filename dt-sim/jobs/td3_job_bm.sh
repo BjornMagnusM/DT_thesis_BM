@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=Mid3Ter3_100
 #SBATCH --output=output/duckie_%j.out
-#SBATCH -e output/duckie_%j.err
+#SBATCH --error=output/duckie_%j.err
 #SBATCH --time=76:00:00
 #SBATCH --partition=pgpu_most
 #SBATCH --account=dei_most
@@ -9,18 +9,17 @@
 #SBATCH --mem=16G
 #SBATCH --cpus-per-task=4
 
-
 source $(conda info --base)/etc/profile.d/conda.sh
 conda activate duckie-rl
 
-
-# using my wand account
 export WANDB_API_KEY=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
 export WANDB_DIR=$PWD/wandb
 
-
 echo "Using Python from: $(which python)"
-export PYTHONPATH="${PYTHONPATH}:$(pwd)"
+
+# IMPORTANT: only project root
+export PYTHONPATH="$PWD"
+
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 export PYGLET_DEBUG_GL=False
 export PYGLET_HEADLESS=True
@@ -29,8 +28,7 @@ if [ ! -f $CONDA_PREFIX/lib/libtiff.so.5 ]; then
     ln -s $CONDA_PREFIX/lib/libtiff.so.6 $CONDA_PREFIX/lib/libtiff.so.5
 fi
 
-# Launch Training
-python3 rl_bm/td3_continuous_action.py \
+python3 -m rl_bm.td3_continuous_action \
     --seed 2 \
     --env-id oval_loop \
     --total-timesteps 1000000 \
