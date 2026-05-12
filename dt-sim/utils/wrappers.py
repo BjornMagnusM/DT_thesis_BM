@@ -295,6 +295,46 @@ class TimeOptimalRewardV2(gym.RewardWrapper):
         reward += reward_const + reward_speed_align + reward_distance + reward_jerk + reward_angle
         return reward
 
+class TimeOptimalRewardV3(gym.RewardWrapper):
+    def __init__(self, env):
+        super().__init__(env)
+        self.prev_action = np.zeros(2)
+    
+    def reset(self, **kwargs):
+        self.prev_action = np.zeros(2)
+        return self.env.reset(**kwargs)
+
+    def reward (self, reward):
+        # Get internal simulator state for custom math
+        sim = self.env.unwrapped
+        reward_const = -2.5
+        speed = sim.speed / 0.83 
+        #Lane logig 
+        pos = sim.cur_pos
+        angle = sim.cur_angle  #This is in Radians where max is 2pi 
+        current_action = sim.last_action 
+        try:
+            lp = get_road_pos2(sim, pos, angle)
+        except NotInLane:
+            return -10.0  
+        
+        reward_speed_align = 2.5 * (speed/0.83)
+  
+        if np.abs(lp.dist) > 0.14 : 
+            reward_distance = -3.0 * (np.abs(lp.dist) / 0.23)  #Max would be 0.23
+        else: 
+            reward_distance = 0 
+            
+        reward_angle = -5 * np.abs(lp.angle_deg) / 90  ##where max would be +-90deg 
+        # Jerk Penalty: Penalize sudden changes in angle
+        action_diff = np.linalg.norm(current_action - self.prev_action)
+        reward_jerk = -0.5 * action_diff / 2.2  # Start with -0.5 and tune if needed, and max would be 2.2
+
+        self.prev_action = current_action.copy()
+        reward += reward_const + reward_speed_align + reward_distance + reward_jerk + reward_angle
+        return reward
+
+
 
 class LapTerminationWrapperV4(gym.Wrapper):
     def __init__(self, env, max_lap_reward):

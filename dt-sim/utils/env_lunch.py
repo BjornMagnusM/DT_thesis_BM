@@ -36,6 +36,13 @@ class EnvLunch:
             **self.sim_to_real_kwargs
         )
 
+
+    def reset(self, **kwargs):
+        self.start_pose =  (np.array([1.7, 0, 0.3]),0.0)
+        obs, info = super().reset(**kwargs)
+
+        return obs, info
+    
     def _apply_wrappers(self, env, capture_video=False, motion_blur=False):
         """Sequentially applies Gymnasium wrappers."""
 

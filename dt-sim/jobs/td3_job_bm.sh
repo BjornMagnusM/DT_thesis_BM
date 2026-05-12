@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH --job-name=bm_duckie_rl_td3
+#SBATCH --job-name=Mid3Ter3_100_td3
 #SBATCH --mail-user bjoernmagnus.myrhaug@studenti.unipd.it 
 
 #SBATCH --output=output/duckie_%j.out
 #SBATCH -e output/duckie_%j.err
-#SBATCH --time=36:00:00
+#SBATCH --time=76:00:00
 #SBATCH --partition allgroups
 #SBATCH --ntasks=1
 #SBATCH --gpus=1
@@ -30,10 +30,12 @@ if [ ! -f $CONDA_PREFIX/lib/libtiff.so.5 ]; then
 fi
 
 # Launch Training
-python rl_bm/td3_continuous_action.py \
-    --seed 123 \
-    --env-id oval_loop \
-    --total-timesteps 1000000 \
-    --buffer-size 5000 \
-    --learning-starts 5000 \
-    --run-notes "First test run of td3"
+python3 rl_bm/td3_continuous_action.py \
+            --seed 2 \
+            --env-id oval_loop \
+            --total-timesteps 1000000 \
+            --buffer-size 10000 \
+            --learning-starts 10000 \
+            --time_optimal_reward \
+            --lap_termination \
+            --run-notes "Mid3 Ter3_100 
