@@ -38,4 +38,4 @@ python3 rl_bm/td3_continuous_action.py \
     --learning-starts 10000 \
     --time_optimal_reward \
     --lap_termination \
-    --run-notes "Mid3 Ter3_100 
+    --run-notes "Mid3 Ter3_100"
