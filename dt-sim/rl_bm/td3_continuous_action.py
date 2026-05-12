@@ -18,7 +18,7 @@ from torch.utils.tensorboard import SummaryWriter
 from cleanrl_utils.buffers import ReplayBuffer
 
 # CNN Architucture 
-from cnn_architectures import DQNEncoder,DrQEncoderV2
+from rl_bm.cnn_architectures import DQNEncoder,DrQEncoderV2
 
 # Utilities
 from utils.rl_env import DuckieOvalEnv
