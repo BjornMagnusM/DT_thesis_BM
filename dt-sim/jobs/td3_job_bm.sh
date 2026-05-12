@@ -1,15 +1,14 @@
 #!/bin/bash
-#SBATCH --job-name=Mid3Ter3_100_td3
-#SBATCH --mail-user bjoernmagnus.myrhaug@studenti.unipd.it 
-
+#SBATCH --job-name=duckie_rl_td3
 #SBATCH --output=output/duckie_%j.out
 #SBATCH -e output/duckie_%j.err
 #SBATCH --time=76:00:00
-#SBATCH --partition allgroups
-#SBATCH --ntasks=1
+#SBATCH --partition=pgpu_most
+#SBATCH --account=dei_most
 #SBATCH --gpus=1
 #SBATCH --mem=16G
 #SBATCH --cpus-per-task=4
+
 
 source $(conda info --base)/etc/profile.d/conda.sh
 conda activate gym-duckietown
