@@ -58,9 +58,12 @@ env = TimeOptimalRewardV3(env)
 
 env = gym.wrappers.RecordEpisodeStatistics(env)
 render_modes = ["human", "top_down", "free_cam", "rgb_array"]
-view = render_modes[0]
+view = render_modes[1]
 
-env.unwrapped.start_pose = (np.array([1.7, 0, 0.3]),0.0)
+env.unwrapped.randomize_maps_on_reset = False
+env.unwrapped.user_tile_start = (1.7, 0)
+env.unwrapped.start_angle = 0.0
+env.unwrapped.start_pose = None  # let simulator decide lane center
 env.reset(seed=args.seed)
 
 pure_internal_obs = env.unwrapped.render_obs()
