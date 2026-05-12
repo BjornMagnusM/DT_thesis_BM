@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=duckie_rl_td3
+#SBATCH --job-name=Mid3Ter3_100
 #SBATCH --output=output/duckie_%j.out
 #SBATCH -e output/duckie_%j.err
 #SBATCH --time=76:00:00
@@ -30,11 +30,11 @@ fi
 
 # Launch Training
 python3 rl_bm/td3_continuous_action.py \
-            --seed 2 \
-            --env-id oval_loop \
-            --total-timesteps 1000000 \
-            --buffer-size 10000 \
-            --learning-starts 10000 \
-            --time_optimal_reward \
-            --lap_termination \
-            --run-notes "Mid3 Ter3_100 
+    --seed 2 \
+    --env-id oval_loop \
+    --total-timesteps 1000000 \
+    --buffer-size 10000 \
+    --learning-starts 10000 \
+    --time_optimal_reward \
+    --lap_termination \
+    --run-notes "Mid3 Ter3_100 
