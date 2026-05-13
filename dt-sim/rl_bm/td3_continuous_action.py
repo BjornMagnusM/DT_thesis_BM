@@ -3,8 +3,8 @@
 #Special path fix because sharing environment with ALi
 import sys
 sys.path.insert(0, "/home/u0156/u0156/DT_thesis_BM/dt-sim/src")
-import gym_duckietown as gym 
-print(gym.__file__)
+import gym_duckietown
+print(gym_duckietown.__file__)
 print(sys.path[:5])
 
 
@@ -15,6 +15,7 @@ import random
 import time
 from dataclasses import dataclass
 
+import gymnasium as gym
 import numpy as np
 import torch
 import torch.nn as nn
