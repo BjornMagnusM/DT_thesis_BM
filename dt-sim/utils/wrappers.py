@@ -1,6 +1,3 @@
-import sys
-sys.path.insert(0, "/home/u0156/u0156/DT_thesis_BM/dt-sim/src")
-
 import gymnasium as gym
 from gymnasium import spaces
 import numpy as np

@@ -1,13 +1,4 @@
 # docs and experiment results can be found at https://docs.cleanrl.dev/rl-algorithms/td3/#td3_continuous_actionpy
-
-#Special path fix because sharing environment with ALi
-import sys
-sys.path.insert(0, "/home/u0156/u0156/DT_thesis_BM/dt-sim/src")
-import gym_duckietown
-print(gym_duckietown.__file__)
-print(sys.path[:5])
-
-
 import os
 os.environ["OMP_NUM_THREADS"] = "1"
 os.environ["MKL_NUM_THREADS"] = "1"

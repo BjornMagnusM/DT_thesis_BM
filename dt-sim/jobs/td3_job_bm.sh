@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=Mid3Ter3_100
+#SBATCH --job-name=PathTest
 #SBATCH --output=output/duckie_%j.out
 #SBATCH --error=output/duckie_%j.err
 #SBATCH --time=76:00:00
