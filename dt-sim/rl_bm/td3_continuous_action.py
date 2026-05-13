@@ -406,7 +406,7 @@ if __name__ == "__main__":
                     global_step = global_step,
                     algo_name="TD3_lap",
                     grayscale = args.grayscale,
-                    num_episodes=2,
+                    num_episodes=1,
                     run_name=run_name,
                     **env_params
                 )
@@ -420,7 +420,7 @@ if __name__ == "__main__":
             device=device,
             algo_name="TD3_lap",
             grayscale = args.grayscale,
-            num_episodes=2,
+            num_episodes=1,
             run_name=run_name,
             **env_params
         )

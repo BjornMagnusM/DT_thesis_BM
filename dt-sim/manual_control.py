@@ -15,7 +15,7 @@ import pyglet
 from pyglet.window import key
 
 from src.gym_duckietown.envs import DuckietownEnv
-from utils.wrappers import CropResizeWrapper,TimeOptimalRewardV2,LapTerminationWrapperV3,TimeOptimalRewardV3
+from utils.wrappers import CropResizeWrapper,TimeOptimalRewardV2,LapTerminationWrapperV3,TimeOptimalReward
 
 # from experiments.utils import save_img
 
@@ -53,17 +53,14 @@ else:
     env = gym.make(args.env_name)
 
 env = LapTerminationWrapperV3(env,2000)
-env = TimeOptimalRewardV3(env)
+env = TimeOptimalRewardV2(env)
 
 
 env = gym.wrappers.RecordEpisodeStatistics(env)
 render_modes = ["human", "top_down", "free_cam", "rgb_array"]
 view = render_modes[1]
 
-env.unwrapped.randomize_maps_on_reset = False
-env.unwrapped.user_tile_start = (1.7, 0)
-env.unwrapped.start_angle = 0.0
-env.unwrapped.start_pose = None  # let simulator decide lane center
+env.unwrapped.start_pose =  (np.array([1.9, 0, 0.9]),0.0)
 env.reset(seed=args.seed)
 
 pure_internal_obs = env.unwrapped.render_obs()
