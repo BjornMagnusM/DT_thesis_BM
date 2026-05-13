@@ -60,7 +60,7 @@ env = gym.wrappers.RecordEpisodeStatistics(env)
 render_modes = ["human", "top_down", "free_cam", "rgb_array"]
 view = render_modes[1]
 
-env.unwrapped.start_pose =  (np.array([1.9, 0, 0.9]),0.0)
+env.unwrapped.start_pose = (np.array([1.7, 0, 0.3]),0.0)
 env.reset(seed=args.seed)
 
 pure_internal_obs = env.unwrapped.render_obs()
