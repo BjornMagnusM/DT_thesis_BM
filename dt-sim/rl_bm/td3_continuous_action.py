@@ -1,4 +1,7 @@
 # docs and experiment results can be found at https://docs.cleanrl.dev/rl-algorithms/td3/#td3_continuous_actionpy
+import sys
+sys.path.insert(0, "/home/u0156/u0156/DT_thesis_BM/dt-sim/src")
+
 import os
 os.environ["OMP_NUM_THREADS"] = "1"
 os.environ["MKL_NUM_THREADS"] = "1"
