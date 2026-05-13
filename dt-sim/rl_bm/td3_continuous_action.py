@@ -270,7 +270,7 @@ if __name__ == "__main__":
         "cap_reward": args.cap_reward
     }
     
-    envs = gym.vector.SyncVectorEnv(
+    envs = gym.vector.AsyncVectorEnv(
         [make_env(args.seed + i, i, run_name, args.capture_video, args.motion_blur, args.max_lap_reward, args.lap_termination ,
          args.time_optimal_reward,args.cap_reward,args.norm_reward) for i in range(args.num_envs)]
     )
@@ -389,7 +389,7 @@ if __name__ == "__main__":
                 for param, target_param in zip(qf2.parameters(), qf2_target.parameters()):
                     target_param.data.copy_(args.tau * param.data + (1 - args.tau) * target_param.data)
 
-            if global_step % 100 == 0:
+            if global_step % 1000 == 0:
                 writer.add_scalar("losses/qf1_values", qf1_a_values.mean().item(), global_step)
                 writer.add_scalar("losses/qf2_values", qf2_a_values.mean().item(), global_step)
                 writer.add_scalar("losses/qf1_loss", qf1_loss.item(), global_step)
@@ -398,18 +398,18 @@ if __name__ == "__main__":
                 writer.add_scalar("losses/actor_loss", actor_loss.item(), global_step)
                 writer.add_scalar("charts/SPS",int(global_step / (time.time() - start_time)),global_step,)
 
-            if global_step % args.eval_interval == 0: 
-                interval_evaluate_policy(
-                    actor=actor,
-                    args=args,
-                    device=device,
-                    global_step = global_step,
-                    algo_name="TD3_lap",
-                    grayscale = args.grayscale,
-                    num_episodes=1,
-                    run_name=run_name,
-                    **env_params
-                )
+            # if global_step % args.eval_interval == 0: 
+            #     interval_evaluate_policy(
+            #         actor=actor,
+            #         args=args,
+            #         device=device,
+            #         global_step = global_step,
+            #         algo_name="TD3_lap",
+            #         grayscale = args.grayscale,
+            #         num_episodes=1,
+            #         run_name=run_name,
+            #         **env_params
+            #     )
 
     if args.save_model:
         save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix="Final")

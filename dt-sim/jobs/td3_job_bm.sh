@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=PathTest
+#SBATCH --job-name=TestingAsync_less_logging
 #SBATCH --output=output/duckie_%j.out
 #SBATCH --error=output/duckie_%j.err
 #SBATCH --time=76:00:00
