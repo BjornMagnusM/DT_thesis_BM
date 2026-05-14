@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J Ter3_100_3Times_Mid3 
+#SBATCH -J Ter3_100_3Times_Mid3_l40s
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -7,8 +7,8 @@
 #SBATCH -c 4
 #SBATCH -p allgroups
 #SBATCH --mem=16g
-#SBATCH --nodelist=gpu1
-#SBATCH --gres=gpu:a40
+#SBATCH --nodelist=gpu7
+#SBATCH --gres=gpu:l40s
 
 cd $HOME/DT_thesis_BM/dt-sim
 mkdir -p logs
