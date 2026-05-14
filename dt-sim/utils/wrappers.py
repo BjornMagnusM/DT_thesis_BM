@@ -453,7 +453,7 @@ class LapTerminationWrapperV3(gym.Wrapper):
          #Mark the episode as done if the agent have completed a whole lap  
         if len(self.visited_tiles) == 12 and current_tile == self.finish_tile: 
             done = True
-            lap_reward = max(self.max_lap_reward-2*self.step_counter,0.0)
+            lap_reward = max(self.max_lap_reward-4*self.step_counter,0.0)
             misc["lap_step"] =  self.step_counter
             reward += lap_reward
             print(f"completed a lap within {self.step_counter} steps")

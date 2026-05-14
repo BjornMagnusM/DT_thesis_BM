@@ -104,7 +104,7 @@ class Args:
     """the frequency of training policy (delayed)"""
     noise_clip: float = 0.5
     """noise clip parameter of the Target Policy Smoothing Regularization"""
-    max_lap_reward: int = 2000
+    max_lap_reward: int = 5000
     """Max reward when completed a map, this get subtracted by the steps taken """
 
     #Duckietown specific arguments
@@ -120,7 +120,7 @@ class Args:
     """Simulates the blur from the moving duckiebot"""
 
 def make_env(seed, idx, run_name, capture_video=False, motion_blur=False,   
-             max_lap_reward=2000,lap_termination = False,time_optimal_reward = False,cap_reward = False ,norm_reward= False, **env_kwargs):
+             max_lap_reward=5000,lap_termination = False,time_optimal_reward = False,cap_reward = False ,norm_reward= False, **env_kwargs):
     def thunk():
         render_mode = "rgb_array" if (capture_video and idx == 0) else None
         env = DuckieOvalEnv.create_wrapped(
@@ -240,7 +240,7 @@ if __name__ == "__main__":
         reward_logic.add_file('utils/rl_env.py')
         reward_logic.add_file('rl_bm/td3_continuous_action.py')
         try:
-            reward_logic.add_file('jobs/gpu_test.slurm')
+            reward_logic.add_file('jobs/yd3_job_bm.sh')
         except (ValueError, FileNotFoundError) as e:
             print(f"Warning: Could not find job file for artifact logging: {e}")
         run.log_artifact(reward_logic)
@@ -270,7 +270,7 @@ if __name__ == "__main__":
         "cap_reward": args.cap_reward
     }
     
-    envs = gym.vector.AsyncVectorEnv(
+    envs = gym.vector.SyncVectorEnv(
         [make_env(args.seed + i, i, run_name, args.capture_video, args.motion_blur, args.max_lap_reward, args.lap_termination ,
          args.time_optimal_reward,args.cap_reward,args.norm_reward) for i in range(args.num_envs)]
     )
@@ -315,8 +315,7 @@ if __name__ == "__main__":
                 actions = actions.cpu().numpy().clip(envs.single_action_space.low, envs.single_action_space.high)
 
         # TRY NOT TO MODIFY: execute the game and log data.
-        next_obs, rewards, terminations, truncations, infos = envs.step(actions)
-  
+        next_obs, rewards, terminations, truncations, infos = envs.step(actions) 
         # TRY NOT TO MODIFY: record rewards for plotting purposes
         if "episode" in infos:
             for i in range(envs.num_envs):

@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=TestingAsync_less_logging
+#SBATCH --job-name=Ter3_100_3Times_Mid3_BM
 #SBATCH --output=output/duckie_%j.out
 #SBATCH --error=output/duckie_%j.err
 #SBATCH --time=76:00:00
@@ -36,4 +36,4 @@ python3  rl_bm/td3_continuous_action.py \
     --learning-starts 10000 \
     --time_optimal_reward \
     --lap_termination \
-    --run-notes "Mid3 Ter3_100"
+    --run-notes "Ter3_100_3Times_Mid3"
