@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J Mid2**3_Ter4_300_a40_td3 
+#SBATCH -J Ter3_100_3Times_Mid3 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -42,5 +42,5 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
-            --run-notes "Mid2**3_Ter4_300 new prints so less in the log"
+            --run-notes "Ter3_100_3Times_Mid3"
     "
