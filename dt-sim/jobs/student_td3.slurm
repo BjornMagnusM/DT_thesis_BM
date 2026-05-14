@@ -42,5 +42,5 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
-            --run-notes "Ter3_100_3Times_Mid3"
+            --run-notes "Ter4_100_Mid3"
     "
