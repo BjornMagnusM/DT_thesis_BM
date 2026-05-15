@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=dt_bm_td3
+#SBATCH --job-name=SAC_3.5_Mid3Ter3
 #SBATCH --output=output/duckie_%j.out
 #SBATCH -e output/duckie_%j.err
 #SBATCH --time=36:00:00
@@ -10,10 +10,16 @@
 #SBATCH --cpus-per-task=4
 
 source $(conda info --base)/etc/profile.d/conda.sh
-conda activate duckie-rl
+conda activate DT_bm
+
+export WANDB_API_KEY=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
+export WANDB_DIR=$PWD/wandb
 
 echo "Using Python from: $(which python)"
-export PYTHONPATH="${PYTHONPATH}:$(pwd)"
+
+# IMPORTANT: only project root
+export PYTHONPATH="$PWD"
+
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 export PYGLET_DEBUG_GL=False
 export PYGLET_HEADLESS=True
@@ -22,4 +28,12 @@ if [ ! -f $CONDA_PREFIX/lib/libtiff.so.5 ]; then
     ln -s $CONDA_PREFIX/lib/libtiff.so.6 $CONDA_PREFIX/lib/libtiff.so.5
 fi
 
-python rl_bm/sac_continuous_action.py 
+python3  rl_bm/sac_continuous_action.py \
+    --seed 2 \
+    --env-id oval_loop \
+    --total-timesteps 1000000 \
+    --buffer-size 10000 \
+    --learning-starts 10000 \
+    --time_optimal_reward \
+    --lap_termination \
+    --run-notes "SAC 3.5Const_Mid3_16_Ter3 Actually Ter3"
