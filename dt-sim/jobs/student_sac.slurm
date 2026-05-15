@@ -42,5 +42,5 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --lap_termination \
             --time_optimal_reward \
-            --run-notes 'ToV2,Ter3 with angle penalty and 100 tile reward'
+            --run-notes 'Ter3_3.5Const_Mid3_Ter4_BM'
     "
