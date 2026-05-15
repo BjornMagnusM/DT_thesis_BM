@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=Ter3_3.5Const_Mid3_16_Ter3_BM
+#SBATCH --job-name=Ter3_3.5Const_Mid3_Ter4_BM
 #SBATCH --output=output/duckie_%j.out
 #SBATCH --error=output/duckie_%j.err
 #SBATCH --time=76:00:00
@@ -31,7 +31,7 @@ fi
 python3  rl_bm/td3_continuous_action.py \
     --seed 2 \
     --env-id oval_loop \
-    --total-timesteps 1000000 \
+    --total-timesteps 2000000 \
     --buffer-size 10000 \
     --learning-starts 10000 \
     --time_optimal_reward \
