@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J 3.5Const_Mid3_2ANgle_Ter4_a40
+#SBATCH -J 2_M_3.5Const_Mid3_2ANgle_Ter4_l40   
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -7,8 +7,8 @@
 #SBATCH -c 4
 #SBATCH -p allgroups
 #SBATCH --mem=16g
-#SBATCH --nodelist=gpu1
-#SBATCH --gres=gpu:a40
+#SBATCH --nodelist=gpu7
+#SBATCH --gres=gpu:l40s
 
 cd $HOME/DT_thesis_BM/dt-sim
 mkdir -p logs
@@ -37,10 +37,10 @@ srun singularity exec --nv \
         python3 rl_bm/td3_continuous_action.py \
             --seed 2 \
             --env-id oval_loop \
-            --total-timesteps 1000000 \
+            --total-timesteps 2000000 \
             --buffer-size 10000 \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
-            --run-notes "3.5Const_Mid3_2ANgle_Ter4_l40"
+            --run-notes "2_M_3.5Const_Mid3_2ANgle_Ter4"
     "
