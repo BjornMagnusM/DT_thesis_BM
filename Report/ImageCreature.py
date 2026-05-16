@@ -94,7 +94,7 @@ def full_pipeline(img):
     """
     resized = resize(img)
     cropped = crop(resized)
-    return img, resized, cropped, cropped  # final = cropped here
+    return img, resized, cropped, cropped  
 
 def full_pipeline_gray(img):
     gray = to_gray(img)
@@ -151,7 +151,7 @@ def update(dt):
         rgb_o, rgb_r, rgb_c, rgb_f = full_pipeline(obs)
         g_o, g_r, g_c, g_f = full_pipeline_gray(obs)
 
-        fig, axs = plt.subplots(2, 4, figsize=(14, 6))
+        fig, axs = plt.subplots(2, 3, figsize=(14, 6))
 
         # ---------------- RGB row ----------------
         axs[0, 0].imshow(rgb_o)
@@ -166,9 +166,9 @@ def update(dt):
         axs[0, 2].set_title("RGB Cropped")
         axs[0, 2].axis("off")
 
-        axs[0, 3].imshow(rgb_f)
-        axs[0, 3].set_title("RGB Final")
-        axs[0, 3].axis("off")
+        # axs[0, 3].imshow(rgb_f)
+        # axs[0, 3].set_title("RGB Final")
+        # axs[0, 3].axis("off")
 
         # ---------------- Gray row ----------------
         axs[1, 0].imshow(g_o, cmap="gray")
@@ -183,9 +183,9 @@ def update(dt):
         axs[1, 2].set_title("Gray Cropped")
         axs[1, 2].axis("off")
 
-        axs[1, 3].imshow(g_f, cmap="gray")
-        axs[1, 3].set_title("Gray Final")
-        axs[1, 3].axis("off")
+        # axs[1, 3].imshow(g_f, cmap="gray")
+        # axs[1, 3].set_title("Gray Final")
+        # axs[1, 3].axis("off")
 
         plt.tight_layout()
         plt.savefig("observation_pipeline_full.png", dpi=250)
