@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=Ter3_3.5Const_Mid3_Ter4_BM
+#SBATCH --job-name=2M_Ter3_3.5Const_Mid3_Ter4_BM
 #SBATCH --output=output/duckie_%j.out
 #SBATCH --error=output/duckie_%j.err
 #SBATCH --time=76:00:00

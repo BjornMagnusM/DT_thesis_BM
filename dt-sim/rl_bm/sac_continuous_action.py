@@ -399,10 +399,14 @@ if __name__ == "__main__":
             for i in range(envs.num_envs):
                 # Using the mask '_episode' to see which sub-env actually finished
                 if "_episode" in infos and infos["_episode"][i]:
-                    print(f"global_step={global_step}, episodic_return={infos['episode']['r'][i]}")
+                    print(f"global_step={global_step}, episodic_return={infos['episode']['r'][i]:.2f}, progress_ratio = {infos['progress_ratio'][i]:.2f}")
                     writer.add_scalar("charts/episodic_return", infos['episode']['r'][i], global_step)
                     writer.add_scalar("charts/episodic_length", infos['episode']['l'][i], global_step)  
-
+                if "_progress_ratio" in infos and infos["_episode"][i]:
+                    writer.add_scalar("charts/progress_ratio", infos['progress_ratio'][i], global_step)  
+                if "_lap_step" in infos and infos["_episode"][i]:
+                    writer.add_scalar("charts/lap_step", infos['lap_step'][i], global_step)  
+                
         # TRY NOT TO MODIFY: save data to reply buffer; handle `final_observation`
         real_next_obs = next_obs.copy()
         for idx, trunc in enumerate(truncations):
@@ -481,14 +485,13 @@ if __name__ == "__main__":
                 writer.add_scalar("losses/qf_loss", qf_loss.item() / 2.0, global_step)
                 writer.add_scalar("losses/actor_loss", actor_loss.item(), global_step)
                 writer.add_scalar("losses/alpha", alpha, global_step)
-                print("SPS:", int(global_step / (time.time() - start_time)))
                 writer.add_scalar(
                     "charts/SPS",
                     int(global_step / (time.time() - start_time)),
                     global_step,
                 )
                 if args.autotune:
-                    writer.add_scalar("losses/alpha_loss", alpha_loss.item(), global_step)
+                    writer.add_scalar("losses/alpha_loss", alpha_loss.item(), global_step)  
             
             if global_step == 499000:
                 save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix="_PRE_RAND")
@@ -496,7 +499,6 @@ if __name__ == "__main__":
                 save_models(actor, qf1, qf2, global_step, run_name, args, env_params)
             
             if global_step % args.eval_interval == 0: 
-                print("in eval p")
                 interval_evaluate_policy(
                     actor=actor,
                     args=args,
@@ -504,7 +506,7 @@ if __name__ == "__main__":
                     global_step = global_step,
                     algo_name="SAC_lap",
                     grayscale = args.grayscale,
-                    num_episodes=10,
+                    num_episodes=1,
                     run_name=run_name,
                     **env_params
                 )
