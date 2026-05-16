@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J 2_M_3.5Const_Mid3_2ANgle_Ter3_a40   
+#SBATCH -J 2_M_3.5Const_Mid3_2ANgle_Ter4_a40   
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -42,5 +42,5 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
-            --run-notes "2_M_3.5Const_Mid3_2ANgle_Ter3"
+            --run-notes "2_M_3.5Const_Mid3_2ANgle_Ter4"
     "
