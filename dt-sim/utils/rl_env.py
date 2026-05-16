@@ -5,8 +5,9 @@ from gym_duckietown.simulator import Simulator
 from gymnasium.wrappers import NormalizeReward
 from utils.wrappers import (
     KinematicActionWrapper, ActionWrapper, ResizeWrapper, 
-    CropResizeWrapper, ImgWrapper, CustomRewardWrapper, DtRewardWrapper,LapTerminationWrapperV3,
-    TimeOptimalReward,TimeOptimalRewardV2,LapTerminationWrapperV2,LapTerminationWrapperV4,TimeOptimalRewardV3 ,VideoOverlayWrapper
+    CropResizeWrapper, ImgWrapper, CustomRewardWrapper, DtRewardWrapper,VideoOverlayWrapper
+    LapTerminationWrapper,LapTerminationWrapperV2,LapTerminationWrapperV3,LapTerminationWrapperV4
+    TimeOptimalReward,TimeOptimalRewardV3,TimeOptimalRewardV3
 )
 
 class DuckieOvalEnv(Simulator):

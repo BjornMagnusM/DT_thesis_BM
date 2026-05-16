@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=2M_Ter3_3.5Const_Mid3_Ter4_BM
+#SBATCH --job-name=5Const_Mid3_2ANgle_Ter4_BM
 #SBATCH --output=output/duckie_%j.out
 #SBATCH --error=output/duckie_%j.err
 #SBATCH --time=76:00:00
@@ -36,4 +36,4 @@ python3  rl_bm/td3_continuous_action.py \
     --learning-starts 10000 \
     --time_optimal_reward \
     --lap_termination \
-    --run-notes "3.5Const_Mid3_16_Ter3 Actually Ter3"
+    --run-notes "3.5Const_Mid3_2ANgle_Ter4"
