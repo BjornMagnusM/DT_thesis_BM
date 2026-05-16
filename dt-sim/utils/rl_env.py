@@ -6,7 +6,7 @@ from gymnasium.wrappers import NormalizeReward
 from utils.wrappers import (
     KinematicActionWrapper, ActionWrapper, ResizeWrapper, 
     CropResizeWrapper, ImgWrapper, CustomRewardWrapper, DtRewardWrapper,VideoOverlayWrapper
-    LapTerminationWrapper,LapTerminationWrapperV2,LapTerminationWrapperV3,LapTerminationWrapperV4
+    LapTerminationWrapperV2,LapTerminationWrapperV3,LapTerminationWrapperV4
     TimeOptimalReward,TimeOptimalRewardV3,TimeOptimalRewardV3
 )
 
