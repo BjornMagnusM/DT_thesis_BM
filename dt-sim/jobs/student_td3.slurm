@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J 4.2Const2AngleTer5_a40   
+#SBATCH -J 4.2Const2AngleTer4_a40   
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
