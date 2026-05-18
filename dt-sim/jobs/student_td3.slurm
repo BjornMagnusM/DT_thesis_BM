@@ -42,5 +42,5 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
-            --run-notes "4.2Const2AngleTer5"
+            --run-notes "4.2Const2AngleTer4"
     "
