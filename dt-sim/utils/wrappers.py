@@ -381,7 +381,7 @@ class LapTerminationWrapperV5(gym.Wrapper):
         self.visited_tiles.add(current_tile)
         
         if len(self.visited_tiles)>self.prev_lenght: 
-            tile_reward = max(300-2*self.step_tile,10)
+            tile_reward = max(300-self.step_tile,10)
             reward += tile_reward
             self.step_tile = 0 
 

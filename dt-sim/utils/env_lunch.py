@@ -21,9 +21,12 @@ class EnvLunch:
         self.img_shape = img_shape
         self.sim_to_real_kwargs = sim_to_real_kwargs
 
+
+
+
     def _create_base_env(self, seed, render_mode=None):
         """Initializes the raw Duckietown simulator."""
-        return Simulator(
+        env = Simulator(
             seed=seed,
             map_name="oval_loop",
             max_steps=self.max_steps,
@@ -32,9 +35,12 @@ class EnvLunch:
             accept_start_angle_deg=2,
             full_transparency=True,
             render_mode=render_mode,
-            frame_skip=3,
+            frame_skip=1,
             **self.sim_to_real_kwargs
         )
+        env.start_pose = (np.array([1.7, 0, 0.3]), 0.0)
+
+        return env
 
 
     def reset(self, **kwargs):
