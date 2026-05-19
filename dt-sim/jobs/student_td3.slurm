@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J 4.2Const2AngleTer4_l40   
+#SBATCH -J Gray4.3ConstAngle5Ter4_l40   
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -42,5 +42,6 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
+            --grayscale \
             --run-notes "4.2Const2AngleTer4"
     "

@@ -325,7 +325,7 @@ class TimeOptimalRewardV3(gym.RewardWrapper):
         else: 
             reward_distance = 0 
 
-        reward_angle = -2 * np.abs(lp.angle_deg) / 90  ##where max would be +-90deg 
+        reward_angle = -4 * np.abs(lp.angle_deg) / 90  ##where max would be +-90deg 
         # Jerk Penalty: Penalize sudden changes in angle
         action_diff = np.linalg.norm(current_action - self.prev_action)
         reward_jerk = -0.5 * action_diff / 2.2  # Start with -0.5 and tune if needed, and max would be 2.2
@@ -456,7 +456,7 @@ class LapTerminationWrapperV4(gym.Wrapper):
          #Mark the episode as done if the agent have completed a whole lap  
         if len(self.visited_tiles) == 12 and current_tile == self.finish_tile: 
             done = True
-            lap_reward = max(self.max_lap_reward-self.step_counter,0.0)
+            lap_reward = max(self.max_lap_reward-self.step_counter,100)
             misc["lap_step"] =  self.step_counter
             reward += lap_reward
             print(f"completed a lap within {self.step_counter} steps")
