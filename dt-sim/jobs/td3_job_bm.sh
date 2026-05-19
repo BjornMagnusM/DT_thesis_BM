@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=4.2Const2AgnleTer5_BM
+#SBATCH --job-name=Cap4.2ConstAngle5Ter4_BM
 #SBATCH --output=output/duckie_%j.out
 #SBATCH --error=output/duckie_%j.err
 #SBATCH --time=76:00:00
@@ -36,4 +36,5 @@ python3  rl_bm/td3_continuous_action.py \
     --learning-starts 10000 \
     --time_optimal_reward \
     --lap_termination \
-    --run-notes "4.2Const2AngleTer5"
+    --cap_reward \
+    --run-notes "Cap4.2ConstAngle4Ter4"
