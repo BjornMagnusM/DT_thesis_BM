@@ -3,7 +3,7 @@ import gymnasium as gym
 import numpy as np
 # Duckietown Specific
 from gym_duckietown.simulator import Simulator
-from utils.wrappers import (ImgWrapper, ActionWrapper, CropResizeWrapper, CustomRewardWrapper, TemporalWrapper,DtRewardWrapper, 
+from utils.wrappers import (ImgWrapper, ActionWrapper, CropResizeWrapper, CustomRewardWrapper, TemporalWrapper,CapRewardWrapper, 
                             KinematicActionWrapper, ResizeWrapper,TimeOptimalReward,LapTerminationWrapperV2,VideoOverlayWrapper)
 
 class EnvLunch:

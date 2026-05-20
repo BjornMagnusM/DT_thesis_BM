@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J G_2M4.3ConstAngle3Ter4_l40   
+#SBATCH -J G_2M_Cap4.3ConstAngle3Ter4_l40   
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -43,5 +43,6 @@ srun singularity exec --nv \
             --time_optimal_reward \
             --lap_termination \
             --grayscale \
+            --cap_reward \
             --run-notes "4.3Const2AngleTer4"
     "
