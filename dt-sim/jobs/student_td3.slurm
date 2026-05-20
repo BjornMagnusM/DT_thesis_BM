@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J Gray4.3ConstAngle5Ter4_a40   
+#SBATCH -J G_2M4.3ConstAngle3Ter4_a40   
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -37,11 +37,11 @@ srun singularity exec --nv \
         python3 rl_bm/td3_continuous_action.py \
             --seed 2 \
             --env-id oval_loop \
-            --total-timesteps 2000000 \
+            --total-timesteps 3000000 \
             --buffer-size 10000 \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
             --grayscale \
-            --run-notes "4.2Const2AngleTer4"
+            --run-notes "4.3Const2AngleTer4"
     "

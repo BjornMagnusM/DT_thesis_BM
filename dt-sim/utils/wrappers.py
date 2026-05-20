@@ -142,7 +142,7 @@ class CropResizeWrapper(gym.ObservationWrapper):
         return np.array(img)
 
 
-class DtRewardWrapper(gym.RewardWrapper):
+class CapRewardWrapper(gym.RewardWrapper):
     def __init__(self, env):
         super().__init__(env)
 
@@ -325,7 +325,7 @@ class TimeOptimalRewardV3(gym.RewardWrapper):
         else: 
             reward_distance = 0 
 
-        reward_angle = -4 * np.abs(lp.angle_deg) / 90  ##where max would be +-90deg 
+        reward_angle = -3 * np.abs(lp.angle_deg) / 90  ##where max would be +-90deg 
         # Jerk Penalty: Penalize sudden changes in angle
         action_diff = np.linalg.norm(current_action - self.prev_action)
         reward_jerk = -0.5 * action_diff / 2.2  # Start with -0.5 and tune if needed, and max would be 2.2

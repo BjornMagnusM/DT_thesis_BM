@@ -37,4 +37,5 @@ python3  rl_bm/td3_continuous_action.py \
     --time_optimal_reward \
     --lap_termination \
     --cap_reward \
+    --grayscale \
     --run-notes "Cap4.2ConstAngle4Ter4"

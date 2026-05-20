@@ -5,7 +5,7 @@ from gym_duckietown.simulator import Simulator
 from gymnasium.wrappers import NormalizeReward
 from utils.wrappers import (
     KinematicActionWrapper, ActionWrapper, ResizeWrapper, 
-    CropResizeWrapper, ImgWrapper, CustomRewardWrapper, DtRewardWrapper,VideoOverlayWrapper,
+    CropResizeWrapper, ImgWrapper, CustomRewardWrapper, CapRewardWrapper,VideoOverlayWrapper,
     LapTerminationWrapperV2,LapTerminationWrapperV3,LapTerminationWrapperV4,LapTerminationWrapperV5,
     TimeOptimalRewardV2,TimeOptimalRewardV3
 )
@@ -81,7 +81,7 @@ class DuckieOvalEnv(Simulator):
 
         if cap_reward:
             print("using reward cap")
-            env = DtRewardWrapper(env)
+            env = CapRewardWrapper(env)
         
 
         if norm_reward:
