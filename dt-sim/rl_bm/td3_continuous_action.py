@@ -240,7 +240,7 @@ if __name__ == "__main__":
         reward_logic.add_file('utils/rl_env.py')
         reward_logic.add_file('rl_bm/td3_continuous_action.py')
         try:
-            reward_logic.add_file('jobs/yd3_job_bm.sh')
+            reward_logic.add_file('jobs/td3_job_bm.sh')
         except (ValueError, FileNotFoundError) as e:
             print(f"Warning: Could not find job file for artifact logging: {e}")
         run.log_artifact(reward_logic)

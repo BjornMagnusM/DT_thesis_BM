@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J G_2M_Cap4.3ConstAngle3Ter4_l40   
+#SBATCH -J DisG4.3ConstAngle4Ter4_l40   
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -37,12 +37,17 @@ srun singularity exec --nv \
         python3 rl_bm/td3_continuous_action.py \
             --seed 2 \
             --env-id oval_loop \
-            --total-timesteps 3000000 \
+            --total-timesteps 2000000 \
             --buffer-size 10000 \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
             --grayscale \
             --cap_reward \
-            --run-notes "4.3Const2AngleTer4"
+            --domain_rand \
+            --distortion \
+            --dynamics_rand \
+            --camera_rand \
+            --motion_blur \
+            --run-notes "DisG4.3ConstAngle4Ter4"
     "
