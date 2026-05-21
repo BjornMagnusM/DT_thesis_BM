@@ -36,5 +36,5 @@ python3  rl_bm/sac_continuous_action.py \
     --learning-starts 10000 \
     --time_optimal_reward \
     --lap_termination \
-    --grayscale \ 
-    --run-notes "SAC_G4.3ConstAngle4Ter4"
+    --grayscale \
+    --run-notes "3 mCap4.2ConstAngle4Ter4"
