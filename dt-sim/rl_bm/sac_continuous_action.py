@@ -124,8 +124,6 @@ class Args:
     """Simulates mounting misalignments"""
     motion_blur: bool = False
     """Simulates the blur from the moving duckiebot"""
-    action_latency: bool = False
-    """Simulates the action latency from the duckiebot"""
 
 def make_env(seed, idx, run_name, capture_video=False, motion_blur=False,   
              max_lap_reward=5000,lap_termination = False,time_optimal_reward = False,cap_reward = False ,norm_reward= False, **env_kwargs):
@@ -286,7 +284,6 @@ if __name__ == "__main__":
         if args.camera_rand: active_tags.append("CameraRand")
         if args.distortion: active_tags.append("Distortion")
         if args.motion_blur: active_tags.append("MotionBlur")
-        if args.action_latency: active_tags.append("ActionLatency")
 
         run = wandb.init(
             project=args.wandb_project_name,

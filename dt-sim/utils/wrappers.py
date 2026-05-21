@@ -308,7 +308,7 @@ class TimeOptimalRewardV3(gym.RewardWrapper):
         # Get internal simulator state for custom math
         sim = self.env.unwrapped
         reward_const = -4.3
-        speed = sim.speed / 0.83 
+        speed = sim.speed
         #Lane logig 
         pos = sim.cur_pos
         angle = sim.cur_angle  #This is in Radians where max is 2pi 
@@ -318,7 +318,7 @@ class TimeOptimalRewardV3(gym.RewardWrapper):
         except NotInLane:
             return -10.0  
         
-        reward_speed_align = 2.5 * (speed/0.83)
+        reward_speed_align = 2 * (speed/0.56)
   
         if np.abs(lp.dist) > 0.16 : 
             reward_distance = -3.0 * (np.abs(lp.dist) / 0.23)  #Max would be 0.23
