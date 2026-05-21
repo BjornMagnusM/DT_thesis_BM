@@ -23,9 +23,9 @@ class CropResizeWrapperROS:
         
         width, height = img.size
         
-        # 2. Crop: Keep the bottom 2/3
+        # 2. Crop: Keep the bottom 3/4
         # PIL crop box is (left, top, right, bottom)
-        top_boundary = int(height * (1/3))
+        top_boundary = int(height * (1/4))
         img = img.crop((0, top_boundary, width, height))
         
         # 3. Resize to target shape (84x84)

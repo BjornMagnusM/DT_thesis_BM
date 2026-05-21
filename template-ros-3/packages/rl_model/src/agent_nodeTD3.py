@@ -117,8 +117,8 @@ class AgentNodeTD3(DTROS):
 
         car_control_msg = Twist2DStamped()
         car_control_msg.header.stamp = rospy.Time.now()
-        car_control_msg.v = float(action[0])
-        car_control_msg.omega = float(action[1])
+        car_control_msg.v = 0.5*float(action[0])
+        car_control_msg.omega = 0.5*float(action[1])
 
         self.car_cmd.publish(car_control_msg)
         rospy.loginfo(f"Published car_cmd: v={car_control_msg.v}, omega={car_control_msg.omega}")
