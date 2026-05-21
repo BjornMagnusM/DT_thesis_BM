@@ -69,6 +69,8 @@ class Args:
     """the interval to save the Actor periodically"""
     eval_interval: int = 10000
     """the interval to save the Actor periodically"""
+    run_notes: str = ""
+    """for wandb tracking notes"""
     grayscale: bool = False
     """whether to convert the observation to grayscale"""
     lap_termination: bool = False
