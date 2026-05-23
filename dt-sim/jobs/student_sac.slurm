@@ -37,16 +37,17 @@ srun singularity exec --nv \
         python3 rl_bm/sac_continuous_action.py \
             --seed 2 \
             --env-id oval_loop \
-            --total-timesteps 1000000 \
+            --total-timesteps 2000000 \
             --buffer-size 10000 \
             --learning-starts 10000 \
-            --lap_termination \
             --time_optimal_reward \
+            --lap_termination \
             --grayscale \
+            --cap_reward \
             --domain_rand \
             --distortion \
             --dynamics_rand \
             --camera_rand \
             --motion_blur \
-            --run-notes "SAC DisG4.3ConstAngle4Ter4"
+            --run-notes "SAC_DisG4.3ConstAngle4Ter40"
     "
