@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J SAC_TOV2angle_Ter3_100_a40_duckie_td3 
+#SBATCH -J SAC_DisG4.3ConstAngle4Ter40_a40 
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -42,5 +42,11 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --lap_termination \
             --time_optimal_reward \
-            --run-notes 'Ter3_3.5Const_Mid3_Ter4_BM'
+            --grayscale \
+            --domain_rand \
+            --distortion \
+            --dynamics_rand \
+            --camera_rand \
+            --motion_blur \
+            --run-notes "SAC DisG4.3ConstAngle4Ter4"
     "
