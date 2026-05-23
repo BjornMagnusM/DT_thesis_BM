@@ -222,7 +222,6 @@ def evaluate():
             cv2.circle(top_down, pixel_traj[-1], 6, (255, 0, 0), -1)
 
         # Save
-        os.makedirs("trajectory_plots", exist_ok=True)
         save_path = f"{video_folder}/episode_{episode}_overlay.png"
         cv2.imwrite(save_path, top_down)
 

@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --job-name=SAC_G4.3ConstAngle4Ter4_BM
+#SBATCH --job-name=SAC_DisG4.3ConstAngle4Ter4_BM
 #SBATCH --output=output/duckie_%j.out
 #SBATCH -e output/duckie_%j.err
-#SBATCH --time=36:00:00
+#SBATCH --time=76:00:00
 #SBATCH --partition=pgpu_most
 #SBATCH --account=dei_most
 #SBATCH --gpus=1
@@ -37,4 +37,9 @@ python3  rl_bm/sac_continuous_action.py \
     --time_optimal_reward \
     --lap_termination \
     --grayscale \
-    --run-notes "3 mCap4.2ConstAngle4Ter4"
+    --domain_rand \
+    --distortion \
+    --dynamics_rand \
+    --camera_rand \
+    --motion_blur \
+    --run-notes "SAC DisG4.3ConstAngle4Ter4"

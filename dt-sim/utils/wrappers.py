@@ -318,7 +318,7 @@ class TimeOptimalRewardV3(gym.RewardWrapper):
         except NotInLane:
             return -10.0  
         
-        reward_speed_align = 2 * (speed/0.56)
+        reward_speed = 2 * (speed/0.56)
   
         if np.abs(lp.dist) > 0.16 : 
             reward_distance = -3.0 * (np.abs(lp.dist) / 0.23)  #Max would be 0.23
@@ -331,7 +331,7 @@ class TimeOptimalRewardV3(gym.RewardWrapper):
         reward_jerk = -0.5 * action_diff / 2.2  # Start with -0.5 and tune if needed, and max would be 2.2
 
         self.prev_action = current_action.copy()
-        reward += reward_const + reward_speed_align + reward_distance + reward_jerk + reward_angle
+        reward += reward_const + reward_speed + reward_distance + reward_jerk + reward_angle
         return reward
 
 class LapTerminationWrapperV5(gym.Wrapper):

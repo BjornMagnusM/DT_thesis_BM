@@ -3,7 +3,8 @@ import torch
 import numpy as np
 import gymnasium as gym
 import argparse
-from sac_continuous_action import Actor, make_env
+from sac_continuous_action import Actor
+from utils.env_lunch import EnvLunch
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluate SAC Agent in Duckietown")
@@ -23,9 +24,32 @@ def evaluate():
     args = parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    # 3. Load the weights
+    print(f"Loading model from {args.model_path}")
+    checkpoint = torch.load(args.model_path, map_location=device)
+
+    #Check for rgb or grayscale
+    state_dict = checkpoint['actor_state_dict']
+    first_layer = state_dict['encoder.convnet.0.weight']
+    grayscale = True if first_layer.shape[1] == 4 else False
+
+
     # 1. Recreate the environment exactly as it was during training
     # Note: make_env returns a thunk, so we call it and then wrap it if needed
-    env_func = make_env(seed=42, idx=0, capture_video=args.capture_video, run_name="eval")
+    sim_params = {
+            "domain_rand": checkpoint.get("domain_rand", False),
+            "distortion": checkpoint.get("distortion", False),
+            "dynamics_rand": checkpoint.get("dynamics_rand", False),
+            "camera_rand": checkpoint.get("camera_rand", False),
+        }
+        
+    env_luncher = EnvLunch(
+        run_name="eval",
+        max_steps=4000,
+        grayscale=grayscale,
+        **sim_params
+    )
+    env_func = env_luncher.make_env_fn(seed=2, idx=0,capture_video=True)
     env = env_func()
 
     if args.capture_video:
@@ -53,11 +77,9 @@ def evaluate():
     dummy = DummyEnv(env)
     actor = Actor(dummy).to(device)
 
-    # 3. Load the weights
-    print(f"Loading model from {args.model_path}")
-    checkpoint = torch.load(args.model_path, map_location=device)
     actor.load_state_dict(checkpoint['actor_state_dict'])
     actor.eval()
+
 
     # 4. Evaluation Loop
     for episode in range(args.num_episodes):
