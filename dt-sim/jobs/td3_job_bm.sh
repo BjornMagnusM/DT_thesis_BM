@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=G3MCap4.2ConstAngle5Ter4_BM
+#SBATCH --job-name=3m500Cap4.3ConstAngle4Ter4BM
 #SBATCH --output=output/duckie_%j.out
 #SBATCH --error=output/duckie_%j.err
 #SBATCH --time=76:00:00
@@ -31,11 +31,11 @@ fi
 python3  rl_bm/td3_continuous_action.py \
     --seed 2 \
     --env-id oval_loop \
-    --total-timesteps 3000000 \
+    --total-timesteps 2000000 \
     --buffer-size 10000 \
     --learning-starts 10000 \
     --time_optimal_reward \
     --lap_termination \
     --cap_reward \
     --grayscale \
-    --run-notes "3 mCap4.2ConstAngle4Ter4"
+    --run-notes "3m500Cap4.3ConstAngle4Ter4"
