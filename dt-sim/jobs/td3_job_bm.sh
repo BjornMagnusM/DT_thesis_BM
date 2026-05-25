@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=3m500Cap4.3ConstAngle4Ter4BM
+#SBATCH --job-name=3m250Cap4.3ConstAngle4Ter4BM
 #SBATCH --output=output/duckie_%j.out
 #SBATCH --error=output/duckie_%j.err
 #SBATCH --time=76:00:00
@@ -38,4 +38,4 @@ python3  rl_bm/td3_continuous_action.py \
     --lap_termination \
     --cap_reward \
     --grayscale \
-    --run-notes "3m500Cap4.3ConstAngle4Ter4"
+    --run-notes "3m250Cap4.3ConstAngle4Ter4"
