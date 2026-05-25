@@ -147,8 +147,8 @@ class CapRewardWrapper(gym.RewardWrapper):
         super().__init__(env)
 
     def reward(self, reward):
-        if reward == -1000:
-            reward = -50
+        if reward < -500:
+            reward = -500
 
         return reward
 
