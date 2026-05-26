@@ -7,7 +7,7 @@ from utils.wrappers import (
     KinematicActionWrapper, ActionWrapper, ResizeWrapper, 
     CropResizeWrapper, ImgWrapper, CustomRewardWrapper, CapRewardWrapper,VideoOverlayWrapper,
     LapTerminationWrapperV2,LapTerminationWrapperV3,LapTerminationWrapperV4,LapTerminationWrapperV5,
-    TimeOptimalRewardV2,TimeOptimalRewardV3
+    TimeOptimalRewardV2,TimeOptimalRewardV3,TimeOptimalRewardV4
 )
 
 class DuckieOvalEnv(Simulator):
@@ -69,7 +69,7 @@ class DuckieOvalEnv(Simulator):
         #  Reward System
         if time_optimal_reward:
             print("using time optimal reward")
-            env = TimeOptimalRewardV3(env)
+            env = TimeOptimalRewardV4(env)
         
 
         ##BM added a termination criteria after finishing a lap 

@@ -334,6 +334,41 @@ class TimeOptimalRewardV3(gym.RewardWrapper):
         reward += reward_const + reward_speed + reward_distance + reward_jerk + reward_angle
         return reward
 
+class TimeOptimalRewardV4(gym.RewardWrapper):
+    def __init__(self, env):
+        super().__init__(env)
+        self.prev_action = np.zeros(2)
+    
+    def reset(self, **kwargs):
+        self.prev_action = np.zeros(2)
+        return self.env.reset(**kwargs)
+
+    def reward (self, reward):
+        # Get internal simulator state for custom math
+        sim = self.env.unwrapped
+        reward_const = -4.3
+        speed = sim.speed
+        #Lane logig 
+        pos = sim.cur_pos
+        angle = sim.cur_angle  #This is in Radians where max is 2pi 
+        current_action = sim.last_action 
+        try:
+            lp = get_road_pos2(sim, pos, angle)
+        except NotInLane:
+            return -10.0  
+        
+        reward_speed = 2 * (speed/0.56)
+  
+        reward_distance_angle = -3.5 * (np.abs(lp.dist) / 0.225) * (np.abs(lp.angle_deg) / 90)  #Max would be 0.23
+
+        # Jerk Penalty: Penalize sudden changes in angle
+        action_diff = np.linalg.norm(current_action - self.prev_action)
+        reward_jerk = -0.5 * action_diff / 2.2  # Start with -0.5 and tune if needed, and max would be 2.2
+
+        self.prev_action = current_action.copy()
+        reward += reward_const + reward_speed + reward_distance_angle + reward_jerk 
+        return reward
+
 class LapTerminationWrapperV5(gym.Wrapper):
     def __init__(self, env, max_lap_reward):
         super().__init__(env)
@@ -683,8 +718,8 @@ class VideoOverlayWrapper(gym.Wrapper):
             return frame
 
         v, omega = self.last_action
-
-        text = f"v={v:.2f}, omega={omega:.2f}, speed={self.env.unwrapped.speed:.2f}"
+        omega_s = (self.env.unwrapped.wheelVels[1] - self.env.unwrapped.wheelVels[0]) / self.env.unwrapped.wheel_dist
+        text = f"v={v:.2f}, omega={omega:.2f}, speed={self.env.unwrapped.speed:.2f}, angular speed = {omega_s:.2f}"
 
         # Draw text on frame
         frame = cv2.putText(
