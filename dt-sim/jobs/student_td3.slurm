@@ -25,7 +25,7 @@ export WANDB_API_KEY=wandb_v1_8e2bMjpF0jAONl9pgp9DvxIjJMv_ZpUFvFVSXjx5aqyHPKvwQh
 export WANDB_DIR=$PWD/wandb
 
 
-SIF_IMAGE="$HOME/DT_thesis_BM/dt-sim/duckie_rl.sif"
+SIF_IMAGE="$HOME/duckie_rl.sif"
 
 
 srun singularity exec --nv \
