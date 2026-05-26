@@ -9,6 +9,9 @@
 #SBATCH --mem=16G
 #SBATCH --cpus-per-task=4
 
+
+SIF_IMAGE="$HOME/DT_thesis_BM/dt-sim/duckie_rl.sif"
+
 cd $HOME/DT_thesis_BM/dt-sim
 mkdir -p output
 
@@ -24,7 +27,7 @@ export WANDB_API_KEY=wandb_v1_8e2bMjpF0jAONl9pgp9DvxIjJMv_ZpUFvFVSXjx5aqyHPKvwQh
 export WANDB_DIR=$PWD/wandb
 
 
-SIF_IMAGE="$HOME/DT_thesis_BM/dt-sim/duckie_rl.sif"
+
 
 
 srun singularity exec --nv \
