@@ -2,13 +2,12 @@
 #SBATCH -J 2mMid4Ter4_l40   
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
-#SBATCH -t 76:00:00
-#SBATCH -n 1
-#SBATCH -c 4
-#SBATCH -p allgroups
-#SBATCH --mem=16g
-#SBATCH --nodelist=gpu7
-#SBATCH --gres=gpu:l40s
+#SBATCH --time=76:00:00
+#SBATCH --partition=pgpu_most
+#SBATCH --account=dei_most
+#SBATCH --gpus=1
+#SBATCH --mem=16G
+#SBATCH --cpus-per-task=4
 
 cd $HOME/DT_thesis_BM/dt-sim
 mkdir -p logs
