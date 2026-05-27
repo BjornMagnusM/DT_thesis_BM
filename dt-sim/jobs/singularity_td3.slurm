@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=2mMid4Ter4_l40   
+#SBATCH --job-name=NoCrop2mMid4Ter4_l40   
 #SBATCH --output=output/log_%j.out
 #SBATCH -e output/log_%j.err
 #SBATCH --time=76:00:00
@@ -44,5 +44,5 @@ srun singularity exec --nv \
             --time_optimal_reward \
             --lap_termination \
             --grayscale \
-            --run-notes "2mMid4Ter4"
+            --run-notes "NoCrop2mMid4Ter4"
     "

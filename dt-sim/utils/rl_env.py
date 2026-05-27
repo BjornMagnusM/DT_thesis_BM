@@ -57,9 +57,10 @@ class DuckieOvalEnv(Simulator):
             env = gym.wrappers.RecordVideo(env, video_folder, episode_trigger=lambda x: True)
 
         # Vision Pipeline (Sim2Real Insurance)
-        env = ResizeWrapper(env, shape=(120, 160, 3)) # Ensure 120x160 base
-        env = CropResizeWrapper(env, shape=(84, 84))  # Crop sky, resize to 84x84
-        
+        #env = ResizeWrapper(env, shape=(120, 160, 3)) # Ensure 120x160 base
+        #env = CropResizeWrapper(env, shape=(84, 84))  # Crop sky, resize to 84x84
+        env = ResizeWrapper(env, shape=(84, 84, 3))
+
         if grayscale:
             env = gym.wrappers.GrayscaleObservation(env, keep_dim=True)
         
