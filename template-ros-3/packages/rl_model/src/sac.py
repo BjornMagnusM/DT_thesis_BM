@@ -39,6 +39,8 @@ class ImgWrapperROS:
         pass
 
     def observation(self, observation):
+        if observation.ndim == 2:
+            observation = observation[:, :, None]
         return observation.transpose(2, 0, 1)
 
 
