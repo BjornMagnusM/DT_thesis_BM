@@ -359,7 +359,7 @@ class TimeOptimalRewardV4(gym.RewardWrapper):
         
         reward_speed = 2 * (speed/0.56)
   
-        reward_distance_angle = -3 * (np.abs(lp.dist) / 0.225) * (np.abs(lp.angle_deg) / 90)  #Max would be 0.23
+        reward_distance_angle = -2 * (np.abs(lp.dist) / 0.225) * (np.abs(lp.angle_deg) / 90)  #Max would be 0.23
 
         # Jerk Penalty: Penalize sudden changes in angle
         action_diff = np.linalg.norm(current_action - self.prev_action)
