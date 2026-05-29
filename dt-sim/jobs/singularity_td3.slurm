@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=2m3Mid4Ter4_BM   
+#SBATCH --job-name=5Const2Speed2m2Mid4Ter4_BM   
 #SBATCH --output=output/log_%j.out
 #SBATCH -e output/log_%j.err
 #SBATCH --time=76:00:00
@@ -44,5 +44,5 @@ srun singularity exec --nv \
             --time_optimal_reward \
             --lap_termination \
             --grayscale \
-            --run-notes "2m3Mid4Ter4"
+            --run-notes "Trying to have higher speed reward to make it wanting to have a higher speed and not stop"
     "
