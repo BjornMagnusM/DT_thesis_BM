@@ -342,11 +342,11 @@ class TimeOptimalRewardV4(gym.RewardWrapper):
     def reset(self, **kwargs):
         self.prev_action = np.zeros(2)
         return self.env.reset(**kwargs)
-
+        
     def reward (self, reward):
         # Get internal simulator state for custom math
         sim = self.env.unwrapped
-        reward_const = -4.8
+        reward_const = -4.3
         speed = sim.speed
         #Lane logig 
         pos = sim.cur_pos
@@ -357,7 +357,7 @@ class TimeOptimalRewardV4(gym.RewardWrapper):
         except NotInLane:
             return -10.0  
         
-        reward_speed = 2.5 * (speed/0.56)
+        reward_speed = 2 * (speed/0.56)
   
         reward_distance_angle = -2 * (np.abs(lp.dist) / 0.225) * (np.abs(lp.angle_deg) / 90)  #Max would be 0.23
 

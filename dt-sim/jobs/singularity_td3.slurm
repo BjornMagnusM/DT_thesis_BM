@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=4.8Const2.5Speed2m2Mid4Ter4_BM   
+#SBATCH --job-name=4.3Const2Speed2m2Mid4Ter4Ter4_BM   
 #SBATCH --output=output/log_%j.out
 #SBATCH -e output/log_%j.err
 #SBATCH --time=76:00:00
@@ -38,11 +38,11 @@ srun singularity exec --nv \
         python3 rl_bm/td3_continuous_action.py \
             --seed 2 \
             --env-id oval_loop \
-            --total-timesteps 2000000 \
+            --total-timesteps 3000000 \
             --buffer-size 10000 \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
             --grayscale \
-            --run-notes "Trying to have higher speed reward to make it wanting to have a higher speed and not stop"
+            --run-notes "Rerun of 60th but with 3m"
     "
