@@ -30,7 +30,7 @@ parser.add_argument("--draw-bbox", action="store_true", help="draw collision det
 parser.add_argument("--domain-rand", action="store_true", help="enable domain randomization")
 parser.add_argument("--dynamics_rand", action="store_true", help="enable dynamics randomization")
 parser.add_argument("--frame-skip", default=1, type=int, help="number of frames to skip")
-parser.add_argument("--seed", default=1, type=int, help="seed")
+parser.add_argument("--seed", default=5, type=int, help="seed")
 args = parser.parse_args()
 
 
