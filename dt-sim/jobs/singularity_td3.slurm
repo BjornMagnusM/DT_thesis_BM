@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=TD3Main62DomainDis_BM   
+#SBATCH --job-name=TD3Main62DomainDisDyn_BM   
 #SBATCH --output=output/log_%j.out
 #SBATCH -e output/log_%j.err
 #SBATCH --time=76:00:00
@@ -46,5 +46,6 @@ srun singularity exec --nv \
             --grayscale \
             --domain_rand \
             --distortion \
-            --run-notes "TD3 Domain rand and distortions"
+            --dynamics_rand \
+            --run-notes "TD3 Domain rand and distortions and dynamics rand"
     "
