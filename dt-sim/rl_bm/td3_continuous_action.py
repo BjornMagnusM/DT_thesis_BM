@@ -267,15 +267,12 @@ if __name__ == "__main__":
         "domain_rand": args.domain_rand,
         "distortion": args.distortion,
         "dynamics_rand": args.dynamics_rand,
-        "camera_rand": args.camera_rand,
-        "lap_termination": args.lap_termination,
-        "time_optimal_reward": args.time_optimal_reward,
-        "cap_reward": args.cap_reward
+        "camera_rand": args.camera_rand
     }
     
     envs = gym.vector.SyncVectorEnv(
         [make_env(args.seed + i, i, run_name, args.capture_video, args.motion_blur, args.max_lap_reward, args.lap_termination ,
-         args.time_optimal_reward,args.cap_reward,args.norm_reward) for i in range(args.num_envs)]
+         args.time_optimal_reward,args.cap_reward,args.norm_reward, **env_params) for i in range(args.num_envs)]
     )
     assert isinstance(envs.single_action_space, gym.spaces.Box), "only continuous action space is supported"
 

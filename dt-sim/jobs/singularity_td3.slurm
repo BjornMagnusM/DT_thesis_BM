@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=TD3Main62DomainDisDynCam_BM   
+#SBATCH --job-name=TD3Main62Domain_BM   
 #SBATCH --output=output/log_%j.out
 #SBATCH -e output/log_%j.err
 #SBATCH --time=76:00:00
@@ -45,8 +45,5 @@ srun singularity exec --nv \
             --lap_termination \
             --grayscale \
             --domain_rand \
-            --distortion \
-            --dynamics_rand \
-            --camera_rand \
-            --run-notes "TD3 Domain Dis and dynamic rand now also with Camera rand"
+            --run-notes "TD3 Domain Domain rand"
     "
