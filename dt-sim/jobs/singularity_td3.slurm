@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=TD3Main62RGB_BM   
+#SBATCH --job-name=TD3Main62DomainDisDynCam_BM   
 #SBATCH --output=output/log_%j.out
 #SBATCH -e output/log_%j.err
 #SBATCH --time=76:00:00
@@ -43,5 +43,10 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
-            --run-notes "TD3  RGB"
+            --grayscale \
+            --domain_rand \
+            --distortion \
+            --dynamics_rand \
+            --camera_rand \
+            --run-notes "TD3 Domain rand and distortions and dynamics rand and Camera"
     "
