@@ -421,7 +421,8 @@ if __name__ == "__main__":
             grayscale = args.grayscale,
             num_episodes=1,
             run_name=run_name,
-            **env_params
+            lap_termination = args.lap_termination,
+            time_optimal_reward = args.time_optimal_reward
         )
 
     envs.close()
