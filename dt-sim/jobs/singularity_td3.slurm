@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=RGBDomainDisDynCam_BM   
+#SBATCH --job-name=RGBDisDynCam_BM   
 #SBATCH --output=output/log_%j.out
 #SBATCH -e output/log_%j.err
 #SBATCH --time=76:00:00
@@ -43,7 +43,6 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
-            --domain_rand \
             --distortion \
             --dynamics_rand \
             --camera_rand \
