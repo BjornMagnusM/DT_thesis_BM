@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=RGBDisDynCam_BM   
+#SBATCH --job-name=SAC3.5Const   
 #SBATCH --output=output/log_%j.out
 #SBATCH -e output/log_%j.err
 #SBATCH --time=76:00:00
@@ -35,7 +35,7 @@ srun singularity exec --nv \
     $SIF_IMAGE \
     bash -c "
         export PYTHONPATH=\$PYTHONPATH:/app:/app/src && \
-        python3 rl_bm/td3_continuous_action.py \
+        python3 rl_bm/sac_continuous_action.py \
             --seed 2 \
             --env-id oval_loop \
             --total-timesteps 2000000 \
@@ -43,8 +43,6 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
-            --distortion \
-            --dynamics_rand \
-            --camera_rand \
-            --run-notes "TD3 Domain rand and distortions and dynamics rand and Camera"
+            --grayscale \
+            --run-notes "SaC -3.5 const"
     "
