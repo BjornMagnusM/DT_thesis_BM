@@ -125,8 +125,6 @@ class Args:
     motion_blur: bool = False
     """Simulates the blur from the moving duckiebot"""
 
-    best_lap_time = 100000 
-    """Measure to see if the current lap was better than earlier ones intialized with a high number"""
 
 def make_env(seed, idx, run_name, capture_video=False, motion_blur=False,   
              max_lap_reward=5000,lap_termination = False,time_optimal_reward = False,cap_reward = False ,norm_reward= False, **env_kwargs):
@@ -274,6 +272,9 @@ class Actor(nn.Module):
 
 if __name__ == "__main__":
 
+
+    best_lap_time = 100000 
+    """Measure to see if the current lap was better than earlier ones intialized with a high number"""
     args = tyro.cli(Args)
     input_mode = "" if args.grayscale else "_RGB"
     timestamp = datetime.now().strftime("%m%d_%H%M")
@@ -409,6 +410,7 @@ if __name__ == "__main__":
                     if  infos['lap_step'][i] < best_lap_time: 
                         print(f"New lap record, completed withing {infos['lap_step'][i]} steps")
                         save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix="best_lap")
+                        best_lap_time = infos['lap_step'][i]
                 
 
                   
