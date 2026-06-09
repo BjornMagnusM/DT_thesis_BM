@@ -35,7 +35,7 @@ srun singularity exec --nv \
     $SIF_IMAGE \
     bash -c "
         export PYTHONPATH=\$PYTHONPATH:/app:/app/src && \
-        python3 rl_bm/sac_continuous_action.py \
+        python3 rl_bm/td3_continuous_action.py \
             --seed 2 \
             --env-id oval_loop \
             --total-timesteps 2000000 \
