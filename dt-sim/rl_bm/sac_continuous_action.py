@@ -504,18 +504,18 @@ if __name__ == "__main__":
             # if global_step % args.save_interval == 0 and global_step > 5e5:
             #     save_models(actor, qf1, qf2, global_step, run_name, args, env_params)
             
-            if global_step % args.eval_interval == 0: 
-                interval_evaluate_policy(
-                    actor=actor,
-                    args=args,
-                    device=device,
-                    global_step = global_step,
-                    algo_name="SAC_lap",
-                    grayscale = args.grayscale,
-                    num_episodes=1,
-                    run_name=run_name,
-                    **env_params
-                )
+            # if global_step % args.eval_interval == 0: 
+            #     interval_evaluate_policy(
+            #         actor=actor,
+            #         args=args,
+            #         device=device,
+            #         global_step = global_step,
+            #         algo_name="SAC_lap",
+            #         grayscale = args.grayscale,
+            #         num_episodes=1,
+            #         run_name=run_name,
+            #         **env_params
+            #     )
 
     if args.save_model:
         save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix=f"v_Final")
