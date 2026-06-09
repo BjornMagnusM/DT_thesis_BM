@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=RGBDomainDyn_BM   
+#SBATCH --job-name=SAC3,5BestSave_BM   
 #SBATCH --output=output/log_%j.out
 #SBATCH -e output/log_%j.err
 #SBATCH --time=76:00:00
@@ -35,7 +35,7 @@ srun singularity exec --nv \
     $SIF_IMAGE \
     bash -c "
         export PYTHONPATH=\$PYTHONPATH:/app:/app/src && \
-        python3 rl_bm/td3_continuous_action.py \
+        python3 rl_bm/sac_continuous_action.py \
             --seed 2 \
             --env-id oval_loop \
             --total-timesteps 2000000 \
@@ -44,5 +44,5 @@ srun singularity exec --nv \
             --time_optimal_reward \
             --lap_termination \
             --grayscale \
-            --run-notes "Main RGB with Domain Dyn"
+            --run-notes "Sac with saving fastest model"
     "

@@ -125,6 +125,9 @@ class Args:
     motion_blur: bool = False
     """Simulates the blur from the moving duckiebot"""
 
+    best_lap_time = 100000 
+    """Measure to see if the current lap was better than earlier ones intialized with a high number"""
+
 def make_env(seed, idx, run_name, capture_video=False, motion_blur=False,   
              max_lap_reward=5000,lap_termination = False,time_optimal_reward = False,cap_reward = False ,norm_reward= False, **env_kwargs):
     def thunk():
@@ -402,7 +405,13 @@ if __name__ == "__main__":
                 if "_progress_ratio" in infos and infos["_episode"][i]:
                     writer.add_scalar("charts/progress_ratio", infos['progress_ratio'][i], global_step)  
                 if "_lap_step" in infos and infos["_episode"][i]:
-                    writer.add_scalar("charts/lap_step", infos['lap_step'][i], global_step)  
+                    writer.add_scalar("charts/lap_step", infos['lap_step'][i], global_step)
+                    if _lap_step < best_lap_time: 
+                        print(f"New lap record, completed withing {_lap_step_} steps")
+                        save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix="best_lap")
+                
+
+                  
                 
         # TRY NOT TO MODIFY: save data to reply buffer; handle `final_observation`
         real_next_obs = next_obs.copy()
@@ -490,10 +499,10 @@ if __name__ == "__main__":
                 if args.autotune:
                     writer.add_scalar("losses/alpha_loss", alpha_loss.item(), global_step)  
             
-            if global_step == 499000:
-                save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix="_PRE_RAND")
-            if global_step % args.save_interval == 0 and global_step > 5e5:
-                save_models(actor, qf1, qf2, global_step, run_name, args, env_params)
+            # if global_step == 499000:
+            #     save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix="_PRE_RAND")
+            # if global_step % args.save_interval == 0 and global_step > 5e5:
+            #     save_models(actor, qf1, qf2, global_step, run_name, args, env_params)
             
             if global_step % args.eval_interval == 0: 
                 interval_evaluate_policy(
