@@ -214,6 +214,8 @@ class Actor(nn.Module):
 
 if __name__ == "__main__":
 
+    best_lap_time = 100000 
+    """Measure to see if the current lap was better than earlier ones intialized with a high number"""
     args = tyro.cli(Args)
     run_name = f"td3__{args.env_id}__{args.seed}__{int(time.time())}"
     if args.track:
@@ -328,6 +330,11 @@ if __name__ == "__main__":
                     writer.add_scalar("charts/progress_ratio", infos['progress_ratio'][i], global_step)  
                 if "_lap_step" in infos and infos["_episode"][i]:
                     writer.add_scalar("charts/lap_step", infos['lap_step'][i], global_step)  
+                    if  infos['lap_step'][i] < best_lap_time: 
+                        print(f"New lap record, completed withing {infos['lap_step'][i]} steps")
+                        save_models(actor, qf1, qf2, global_step, run_name, args, env_params, suffix="best_lap")
+                        best_lap_time = infos['lap_step'][i]
+                
                 
 
         # TRY NOT TO MODIFY: save data to reply buffer; handle `final_observation`
