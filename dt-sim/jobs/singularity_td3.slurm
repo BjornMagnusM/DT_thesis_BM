@@ -46,5 +46,5 @@ srun singularity exec --nv \
             --grayscale \
             --domain_rand \ 
             --dynamics_rand \
-            --run-notes "TD3 no dis save best Grayscale wiht 8 time omegawith Dom and DYn"
+            --run-notes "TD3 no dis save best Grayscale wiht eight time omegawith Dom and DYn"
     "
