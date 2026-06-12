@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=Gray_8Omega  
+#SBATCH --job-name=Gray_8OmegaDomDyn 
 #SBATCH --output=output/log_%j.out
 #SBATCH -e output/log_%j.err
 #SBATCH --time=76:00:00
@@ -44,5 +44,7 @@ srun singularity exec --nv \
             --time_optimal_reward \
             --lap_termination \
             --grayscale \
-            --run-notes "TD3 no dis save best Grayscale wiht 8 time omega"
+            --domain_rand \ 
+            --dynamics_rand \
+            --run-notes "TD3 no dis save best Grayscale wiht 8 time omegawith Dom and DYn"
     "
