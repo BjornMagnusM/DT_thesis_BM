@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J LoopRGB_Best_l40
+#SBATCH -J LoopRGB_Best_a40
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -7,8 +7,8 @@
 #SBATCH -c 4
 #SBATCH -p allgroups
 #SBATCH --mem=16g
-#SBATCH --nodelist=gpu7
-#SBATCH --gres=gpu:l40s
+#SBATCH --nodelist=gpu1
+#SBATCH --gres=gpu:a40
 
 cd $HOME/DT_thesis_BM/dt-sim
 mkdir -p logs
