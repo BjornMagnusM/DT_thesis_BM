@@ -44,7 +44,7 @@ srun singularity exec --nv \
             --time_optimal_reward \
             --lap_termination \
             --grayscale \
-            --domain_rand \ 
+            --domain_rand \
             --dynamics_rand \
             --run-notes "TD3 no dis save best Grayscale wiht eight time omegawith Dom and DYn New loop"
     "
