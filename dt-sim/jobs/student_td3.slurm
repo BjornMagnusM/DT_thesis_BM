@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J LoopRGB_BestDis_a40
+#SBATCH -J LoopGray_BestDis_l40
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -7,8 +7,8 @@
 #SBATCH -c 4
 #SBATCH -p allgroups
 #SBATCH --mem=16g
-#SBATCH --nodelist=gpu1
-#SBATCH --gres=gpu:a40
+#SBATCH --nodelist=gpu7
+#SBATCH --gres=gpu:l40s
 
 cd $HOME/DT_thesis_BM/dt-sim
 mkdir -p logs
@@ -42,8 +42,8 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
-            --distortion \
+            --grayscale \
+            --domain_rand \
             --dynamics_rand \
-            --camera_rand \
             --run-notes "TD3 no dis save best RGB New loop"
     "
