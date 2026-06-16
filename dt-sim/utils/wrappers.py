@@ -111,8 +111,8 @@ class ActionWrapper(gym.ActionWrapper):
         super().__init__(env)
 
     def action(self, action):
-        action_ = [action[0] * 0.8, action[1]]
-        return action_
+        action = [action[0] * 0.8, action[1]]
+        return action
 
 class CropResizeWrapper(gym.ObservationWrapper):
     def __init__(self, env, shape=(84, 84)):
@@ -489,7 +489,7 @@ class LapTerminationWrapperV4(gym.Wrapper):
         misc["progress_ratio"] = len(self.visited_tiles) / 12
         
          #Mark the episode as done if the agent have completed a whole lap  
-        if len(self.visited_tiles) == 12 and current_tile == self.finish_tile: 
+        if len(self.visited_tiles) == 10 and current_tile == self.finish_tile: 
             done = True
             lap_reward = max(self.max_lap_reward-self.step_counter,100)
             misc["lap_step"] =  self.step_counter

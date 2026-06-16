@@ -28,10 +28,10 @@ def parse_args():
     return parser.parse_args()
 
 
-def world_to_pixel(x, z, h,w , scale=200):
+def world_to_pixel(x, z, h,w , scale=250):
 
-    px = int(x * scale + w / 2)-300
-    py = int(z * scale + h / 2)-175
+    px = int(x * scale + w / 2)-290
+    py = int(z * scale + h / 2)-215
 
     return px, py
 

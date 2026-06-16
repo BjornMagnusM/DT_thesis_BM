@@ -4,7 +4,7 @@ import numpy as np
 # Duckietown Specific
 from gym_duckietown.simulator import Simulator
 from utils.wrappers import (ImgWrapper, ActionWrapper, CropResizeWrapper, CustomRewardWrapper, TemporalWrapper,CapRewardWrapper, 
-                            KinematicActionWrapper, ResizeWrapper,TimeOptimalReward,LapTerminationWrapperV2,VideoOverlayWrapper)
+                            KinematicActionWrapper, ResizeWrapper,TimeOptimalReward,LapTerminationWrapperV4,VideoOverlayWrapper)
 
 class EnvLunch:
     def __init__(self, 
@@ -38,13 +38,13 @@ class EnvLunch:
             frame_skip=1,
             **self.sim_to_real_kwargs
         )
-        env.start_pose = (np.array([1.7, 0, 0.3]), 0.0)
+        env.start_pose = (np.array([1.1, 0, 0.3]), 0.0)
 
         return env
 
 
     def reset(self, **kwargs):
-        self.start_pose =  (np.array([1.7, 0, 0.3]),0.0)
+        self.start_pose =  (np.array([1.1, 0, 0.3]),0.0)
         obs, info = super().reset(**kwargs)
 
         return obs, info
@@ -61,7 +61,7 @@ class EnvLunch:
         #env = TemporalWrapper(env, frame_skip=3, motion_blur=motion_blur)
 
         ##BM added a termination criteria after finishing a lap 
-        env = LapTerminationWrapperV2(env,2000)
+        env = LapTerminationWrapperV4(env,2000)
 
         if motion_blur:
             print("motion blur applied")

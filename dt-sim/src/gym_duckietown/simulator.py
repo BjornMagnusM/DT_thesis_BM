@@ -660,7 +660,7 @@ class Simulator(gym.Env):
                     # logger.warning(msg)
                     continue
 
-                invalid = not self._valid_pose(propose_pos, propose_angle, safety_factor=1.3)
+                invalid = not self._valid_pose(propose_pos, propose_angle, safety_factor=0.00)
                 if invalid:
                     # msg = 'The spawn was invalid.'
                     # logger.warning(msg)
@@ -1494,7 +1494,7 @@ class Simulator(gym.Env):
         # No collision with any object
         return False
 
-    def _valid_pose(self, pos: g.T3value, angle: float, safety_factor: float = 1.0) -> bool:
+    def _valid_pose(self, pos: g.T3value, angle: float, safety_factor: float = 0.0) -> bool:
         """
         Check that the agent is in a valid pose
 
