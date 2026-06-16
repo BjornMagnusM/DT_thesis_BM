@@ -43,5 +43,8 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
+            --distortion \
+            --dynamics_rand \
+            --camera_rand \
             --run-notes "TD3 no dis save best RGB New loop"
     "
