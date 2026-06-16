@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=LoopGray_Best 
+#SBATCH --job-name=LoopGray_RGBBest 
 #SBATCH --output=output/log_%j.out
 #SBATCH -e output/log_%j.err
 #SBATCH --time=76:00:00
@@ -43,6 +43,5 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
-            --grayscale \
-            --run-notes "TD3 no dis save best Grayscale New loop"
+            --run-notes "TD3 no dis save best RGB New loop"
     "
