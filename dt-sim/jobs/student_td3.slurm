@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J LoopRGB_Best_a40
+#SBATCH -J LoopRGB_BestDis_a40
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -42,5 +42,8 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
+            --distortion \
+            --dynamics_rand \
+            --camera_rand \
             --run-notes "TD3 no dis save best RGB New loop"
     "
