@@ -31,7 +31,7 @@ class DuckieOvalEnv(Simulator):
         self.motor_k = 27.0
 
     def reset(self, **kwargs):
-        self.start_pose =  (np.array([1.7, 0, 0.3]),0.0)
+        self.start_pose =  (np.array([1.1, 0, 0.3]),0.0)
         obs, info = super().reset(**kwargs)
 
         return obs, info

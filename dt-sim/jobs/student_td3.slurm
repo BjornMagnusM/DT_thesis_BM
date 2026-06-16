@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J 2mMid4Ter4_l40   
+#SBATCH -J LoopRGB_Best_l40
 #SBATCH -o logs/output_%j.txt
 #SBATCH -e logs/errors_%j.txt
 #SBATCH -t 76:00:00
@@ -42,6 +42,5 @@ srun singularity exec --nv \
             --learning-starts 10000 \
             --time_optimal_reward \
             --lap_termination \
-            --grayscale \
-            --run-notes "2mMid4Ter4"
+            --run-notes "TD3 no dis save best RGB New loop"
     "
